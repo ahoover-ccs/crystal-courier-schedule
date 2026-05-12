@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 48" role="img" aria-label="Crystal Courier Service">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f6f1e7"/>
+      <stop offset="100%" style="stop-color:#c9a85c"/>
+    </linearGradient>
+  </defs>
+  <text x="0" y="34" fill="url(#g)" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="500">
+    Crystal Courier
+  </text>
+  <text x="0" y="46" fill="#c9a85c" font-family="Georgia, 'Times New Roman', serif" font-size="9" letter-spacing="0.35em">
+    SINCE 1949
+  </text>
+</svg>

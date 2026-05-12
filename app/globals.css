@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  --cc-navy: #1e2d4a;
+  --cc-navy-deep: #152238;
+  --cc-cream: #f6f1e7;
+  --cc-paper: #fffcf7;
+  --cc-gold: #a67c2d;
+  --cc-gold-light: #c9a85c;
+  --cc-ink: #2a2118;
+  --cc-muted: #5c5347;
+  --cc-line: #d9d0c3;
+  --cc-lab: #4a6fa5;
+  --cc-morning: #2d8a6e;
+  --cc-afternoon: #b45309;
+  --cc-allday: #6b4c9a;
+}
+
+@theme inline {
+  --color-cc-navy: var(--cc-navy);
+  --color-cc-navy-deep: var(--cc-navy-deep);
+  --color-cc-cream: var(--cc-cream);
+  --color-cc-paper: var(--cc-paper);
+  --color-cc-gold: var(--cc-gold);
+  --color-cc-ink: var(--cc-ink);
+  --color-cc-muted: var(--cc-muted);
+  --color-cc-line: var(--cc-line);
+  --font-serif: var(--font-eb-garamond), "EB Garamond", "Cormorant Garamond", Garamond,
+    "Times New Roman", serif;
+}
+
+body {
+  background: var(--cc-cream);
+  color: var(--cc-ink);
+  font-family: var(--font-serif);
+}
