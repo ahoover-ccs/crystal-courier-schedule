@@ -14,7 +14,11 @@ import {
 } from "@dnd-kit/core";
 import { format, parseISO } from "date-fns";
 import type { AppData, Person, RouteType, ScheduleSlot } from "@/lib/types";
-import { isNonDefaultAssignmentForSlot, resolveTemplateLabel } from "@/lib/availability-helpers";
+import {
+  hasPendingTimeOffForSlot,
+  isNonDefaultAssignmentForSlot,
+  resolveTemplateLabel,
+} from "@/lib/availability-helpers";
 import { roleLabel } from "@/lib/roles";
 import { suggestFillIns } from "@/lib/suggestions";
 import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
@@ -86,11 +90,13 @@ function DraggableAssignChip({
   driverId,
   name,
   isNonDefault,
+  isPendingTimeOff,
 }: {
   slotId: string;
   driverId: string;
   name: string;
   isNonDefault: boolean;
+  isPendingTimeOff: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `assign-${slotId}`,
@@ -99,6 +105,12 @@ function DraggableAssignChip({
   const style = transform
     ? { transform: `translate3d(${transform.x}px,${transform.y}px,0)` }
     : undefined;
+  // Pending time off wins over the non-default highlight while approval is in flight.
+  const chipColor = isPendingTimeOff
+    ? "bg-cc-sky"
+    : isNonDefault
+      ? "bg-cc-gold"
+      : "bg-cc-navy";
   return (
     <button
       type="button"
@@ -106,9 +118,8 @@ function DraggableAssignChip({
       style={style}
       {...listeners}
       {...attributes}
-      className={`mt-1 w-full cursor-grab rounded px-2 py-1 text-left text-sm text-cc-paper active:cursor-grabbing ${
-        isNonDefault ? "bg-cc-gold" : "bg-cc-navy"
-      } ${
+      title={isPendingTimeOff ? "Time off requested — pending approval" : undefined}
+      className={`mt-1 w-full cursor-grab rounded px-2 py-1 text-left text-sm text-cc-paper active:cursor-grabbing ${chipColor} ${
         isDragging ? "opacity-50" : ""
       }`}
     >
@@ -121,10 +132,12 @@ function SlotCell({
   slot,
   occupantName,
   isNonDefaultAssignment,
+  isPendingTimeOff,
 }: {
   slot: ScheduleSlot;
   occupantName: string | null;
   isNonDefaultAssignment: boolean;
+  isPendingTimeOff: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `slot-${slot.id}`,
@@ -143,6 +156,7 @@ function SlotCell({
           driverId={slot.driverId}
           name={occupantName}
           isNonDefault={isNonDefaultAssignment}
+          isPendingTimeOff={isPendingTimeOff}
         />
       ) : (
         <p className="mt-2 text-center text-xs text-cc-muted">Drop here</p>
@@ -263,11 +277,21 @@ export function ScheduleBoard() {
       const nonDefaultCount = rowSlots.filter(
         (s) => s && isNonDefaultAssignmentForSlot(t, s)
       ).length;
-      return { template: t, rowSlots, blankCount, nonDefaultCount, index };
+      const pendingTimeOffCount = rowSlots.filter(
+        (s) =>
+          s &&
+          s.driverId &&
+          hasPendingTimeOffForSlot(data, s.driverId, s.date, s.routeType)
+      ).length;
+      return { template: t, rowSlots, blankCount, nonDefaultCount, pendingTimeOffCount, index };
     });
+    // Row order: empty slots first, then rows with non-default (gold) assignments,
+    // then rows with pending-time-off (sky) chips, then the rest in their original order.
     rows.sort((a, b) => {
       if (b.blankCount !== a.blankCount) return b.blankCount - a.blankCount;
       if (b.nonDefaultCount !== a.nonDefaultCount) return b.nonDefaultCount - a.nonDefaultCount;
+      if (b.pendingTimeOffCount !== a.pendingTimeOffCount)
+        return b.pendingTimeOffCount - a.pendingTimeOffCount;
       return a.index - b.index;
     });
     return rows.map(({ template, rowSlots }) => ({ template, rowSlots }));
@@ -503,6 +527,11 @@ export function ScheduleBoard() {
                           slot={slot}
                           occupantName={slot.driverId ? nameById.get(slot.driverId) ?? "?" : null}
                           isNonDefaultAssignment={isNonDefaultAssignmentForSlot(template, slot)}
+                          isPendingTimeOff={
+                            slot.driverId
+                              ? hasPendingTimeOffForSlot(data, slot.driverId, slot.date, slot.routeType)
+                              : false
+                          }
                         />
                       </div>
                     ) : (

@@ -3,7 +3,11 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { addDays, format, parseISO } from "date-fns";
 import type { AppData, RouteType } from "@/lib/types";
-import { isNonDefaultAssignmentForSlot, resolveTemplateLabel } from "@/lib/availability-helpers";
+import {
+  hasPendingTimeOffForSlot,
+  isNonDefaultAssignmentForSlot,
+  resolveTemplateLabel,
+} from "@/lib/availability-helpers";
 import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
 
 function routeStyle(rt: RouteType): string {
@@ -85,11 +89,19 @@ export function DriverScheduleBoard() {
       });
       const blankCount = rowSlots.filter((s) => s && !s.driverId).length;
       const nonDefaultCount = rowSlots.filter((s) => s && isNonDefaultAssignmentForSlot(t, s)).length;
-      return { template: t, rowSlots, blankCount, nonDefaultCount, index };
+      const pendingTimeOffCount = rowSlots.filter(
+        (s) =>
+          s &&
+          s.driverId &&
+          hasPendingTimeOffForSlot(data, s.driverId, s.date, s.routeType)
+      ).length;
+      return { template: t, rowSlots, blankCount, nonDefaultCount, pendingTimeOffCount, index };
     });
     rows.sort((a, b) => {
       if (b.blankCount !== a.blankCount) return b.blankCount - a.blankCount;
       if (b.nonDefaultCount !== a.nonDefaultCount) return b.nonDefaultCount - a.nonDefaultCount;
+      if (b.pendingTimeOffCount !== a.pendingTimeOffCount)
+        return b.pendingTimeOffCount - a.pendingTimeOffCount;
       return a.index - b.index;
     });
     return rows.map(({ template, rowSlots }) => ({ template, rowSlots }));
@@ -200,6 +212,15 @@ export function DriverScheduleBoard() {
 
                 {rowSlots.map((slot, i) => {
                   const isNonDefault = slot ? isNonDefaultAssignmentForSlot(template, slot) : false;
+                  const isPendingTimeOff =
+                    slot && slot.driverId
+                      ? hasPendingTimeOffForSlot(data, slot.driverId, slot.date, slot.routeType)
+                      : false;
+                  const chipColor = isPendingTimeOff
+                    ? "bg-cc-sky"
+                    : isNonDefault
+                      ? "bg-cc-gold"
+                      : "bg-cc-navy";
                   return (
                     <div key={slot?.id ?? `missing-${template.id}-${i}`} className="bg-cc-cream/40 p-1">
                       <div
@@ -209,9 +230,8 @@ export function DriverScheduleBoard() {
                       >
                         {slot?.driverId ? (
                           <p
-                            className={`rounded px-2 py-1 text-sm text-cc-paper ${
-                              isNonDefault ? "bg-cc-gold" : "bg-cc-navy"
-                            }`}
+                            title={isPendingTimeOff ? "Time off requested — pending approval" : undefined}
+                            className={`rounded px-2 py-1 text-sm text-cc-paper ${chipColor}`}
                           >
                             {nameById.get(slot.driverId) ?? "Assigned"}
                           </p>

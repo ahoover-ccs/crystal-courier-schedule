@@ -97,6 +97,22 @@ export function isPersonAvailableForSlotOnDate(
   return dayMap[routeType] !== false;
 }
 
+/** True if the person has a pending (not yet approved) time-off request that covers this date + route type. */
+export function hasPendingTimeOffForSlot(
+  data: AppData,
+  personId: string,
+  date: string,
+  routeType: RouteType
+): boolean {
+  return data.timeOffRequests.some(
+    (r) =>
+      r.status === "pending" &&
+      r.driverId === personId &&
+      r.date === date &&
+      r.routeTypes.includes(routeType)
+  );
+}
+
 /** Merge partial weekly availability with full defaults */
 export function normalizeWeeklyAvailability(
   raw: Partial<WeeklyShiftAvailability> | undefined
