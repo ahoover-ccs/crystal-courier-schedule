@@ -1,5 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { Pool, type PoolConfig } from "pg";
 import {
   dateToWeekdayKey,
   defaultDriverForTemplateDate,
@@ -23,6 +24,9 @@ import { roleNeedsProfileToken } from "./roles";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const DB_PATH = path.join(DATA_DIR, "schedule.json");
+
+const DATABASE_URL = process.env.DATABASE_URL;
+const USE_POSTGRES = Boolean(DATABASE_URL);
 
 const STEVE = "drv-steve-prince";
 
@@ -259,7 +263,117 @@ export function createSeedData(): AppData {
   });
 }
 
-export async function readDb(): Promise<AppData> {
+// ---------------------------------------------------------------------------
+// Storage backends
+//
+// When `DATABASE_URL` is set the app stores its state as a single JSONB row in
+// a Postgres table named `app_state`. This preserves the existing
+// read-mutate-write API surface (`readDb` / `writeDb` / `ensureDb`) without
+// requiring any caller changes. When `DATABASE_URL` is unset we fall back to
+// the original `data/schedule.json` file, which keeps the local dev experience
+// identical and avoids forcing a Postgres install for development.
+//
+// The JSONB-blob model is intentional: this app's mutations all happen against
+// the in-memory `AppData` object (then write back), so swapping the backing
+// store to one row keeps every API route and lib function unchanged. At this
+// scale (handful of admin users) it is correct; if write contention ever
+// becomes a real concern we can move to row-locking transactions or normalize
+// into per-entity tables.
+// ---------------------------------------------------------------------------
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __ccsPgPool: Pool | undefined;
+  // eslint-disable-next-line no-var
+  var __ccsPgReady: Promise<void> | undefined;
+}
+
+function buildPoolConfig(): PoolConfig {
+  const config: PoolConfig = { connectionString: DATABASE_URL };
+  // Managed Postgres providers (Render, Neon, Supabase, etc.) require TLS for
+  // external connections. `rejectUnauthorized: false` is the broad-compatibility
+  // setting; tighten if you ship a verified CA bundle.
+  if (!/sslmode=disable/.test(DATABASE_URL ?? "")) {
+    config.ssl = { rejectUnauthorized: false };
+  }
+  return config;
+}
+
+function getPool(): Pool {
+  if (process.env.NODE_ENV !== "production") {
+    if (!global.__ccsPgPool) {
+      global.__ccsPgPool = new Pool(buildPoolConfig());
+    }
+    return global.__ccsPgPool;
+  }
+  if (!global.__ccsPgPool) {
+    global.__ccsPgPool = new Pool(buildPoolConfig());
+  }
+  return global.__ccsPgPool;
+}
+
+async function ensurePostgresSchema(): Promise<void> {
+  if (!global.__ccsPgReady) {
+    global.__ccsPgReady = (async () => {
+      const pool = getPool();
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS app_state (
+          id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+          data JSONB NOT NULL,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+      `);
+
+      // First-run import: if the table is empty but a data/schedule.json
+      // file ships with the deploy, seed Postgres from it so an existing
+      // roster carries over automatically on the first deploy.
+      const { rows } = await pool.query<{ exists: boolean }>(
+        `SELECT EXISTS (SELECT 1 FROM app_state WHERE id = 1) AS exists`
+      );
+      if (!rows[0]?.exists) {
+        try {
+          const raw = await fs.readFile(DB_PATH, "utf-8");
+          const imported = normalizeAppData(JSON.parse(raw) as AppData);
+          await pool.query(
+            `INSERT INTO app_state (id, data) VALUES (1, $1::jsonb)
+             ON CONFLICT (id) DO NOTHING`,
+            [JSON.stringify(imported)]
+          );
+        } catch {
+          // No bundled JSON; ensureDb() will seed defaults on first call.
+        }
+      }
+    })().catch((e) => {
+      // Reset the cached promise so a transient failure can be retried.
+      global.__ccsPgReady = undefined;
+      throw e;
+    });
+  }
+  return global.__ccsPgReady;
+}
+
+async function pgRead(): Promise<AppData | null> {
+  await ensurePostgresSchema();
+  const pool = getPool();
+  const { rows } = await pool.query<{ data: AppData }>(
+    `SELECT data FROM app_state WHERE id = 1`
+  );
+  if (rows.length === 0) return null;
+  return normalizeAppData(rows[0].data);
+}
+
+async function pgWrite(data: AppData): Promise<void> {
+  await ensurePostgresSchema();
+  const pool = getPool();
+  const normalized = normalizeAppData(data);
+  await pool.query(
+    `INSERT INTO app_state (id, data, updated_at) VALUES (1, $1::jsonb, NOW())
+     ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+    [JSON.stringify(normalized)]
+  );
+}
+
+async function fileRead(): Promise<AppData> {
   try {
     const raw = await fs.readFile(DB_PATH, "utf-8");
     return normalizeAppData(JSON.parse(raw) as AppData);
@@ -268,19 +382,41 @@ export async function readDb(): Promise<AppData> {
   }
 }
 
-export async function writeDb(data: AppData): Promise<void> {
+async function fileWrite(data: AppData): Promise<void> {
   await fs.mkdir(DATA_DIR, { recursive: true });
   const normalized = normalizeAppData(data);
   await fs.writeFile(DB_PATH, JSON.stringify(normalized, null, 2), "utf-8");
 }
 
+export async function readDb(): Promise<AppData> {
+  if (USE_POSTGRES) {
+    const existing = await pgRead();
+    return existing ?? createSeedData();
+  }
+  return fileRead();
+}
+
+export async function writeDb(data: AppData): Promise<void> {
+  if (USE_POSTGRES) {
+    return pgWrite(data);
+  }
+  return fileWrite(data);
+}
+
 export async function ensureDb(): Promise<AppData> {
+  if (USE_POSTGRES) {
+    const existing = await pgRead();
+    if (existing) return existing;
+    const seed = createSeedData();
+    await pgWrite(seed);
+    return seed;
+  }
   try {
     await fs.access(DB_PATH);
-    return readDb();
+    return fileRead();
   } catch {
     const seed = createSeedData();
-    await writeDb(seed);
+    await fileWrite(seed);
     return seed;
   }
 }

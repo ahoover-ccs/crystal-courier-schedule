@@ -1,0 +1,4521 @@
+{
+  "people": [
+    {
+      "id": "disp-1",
+      "name": "Donna Harmon",
+      "role": "dispatch",
+      "email": "dispatch1@crystalcourier.com",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        }
+      }
+    },
+    {
+      "id": "disp-2",
+      "name": "Maranda Gould",
+      "role": "dispatch",
+      "email": "dispatch2@crystalcourier.com",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        }
+      }
+    },
+    {
+      "id": "disp-3",
+      "name": "Taylor Reese",
+      "role": "dispatch",
+      "email": "dispatch3@crystalcourier.com",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        }
+      }
+    },
+    {
+      "id": "drv-1",
+      "name": "Steve Prince",
+      "role": "full_time_driver",
+      "phone": "+13035550101",
+      "profileToken": "2e987dd530d74fcca296237d9c0c5a6875b9358bc6ec",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "drv-2",
+      "name": "Corena Anderson",
+      "role": "full_time_driver",
+      "phone": "+13035550102",
+      "profileToken": "ee3b758f26a84d1d9bdc2dad695e8cec13ef05a45de7",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "drv-3",
+      "name": "Shandi Brannon",
+      "role": "full_time_driver",
+      "phone": "+13035550103",
+      "profileToken": "ad921b45dc35471cac49e7df7ab0b3b4e6c844afde3e",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "drv-4",
+      "name": "Greg Cooper",
+      "role": "full_time_driver",
+      "phone": "+13035550104",
+      "profileToken": "20f2a44552904b2996e10c287fb1c4c204ed6621f432",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "drv-5",
+      "name": "Angelique Fraire",
+      "role": "full_time_driver",
+      "phone": "+13035550105",
+      "profileToken": "9f94de35429e44c191dffb5f55dae032a8fe5581b5ce",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "on-1",
+      "name": "Brendan Gates",
+      "role": "full_time_driver",
+      "email": "jamie@example.com",
+      "phone": "+13035550999",
+      "profileToken": "7c193b7424374b8597b79cfaf12b759675e544ece507",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "on-2",
+      "name": "Evan Gericke",
+      "role": "full_time_driver",
+      "email": "taylor@example.com",
+      "phone": "+13035550998",
+      "profileToken": "afc80a4e6bfe4c3aa5ba7a1f114ad939af42f9122d6a",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "on-3",
+      "name": "Larry Grady",
+      "role": "full_time_driver",
+      "email": "morgan@example.com",
+      "phone": "+13035550997",
+      "profileToken": "5c47d43fa1554d058ef0e431a1e1d27bfa43163ded26",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "name": "Bill Gray",
+      "role": "full_time_driver",
+      "profileToken": "adacf220d83b40c59fcfb688258c6aa35c30fba00952",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+      "name": "Billy Grueter",
+      "role": "full_time_driver",
+      "profileToken": "fff1005afd9a48f4993d6cc3759b1c736086011b74b9",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "name": "Jeff McLaughlin",
+      "role": "full_time_driver",
+      "profileToken": "cebe79805533438fb1726a3c794a452e4c8a61ab616b",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "name": "Luis Medina",
+      "role": "full_time_driver",
+      "profileToken": "31cc573846ed42d987700baccfac9e540c69751d915e",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-cc99bfdf-306e-4411-a8ad-62322f49ba38",
+      "name": "Dan Meier",
+      "role": "on_call_driver",
+      "profileToken": "8c3466c5fe2947828da70fd6f7bc397bd059ec1b0d8c",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        }
+      }
+    },
+    {
+      "id": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+      "name": "Jon Merrill",
+      "role": "full_time_driver",
+      "profileToken": "ca3b6c86a2364505aa50b35a52391c568e4fc47f24c8",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "name": "Adrian Miramontes",
+      "role": "full_time_driver",
+      "profileToken": "27cc3a9d51b64868a6185e8f45bbc1db326b608a1cb3",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "tue": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "wed": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "thu": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "fri": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        }
+      }
+    },
+    {
+      "id": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+      "name": "Jon Olivas",
+      "role": "ops_manager",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        }
+      }
+    },
+    {
+      "id": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "name": "Jorge Ordonez Garcia",
+      "role": "full_time_driver",
+      "profileToken": "c474ca8219184b499ea771b364d4a0a24756c40de853",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-1cfda62c-dcf9-42dd-8495-39d3c0ce3863",
+      "name": "Aaron Hoover",
+      "role": "owner",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": true
+        }
+      }
+    },
+    {
+      "id": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "name": "Rick Tessmer",
+      "role": "full_time_driver",
+      "profileToken": "f1a00492f8d447e488f3a5859373e79df60227df29c4",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-2c459fa5-9f0a-4ee2-80af-fcfdd4033e50",
+      "name": "Tyler Townson",
+      "role": "full_time_driver",
+      "profileToken": "0f82cc42e0b44fb7af30b3ed9a6d54bdddf6f096dc5a",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+      "name": "Lee Traub",
+      "role": "full_time_driver",
+      "profileToken": "0b8f9f4d250243de9de064b25a6d10013fc987f955f1",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+      "name": "Charlie Wilson",
+      "role": "part_time_driver",
+      "profileToken": "5a56a65cfdec4690b7e710c282b5deadff598144ac7f",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": false,
+          "morning": false,
+          "afternoon": false,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+      "name": "Gary Wolfe",
+      "role": "part_time_driver",
+      "profileToken": "361c423c83f04ebb9096ff20e80d27829fc4e75af82d",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "name": "Roy Yturralde",
+      "role": "part_time_driver",
+      "profileToken": "eb2d6d41124149498998bf3c4227eca0fcf382998f50",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+      "name": "Malculm Wheeler",
+      "role": "part_time_driver",
+      "profileToken": "12a80311a59248eebe5a2ac8871e9e230f3d0f97311c",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": false,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-2b742511-24b2-4339-8aad-13698f5dc8bf",
+      "name": "Benny Anderson",
+      "role": "part_time_driver",
+      "profileToken": "35c4ec8cbbf44f2780a236a7e6b7ba420d3522e4a5ca",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        }
+      }
+    },
+    {
+      "id": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+      "name": "Gerry Zimmerman",
+      "role": "part_time_driver",
+      "weeklyShiftAvailability": {
+        "mon": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "tue": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "wed": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "thu": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        },
+        "fri": {
+          "lab": true,
+          "morning": true,
+          "afternoon": true,
+          "allday": true,
+          "office": false
+        }
+      },
+      "profileToken": "533862f83eb7481b80449d277008b0356c1febbc8de7"
+    }
+  ],
+  "slots": [
+    {
+      "id": "2026-05-11__t-lab-1",
+      "date": "2026-05-11",
+      "routeType": "lab",
+      "label": "Acculens/AVT/Gnatho Lab Run",
+      "driverId": "drv-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-lab-2",
+      "date": "2026-05-11",
+      "routeType": "lab",
+      "label": "DDS/PY/YG/Aspen/Arc/ConnectPay Lab Run",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-lab-3",
+      "date": "2026-05-11",
+      "routeType": "lab",
+      "label": "PDA/ALAB/Vitality Lab Run",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-am-1",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "BLDR",
+      "driverId": "drv-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-am-2",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "NGBR",
+      "driverId": "drv-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-am-3",
+      "date": "2026-05-11",
+      "routeType": "lab",
+      "label": "JMCU",
+      "driverId": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-am-4",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "STAM",
+      "driverId": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-am-5",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "AUR",
+      "driverId": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-pm-1",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "ARV",
+      "driverId": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-pm-2",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "SLND",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-pm-3",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "CCRK",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-pm-4",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "GLDN",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-pm-5",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "HRSW",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-ad-1",
+      "date": "2026-05-11",
+      "routeType": "allday",
+      "label": "GRLY",
+      "driverId": "drv-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-ad-2",
+      "date": "2026-05-11",
+      "routeType": "allday",
+      "label": "FTCL",
+      "driverId": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776369687688",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "MBAM",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370085942",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "DTC",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370115044",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "PKAM",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370129143",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "MBPM",
+      "driverId": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370158532",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "DWTN",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370196650",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "EVER",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370210640",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "SGLN",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370228524",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "STPL",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370248117",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "EAST",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370265058",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "LONG",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370277312",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "S/E",
+      "driverId": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370411788",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "NEAS",
+      "driverId": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370428285",
+      "date": "2026-05-11",
+      "routeType": "allday",
+      "label": "CSPR",
+      "driverId": "on-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370444321",
+      "date": "2026-05-11",
+      "routeType": "allday",
+      "label": "PUEB",
+      "driverId": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370487314",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "LKWD",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370509760",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "GNBR",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776370693125",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "NWAM",
+      "driverId": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776446718991",
+      "date": "2026-05-11",
+      "routeType": "morning",
+      "label": "HRAM",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776446723311",
+      "date": "2026-05-11",
+      "routeType": "afternoon",
+      "label": "PKCR",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776446769767",
+      "date": "2026-05-11",
+      "routeType": "lab",
+      "label": "Duffens/Pasch Lab Run",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-11__t-1776519005678",
+      "date": "2026-05-11",
+      "routeType": "office",
+      "label": "Office",
+      "driverId": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+      "isGap": false,
+      "isOfficeSlot": true,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-lab-1",
+      "date": "2026-05-12",
+      "routeType": "lab",
+      "label": "Acculens/AVT/Gnatho Lab Run",
+      "driverId": "drv-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-lab-2",
+      "date": "2026-05-12",
+      "routeType": "lab",
+      "label": "DDS/PY/YG/Aspen/Arc/ConnectPay Lab Run",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-lab-3",
+      "date": "2026-05-12",
+      "routeType": "lab",
+      "label": "PDA/ALAB/Vitality Lab Run",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-am-1",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "BLDR",
+      "driverId": "drv-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-am-2",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "NGBR",
+      "driverId": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-am-3",
+      "date": "2026-05-12",
+      "routeType": "lab",
+      "label": "JMCU",
+      "driverId": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-am-4",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "STAM",
+      "driverId": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-am-5",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "AUR",
+      "driverId": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-pm-1",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "ARV",
+      "driverId": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-pm-2",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "SLND",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-pm-3",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "CCRK",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-pm-4",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "GLDN",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-pm-5",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "HRSW",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-ad-1",
+      "date": "2026-05-12",
+      "routeType": "allday",
+      "label": "GRLY",
+      "driverId": "drv-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-ad-2",
+      "date": "2026-05-12",
+      "routeType": "allday",
+      "label": "FTCL",
+      "driverId": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776369687688",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "MBAM",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370085942",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "DTC",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370115044",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "PKAM",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370129143",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "MBPM",
+      "driverId": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370158532",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "DWTN",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370196650",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "EVER",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370210640",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "SGLN",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370228524",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "STPL",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370248117",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "EAST",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370265058",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "LONG",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370277312",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "S/E",
+      "driverId": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370411788",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "NEAS",
+      "driverId": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370428285",
+      "date": "2026-05-12",
+      "routeType": "allday",
+      "label": "CSPR",
+      "driverId": "on-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370444321",
+      "date": "2026-05-12",
+      "routeType": "allday",
+      "label": "PUEB",
+      "driverId": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370487314",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "LKWD",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370509760",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "GNBR",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776370693125",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "NWAM",
+      "driverId": "p-cc99bfdf-306e-4411-a8ad-62322f49ba38",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776446718991",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "HRAM",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776446723311",
+      "date": "2026-05-12",
+      "routeType": "afternoon",
+      "label": "PKCR",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776446769767",
+      "date": "2026-05-12",
+      "routeType": "lab",
+      "label": "Duffens/Pasch Lab Run",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-12__t-1776519005678",
+      "date": "2026-05-12",
+      "routeType": "office",
+      "label": "Office",
+      "driverId": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+      "isGap": false,
+      "isOfficeSlot": true,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-lab-1",
+      "date": "2026-05-13",
+      "routeType": "lab",
+      "label": "Acculens/AVT/Gnatho Lab Run",
+      "driverId": "drv-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-lab-2",
+      "date": "2026-05-13",
+      "routeType": "lab",
+      "label": "DDS/PY/YG/Aspen/Arc/ConnectPay Lab Run",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-lab-3",
+      "date": "2026-05-13",
+      "routeType": "lab",
+      "label": "PDA/ALAB/Vitality Lab Run",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-am-1",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "BLDR",
+      "driverId": "drv-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-am-2",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "NGBR",
+      "driverId": "drv-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-am-3",
+      "date": "2026-05-13",
+      "routeType": "lab",
+      "label": "JMCU",
+      "driverId": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-am-4",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "STAM",
+      "driverId": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-am-5",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "AUR",
+      "driverId": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-pm-1",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "ARV",
+      "driverId": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-pm-2",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "SLND",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-pm-3",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "CCRK",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-pm-4",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "GLDN",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-pm-5",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "HRSW",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-ad-1",
+      "date": "2026-05-13",
+      "routeType": "allday",
+      "label": "GRLY",
+      "driverId": "drv-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-ad-2",
+      "date": "2026-05-13",
+      "routeType": "allday",
+      "label": "FTCL",
+      "driverId": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776369687688",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "MBAM",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370085942",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "DTC",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370115044",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "PKAM",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370129143",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "MBPM",
+      "driverId": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370158532",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "DWTN",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370196650",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "EVER",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370210640",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "SGLN",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370228524",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "STPL",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370248117",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "EAST",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370265058",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "LONG",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370277312",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "S/E",
+      "driverId": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370411788",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "NEAS",
+      "driverId": "p-cc99bfdf-306e-4411-a8ad-62322f49ba38",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370428285",
+      "date": "2026-05-13",
+      "routeType": "allday",
+      "label": "CSPR",
+      "driverId": "on-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370444321",
+      "date": "2026-05-13",
+      "routeType": "allday",
+      "label": "PUEB",
+      "driverId": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370487314",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "LKWD",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370509760",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "GNBR",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776370693125",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "NWAM",
+      "driverId": "disp-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776446718991",
+      "date": "2026-05-13",
+      "routeType": "morning",
+      "label": "HRAM",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776446723311",
+      "date": "2026-05-13",
+      "routeType": "afternoon",
+      "label": "PKCR",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776446769767",
+      "date": "2026-05-13",
+      "routeType": "lab",
+      "label": "Duffens/Pasch Lab Run",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-13__t-1776519005678",
+      "date": "2026-05-13",
+      "routeType": "office",
+      "label": "Office",
+      "driverId": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+      "isGap": false,
+      "isOfficeSlot": true,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-lab-1",
+      "date": "2026-05-14",
+      "routeType": "lab",
+      "label": "Acculens/AVT/Gnatho Lab Run",
+      "driverId": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-lab-2",
+      "date": "2026-05-14",
+      "routeType": "lab",
+      "label": "DDS/PY/YG/Aspen/Arc/ConnectPay Lab Run",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-lab-3",
+      "date": "2026-05-14",
+      "routeType": "lab",
+      "label": "PDA/ALAB/Vitality Lab Run",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-am-1",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "BLDR",
+      "driverId": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-am-2",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "NGBR",
+      "driverId": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-am-3",
+      "date": "2026-05-14",
+      "routeType": "lab",
+      "label": "JMCU",
+      "driverId": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-am-4",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "STAM",
+      "driverId": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-am-5",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "AUR",
+      "driverId": "on-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-pm-1",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "ARV",
+      "driverId": "on-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-pm-2",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "SLND",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-pm-3",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "CCRK",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-pm-4",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "GLDN",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-pm-5",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "HRSW",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-ad-1",
+      "date": "2026-05-14",
+      "routeType": "allday",
+      "label": "GRLY",
+      "driverId": "drv-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-ad-2",
+      "date": "2026-05-14",
+      "routeType": "allday",
+      "label": "FTCL",
+      "driverId": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776369687688",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "MBAM",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370085942",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "DTC",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370115044",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "PKAM",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370129143",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "MBPM",
+      "driverId": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370158532",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "DWTN",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370196650",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "EVER",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370210640",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "SGLN",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370228524",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "STPL",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370248117",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "EAST",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370265058",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "LONG",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370277312",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "S/E",
+      "driverId": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370411788",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "NEAS",
+      "driverId": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370428285",
+      "date": "2026-05-14",
+      "routeType": "allday",
+      "label": "CSPR",
+      "driverId": "on-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370444321",
+      "date": "2026-05-14",
+      "routeType": "allday",
+      "label": "PUEB",
+      "driverId": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370487314",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "LKWD",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370509760",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "GNBR",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776370693125",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "NWAM",
+      "driverId": "disp-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776446718991",
+      "date": "2026-05-14",
+      "routeType": "morning",
+      "label": "HRAM",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776446723311",
+      "date": "2026-05-14",
+      "routeType": "afternoon",
+      "label": "PKCR",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776446769767",
+      "date": "2026-05-14",
+      "routeType": "lab",
+      "label": "Duffens/Pasch Lab Run",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-14__t-1776519005678",
+      "date": "2026-05-14",
+      "routeType": "office",
+      "label": "Office",
+      "driverId": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+      "isGap": false,
+      "isOfficeSlot": true,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-lab-1",
+      "date": "2026-05-15",
+      "routeType": "lab",
+      "label": "Acculens/AVT/Gnatho Lab Run",
+      "driverId": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-lab-2",
+      "date": "2026-05-15",
+      "routeType": "lab",
+      "label": "DDS/PY/YG/Aspen/Arc/ConnectPay Lab Run",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-lab-3",
+      "date": "2026-05-15",
+      "routeType": "lab",
+      "label": "PDA/ALAB/Vitality Lab Run",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-am-1",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "BLDR",
+      "driverId": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-am-2",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "NGBR",
+      "driverId": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-am-3",
+      "date": "2026-05-15",
+      "routeType": "lab",
+      "label": "JMCU",
+      "driverId": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-am-4",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "STAM",
+      "driverId": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-am-5",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "AUR",
+      "driverId": "on-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-pm-1",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "ARV",
+      "driverId": "on-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-pm-2",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "SLND",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-pm-3",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "CCRK",
+      "driverId": "p-72b8324d-5c10-455e-b888-79485680d024",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-pm-4",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "GLDN",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-pm-5",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "HRSW",
+      "driverId": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-ad-1",
+      "date": "2026-05-15",
+      "routeType": "allday",
+      "label": "GRLY",
+      "driverId": "drv-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-ad-2",
+      "date": "2026-05-15",
+      "routeType": "allday",
+      "label": "FTCL",
+      "driverId": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776369687688",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "MBAM",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370085942",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "DTC",
+      "driverId": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370115044",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "PKAM",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370129143",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "MBPM",
+      "driverId": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370158532",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "DWTN",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370196650",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "EVER",
+      "driverId": "drv-4",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370210640",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "SGLN",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370228524",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "STPL",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370248117",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "EAST",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370265058",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "LONG",
+      "driverId": "drv-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370277312",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "S/E",
+      "driverId": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370411788",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "NEAS",
+      "driverId": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370428285",
+      "date": "2026-05-15",
+      "routeType": "allday",
+      "label": "CSPR",
+      "driverId": "on-2",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370444321",
+      "date": "2026-05-15",
+      "routeType": "allday",
+      "label": "PUEB",
+      "driverId": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370487314",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "LKWD",
+      "driverId": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370509760",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "GNBR",
+      "driverId": "drv-5",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776370693125",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "NWAM",
+      "driverId": "disp-3",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776446718991",
+      "date": "2026-05-15",
+      "routeType": "morning",
+      "label": "HRAM",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776446723311",
+      "date": "2026-05-15",
+      "routeType": "afternoon",
+      "label": "PKCR",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776446769767",
+      "date": "2026-05-15",
+      "routeType": "lab",
+      "label": "Duffens/Pasch Lab Run",
+      "driverId": "on-1",
+      "isGap": false,
+      "isOfficeSlot": false,
+      "gapForDriverId": null
+    },
+    {
+      "id": "2026-05-15__t-1776519005678",
+      "date": "2026-05-15",
+      "routeType": "office",
+      "label": "Office",
+      "driverId": "p-1cfda62c-dcf9-42dd-8495-39d3c0ce3863",
+      "isGap": false,
+      "isOfficeSlot": true,
+      "gapForDriverId": null
+    }
+  ],
+  "timeOffRequests": [
+    {
+      "id": "tof-1776449429564",
+      "driverId": "drv-5",
+      "driverName": "Angelique Fraire",
+      "date": "2026-04-15",
+      "routeTypes": [
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-17T18:10:29.564Z"
+    },
+    {
+      "id": "tof-1776459248244-0",
+      "driverId": "drv-2",
+      "driverName": "Corena Anderson",
+      "date": "2026-04-22",
+      "routeTypes": [
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-17T20:54:08.245Z"
+    },
+    {
+      "id": "tof-1777415994190-0",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-27",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T22:39:54.190Z"
+    },
+    {
+      "id": "tof-1777415994190-1",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-28",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T22:39:54.190Z"
+    },
+    {
+      "id": "tof-1777415994190-2",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-29",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T22:39:54.190Z"
+    },
+    {
+      "id": "tof-1777415994190-3",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-30",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T22:39:54.190Z"
+    },
+    {
+      "id": "tof-1777415994190-4",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-05-01",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T22:39:54.190Z"
+    },
+    {
+      "id": "tof-1777418871139-0",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-27",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:27:51.139Z"
+    },
+    {
+      "id": "tof-1777418871139-1",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-28",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:27:51.139Z"
+    },
+    {
+      "id": "tof-1777418871139-2",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-29",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:27:51.139Z"
+    },
+    {
+      "id": "tof-1777418871139-3",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-30",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:27:51.139Z"
+    },
+    {
+      "id": "tof-1777418871139-4",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-05-01",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:27:51.139Z"
+    },
+    {
+      "id": "tof-1777419379622-0",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-27",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:36:19.622Z"
+    },
+    {
+      "id": "tof-1777419379622-1",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-28",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:36:19.623Z"
+    },
+    {
+      "id": "tof-1777419379622-2",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-29",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:36:19.623Z"
+    },
+    {
+      "id": "tof-1777419379622-3",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-04-30",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:36:19.623Z"
+    },
+    {
+      "id": "tof-1777419379622-4",
+      "driverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "driverName": "Luis Medina",
+      "date": "2026-05-01",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-28T23:36:19.623Z"
+    },
+    {
+      "id": "tof-1777421524085-0",
+      "driverId": "drv-1",
+      "driverName": "Steve Prince",
+      "date": "2026-04-29",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-29T00:12:04.085Z"
+    },
+    {
+      "id": "tof-1777421524085-1",
+      "driverId": "drv-1",
+      "driverName": "Steve Prince",
+      "date": "2026-04-30",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-29T00:12:04.085Z"
+    },
+    {
+      "id": "tof-1777421524085-2",
+      "driverId": "drv-1",
+      "driverName": "Steve Prince",
+      "date": "2026-05-01",
+      "routeTypes": [
+        "lab",
+        "morning",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-04-29T00:12:04.085Z"
+    },
+    {
+      "id": "tof-1778605003968-0",
+      "driverId": "disp-3",
+      "driverName": "Taylor Reese",
+      "date": "2026-05-12",
+      "routeTypes": [
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-05-12T16:56:43.968Z"
+    },
+    {
+      "id": "tof-1778605073027-0",
+      "driverId": "disp-3",
+      "driverName": "Taylor Reese",
+      "date": "2026-05-12",
+      "routeTypes": [
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-05-12T16:57:53.027Z"
+    },
+    {
+      "id": "tof-1778607882512-0",
+      "driverId": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+      "driverName": "Jon Olivas",
+      "date": "2026-05-15",
+      "routeTypes": [
+        "office"
+      ],
+      "status": "approved",
+      "createdAt": "2026-05-12T17:44:42.512Z"
+    },
+    {
+      "id": "tof-1778608040680-0",
+      "driverId": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+      "driverName": "Gary Wolfe",
+      "date": "2026-05-13",
+      "routeTypes": [
+        "morning",
+        "lab",
+        "afternoon"
+      ],
+      "status": "approved",
+      "createdAt": "2026-05-12T17:47:20.680Z"
+    }
+  ],
+  "openShifts": [
+    {
+      "id": "os-1777420702712",
+      "slotId": "2026-04-28__t-1776370693125",
+      "date": "2026-04-28",
+      "routeType": "morning",
+      "label": "NWAM",
+      "status": "filled",
+      "claimedById": "on-3",
+      "claimedByName": "Larry Grady",
+      "invitedAt": "2026-04-28T23:58:22.710Z",
+      "notificationLog": [
+        {
+          "at": "2026-04-28T23:58:22.710Z",
+          "channel": "in-app",
+          "message": "Open shift posted: NWAM on 2026-04-28 — notified 10 team member(s) with no assignment that day (email and/or SMS per contact info)."
+        },
+        {
+          "at": "2026-04-28T23:58:22.710Z",
+          "channel": "email",
+          "message": "Email logged for Donna Harmon <dispatch1@crystalcourier.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-04-28T23:58:22.711Z",
+          "channel": "email",
+          "message": "Email logged for Maranda Gould <dispatch2@crystalcourier.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-04-28T23:58:22.711Z",
+          "channel": "email",
+          "message": "Email logged for Larry Grady <morgan@example.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-04-28T23:58:22.711Z",
+          "channel": "sms",
+          "message": "SMS logged for Larry Grady (+13035550997) — set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER to send"
+        },
+        {
+          "at": "2026-04-28T23:58:22.712Z",
+          "channel": "in-app",
+          "message": "Skipped Luis Medina — no email or phone on file"
+        },
+        {
+          "at": "2026-04-28T23:58:22.712Z",
+          "channel": "in-app",
+          "message": "Skipped Dan Meier — no email or phone on file"
+        },
+        {
+          "at": "2026-04-28T23:58:22.712Z",
+          "channel": "in-app",
+          "message": "Skipped Aaron Hoover — no email or phone on file"
+        },
+        {
+          "at": "2026-04-28T23:58:22.712Z",
+          "channel": "in-app",
+          "message": "Skipped Tyler Townson — no email or phone on file"
+        },
+        {
+          "at": "2026-04-28T23:58:22.712Z",
+          "channel": "in-app",
+          "message": "Skipped Roy Yturralde — no email or phone on file"
+        },
+        {
+          "at": "2026-04-28T23:58:22.712Z",
+          "channel": "in-app",
+          "message": "Skipped Benny Anderson — no email or phone on file"
+        },
+        {
+          "at": "2026-04-28T23:58:22.712Z",
+          "channel": "in-app",
+          "message": "Skipped Gerry Zimmerman — no email or phone on file"
+        }
+      ],
+      "pendingClaimDriverId": null,
+      "pendingClaimDriverName": null,
+      "pendingClaimAt": null
+    },
+    {
+      "id": "os-1777420815137",
+      "slotId": "2026-04-29__t-1776370210640",
+      "date": "2026-04-29",
+      "routeType": "morning",
+      "label": "SGLN",
+      "status": "filled",
+      "claimedById": "on-3",
+      "claimedByName": "Larry Grady",
+      "invitedAt": "2026-04-29T00:00:15.135Z",
+      "notificationLog": [
+        {
+          "at": "2026-04-29T00:00:15.135Z",
+          "channel": "in-app",
+          "message": "Open shift posted: SGLN on 2026-04-29 — notified 11 team member(s) with no assignment that day (email and/or SMS per contact info)."
+        },
+        {
+          "at": "2026-04-29T00:00:15.135Z",
+          "channel": "email",
+          "message": "Email logged for Donna Harmon <dispatch1@crystalcourier.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-04-29T00:00:15.136Z",
+          "channel": "email",
+          "message": "Email logged for Maranda Gould <dispatch2@crystalcourier.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-04-29T00:00:15.136Z",
+          "channel": "email",
+          "message": "Email logged for Taylor Reese <dispatch3@crystalcourier.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-04-29T00:00:15.136Z",
+          "channel": "email",
+          "message": "Email logged for Larry Grady <morgan@example.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-04-29T00:00:15.136Z",
+          "channel": "sms",
+          "message": "SMS logged for Larry Grady (+13035550997) — set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER to send"
+        },
+        {
+          "at": "2026-04-29T00:00:15.137Z",
+          "channel": "in-app",
+          "message": "Skipped Luis Medina — no email or phone on file"
+        },
+        {
+          "at": "2026-04-29T00:00:15.137Z",
+          "channel": "in-app",
+          "message": "Skipped Dan Meier — no email or phone on file"
+        },
+        {
+          "at": "2026-04-29T00:00:15.137Z",
+          "channel": "in-app",
+          "message": "Skipped Aaron Hoover — no email or phone on file"
+        },
+        {
+          "at": "2026-04-29T00:00:15.137Z",
+          "channel": "in-app",
+          "message": "Skipped Tyler Townson — no email or phone on file"
+        },
+        {
+          "at": "2026-04-29T00:00:15.137Z",
+          "channel": "in-app",
+          "message": "Skipped Roy Yturralde — no email or phone on file"
+        },
+        {
+          "at": "2026-04-29T00:00:15.137Z",
+          "channel": "in-app",
+          "message": "Skipped Benny Anderson — no email or phone on file"
+        },
+        {
+          "at": "2026-04-29T00:00:15.137Z",
+          "channel": "in-app",
+          "message": "Skipped Gerry Zimmerman — no email or phone on file"
+        }
+      ],
+      "pendingClaimDriverId": null,
+      "pendingClaimDriverName": null,
+      "pendingClaimAt": null
+    },
+    {
+      "id": "os-1778608053039",
+      "slotId": "2026-05-12__t-1776370693125",
+      "date": "2026-05-12",
+      "routeType": "morning",
+      "label": "NWAM",
+      "status": "filled",
+      "claimedById": "p-cc99bfdf-306e-4411-a8ad-62322f49ba38",
+      "claimedByName": "Dan Meier",
+      "pendingClaimDriverId": null,
+      "pendingClaimDriverName": null,
+      "pendingClaimAt": null,
+      "invitedAt": "2026-05-12T17:47:33.037Z",
+      "notificationLog": [
+        {
+          "at": "2026-05-12T17:47:33.037Z",
+          "channel": "in-app",
+          "message": "Open shift posted: NWAM on 2026-05-12 — notified 9 team member(s) with no assignment that day (email and/or SMS per contact info)."
+        },
+        {
+          "at": "2026-05-12T17:47:33.037Z",
+          "channel": "email",
+          "message": "Email logged for Donna Harmon <dispatch1@crystalcourier.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-05-12T17:47:33.037Z",
+          "channel": "email",
+          "message": "Email logged for Maranda Gould <dispatch2@crystalcourier.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-05-12T17:47:33.038Z",
+          "channel": "email",
+          "message": "Email logged for Taylor Reese <dispatch3@crystalcourier.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-05-12T17:47:33.038Z",
+          "channel": "email",
+          "message": "Email logged for Larry Grady <morgan@example.com> (set RESEND_API_KEY to send)"
+        },
+        {
+          "at": "2026-05-12T17:47:33.038Z",
+          "channel": "sms",
+          "message": "SMS logged for Larry Grady (+13035550997) — set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER to send"
+        },
+        {
+          "at": "2026-05-12T17:47:33.039Z",
+          "channel": "in-app",
+          "message": "Skipped Dan Meier — no email or phone on file"
+        },
+        {
+          "at": "2026-05-12T17:47:33.039Z",
+          "channel": "in-app",
+          "message": "Skipped Aaron Hoover — no email or phone on file"
+        },
+        {
+          "at": "2026-05-12T17:47:33.039Z",
+          "channel": "in-app",
+          "message": "Skipped Tyler Townson — no email or phone on file"
+        },
+        {
+          "at": "2026-05-12T17:47:33.039Z",
+          "channel": "in-app",
+          "message": "Skipped Benny Anderson — no email or phone on file"
+        },
+        {
+          "at": "2026-05-12T17:47:33.039Z",
+          "channel": "in-app",
+          "message": "Skipped Gerry Zimmerman — no email or phone on file"
+        }
+      ]
+    }
+  ],
+  "announcements": [
+    {
+      "id": "ann-1777421760047",
+      "subject": "First post test",
+      "body": "This is only a test",
+      "createdAt": "2026-04-29T00:16:00.047Z",
+      "createdByName": "Manager"
+    }
+  ],
+  "absenceStats": [
+    {
+      "personId": "drv-1",
+      "year": 2026,
+      "requestedDayCount": 3,
+      "coveredAbsenceDayCount": 0
+    },
+    {
+      "personId": "drv-5",
+      "year": 2026,
+      "requestedDayCount": 1,
+      "coveredAbsenceDayCount": 0
+    },
+    {
+      "personId": "drv-2",
+      "year": 2026,
+      "requestedDayCount": 1,
+      "coveredAbsenceDayCount": 14
+    },
+    {
+      "personId": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "year": 2026,
+      "requestedDayCount": 5,
+      "coveredAbsenceDayCount": 5
+    },
+    {
+      "personId": "disp-3",
+      "year": 2026,
+      "requestedDayCount": 1,
+      "coveredAbsenceDayCount": 0
+    },
+    {
+      "personId": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+      "year": 2026,
+      "requestedDayCount": 1,
+      "coveredAbsenceDayCount": 1
+    },
+    {
+      "personId": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+      "year": 2026,
+      "requestedDayCount": 1,
+      "coveredAbsenceDayCount": 2
+    }
+  ],
+  "nonDefaultShiftReminders": [],
+  "slotOverrides": {
+    "2026-04-20__t-1776370693125": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-21__t-1776370693125": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-21__t-1776370509760": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-22__t-1776370693125": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-23__t-1776370509760": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-23__t-1776370693125": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-24__t-1776370509760": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-24__t-1776370693125": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-23__t-1776370248117": {
+      "driverId": "disp-1",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-27__t-1776370210640": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-27__t-1776370228524": {
+      "driverId": "disp-2",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-28__t-1776370210640": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-28__t-1776370228524": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-29__t-1776370210640": {
+      "driverId": "on-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-29__t-1776370228524": {
+      "driverId": null,
+      "isGap": true,
+      "gapReason": "Time off — Luis Medina",
+      "gapForDriverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543"
+    },
+    "2026-04-30__t-1776370210640": {
+      "driverId": null,
+      "isGap": true,
+      "gapReason": "Time off — Luis Medina",
+      "gapForDriverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543"
+    },
+    "2026-04-30__t-1776370228524": {
+      "driverId": null,
+      "isGap": true,
+      "gapReason": "Time off — Luis Medina",
+      "gapForDriverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543"
+    },
+    "2026-05-01__t-1776370210640": {
+      "driverId": null,
+      "isGap": true,
+      "gapReason": "Time off — Luis Medina",
+      "gapForDriverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543"
+    },
+    "2026-05-01__t-1776370228524": {
+      "driverId": null,
+      "isGap": true,
+      "gapReason": "Time off — Luis Medina",
+      "gapForDriverId": "p-8f517bd4-0b56-422c-86f6-5ab070104543"
+    },
+    "2026-04-27__t-1776370693125": {
+      "driverId": "disp-2",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-28__t-1776370693125": {
+      "driverId": "on-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-04-29__t-lab-1": {
+      "driverId": null,
+      "isGap": true,
+      "gapReason": "Time off — Steve Prince",
+      "gapForDriverId": "drv-1"
+    },
+    "2026-04-29__t-am-1": {
+      "driverId": null,
+      "isGap": true,
+      "gapReason": "Time off — Steve Prince",
+      "gapForDriverId": "drv-1"
+    },
+    "2026-04-29__t-am-2": {
+      "driverId": null,
+      "isGap": true,
+      "gapReason": "Time off — Steve Prince",
+      "gapForDriverId": "drv-1"
+    },
+    "2026-05-12__t-am-2": {
+      "driverId": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-05-11__t-1776370693125": {
+      "driverId": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-05-12__t-1776370693125": {
+      "driverId": "p-cc99bfdf-306e-4411-a8ad-62322f49ba38",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-05-13__t-1776370693125": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-05-14__t-1776370693125": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-05-15__t-1776370693125": {
+      "driverId": "disp-3",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-05-15__t-1776519005678": {
+      "driverId": "p-1cfda62c-dcf9-42dd-8495-39d3c0ce3863",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-05-13__t-1776370277312": {
+      "driverId": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "isGap": false,
+      "gapForDriverId": null
+    },
+    "2026-05-13__t-1776370411788": {
+      "driverId": "p-cc99bfdf-306e-4411-a8ad-62322f49ba38",
+      "isGap": false,
+      "gapForDriverId": null
+    }
+  },
+  "settings": {
+    "routeDefinitions": [
+      {
+        "id": "rd-t-lab-1",
+        "name": "Acculens/AVT/Gnatho Lab Run",
+        "routeType": "lab",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-lab-2",
+        "name": "DDS/PY/YG/Aspen/Arc/ConnectPay Lab Run",
+        "routeType": "lab",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-lab-3",
+        "name": "PDA/ALAB/Vitality Lab Run",
+        "routeType": "lab",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-am-1",
+        "name": "BLDR",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-am-2",
+        "name": "NGBR",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-am-3",
+        "name": "JMCU",
+        "routeType": "lab",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-am-4",
+        "name": "STAM",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-am-5",
+        "name": "AUR",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-pm-1",
+        "name": "ARV",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-pm-2",
+        "name": "SLND",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-pm-3",
+        "name": "CCRK",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-pm-4",
+        "name": "GLDN",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-pm-5",
+        "name": "HRSW",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-ad-1",
+        "name": "GRLY",
+        "routeType": "allday",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-t-ad-2",
+        "name": "FTCL",
+        "routeType": "allday",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369332095",
+        "name": "MBAM",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369355244",
+        "name": "DTC",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369359385",
+        "name": "NWAM",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369363884",
+        "name": "PKAM",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369379448",
+        "name": "DWTN",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369394318",
+        "name": "EVER",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369411618",
+        "name": "SGLN",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369418443",
+        "name": "STPL",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369423986",
+        "name": "EAST",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369441155",
+        "name": "LONG",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369484638",
+        "name": "S/E",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369495643",
+        "name": "NEAS",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369500354",
+        "name": "CSPR",
+        "routeType": "allday",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369555994",
+        "name": "PUEB",
+        "routeType": "allday",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369566859",
+        "name": "LKWD",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369596074",
+        "name": "GNBR",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776369602639",
+        "name": "MBPM",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776446686426",
+        "name": "HRAM",
+        "routeType": "morning",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776446691188",
+        "name": "PKCR",
+        "routeType": "afternoon",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776446776904",
+        "name": "Duffens/Pasch Lab Run",
+        "routeType": "lab",
+        "isOfficeRoute": false
+      },
+      {
+        "id": "rd-1776518993495",
+        "name": "Office",
+        "routeType": "office",
+        "isOfficeRoute": true
+      }
+    ],
+    "slotTemplates": [
+      {
+        "id": "t-lab-1",
+        "routeDefinitionId": "rd-t-lab-1",
+        "defaultDriversByDay": {
+          "mon": "drv-1",
+          "tue": "drv-1",
+          "wed": "drv-1",
+          "thu": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+          "fri": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec"
+        }
+      },
+      {
+        "id": "t-lab-2",
+        "routeDefinitionId": "rd-t-lab-2",
+        "defaultDriversByDay": {
+          "mon": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+          "tue": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+          "wed": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+          "thu": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+          "fri": "p-eadccec5-2ea7-48dd-a472-f847642369d9"
+        }
+      },
+      {
+        "id": "t-lab-3",
+        "routeDefinitionId": "rd-t-lab-3",
+        "defaultDriversByDay": {
+          "mon": "drv-4",
+          "tue": "drv-4",
+          "wed": "drv-4",
+          "thu": "drv-4",
+          "fri": "drv-4"
+        }
+      },
+      {
+        "id": "t-am-1",
+        "routeDefinitionId": "rd-t-am-1",
+        "defaultDriversByDay": {
+          "mon": "drv-1",
+          "tue": "drv-1",
+          "wed": "drv-1",
+          "thu": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+          "fri": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec"
+        }
+      },
+      {
+        "id": "t-am-2",
+        "routeDefinitionId": "rd-t-am-2",
+        "defaultDriversByDay": {
+          "mon": "drv-1",
+          "tue": "drv-1",
+          "wed": "drv-1",
+          "thu": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+          "fri": "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec"
+        }
+      },
+      {
+        "id": "t-am-3",
+        "routeDefinitionId": "rd-t-am-3",
+        "defaultDriversByDay": {
+          "mon": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+          "tue": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+          "wed": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+          "thu": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+          "fri": "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93"
+        }
+      },
+      {
+        "id": "t-am-4",
+        "routeDefinitionId": "rd-t-am-4",
+        "defaultDriversByDay": {
+          "mon": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+          "tue": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+          "wed": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+          "thu": "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+          "fri": "p-c0124724-7820-4a5f-877d-cd06784ec07e"
+        }
+      },
+      {
+        "id": "t-am-5",
+        "routeDefinitionId": "rd-t-am-5",
+        "defaultDriversByDay": {
+          "mon": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+          "tue": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+          "wed": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+          "thu": "on-3",
+          "fri": "on-3"
+        }
+      },
+      {
+        "id": "t-pm-1",
+        "routeDefinitionId": "rd-t-pm-1",
+        "defaultDriversByDay": {
+          "mon": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+          "tue": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+          "wed": "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+          "thu": "on-3",
+          "fri": "on-3"
+        }
+      },
+      {
+        "id": "t-pm-2",
+        "routeDefinitionId": "rd-t-pm-2",
+        "defaultDriversByDay": {
+          "mon": "p-72b8324d-5c10-455e-b888-79485680d024",
+          "tue": "p-72b8324d-5c10-455e-b888-79485680d024",
+          "wed": "p-72b8324d-5c10-455e-b888-79485680d024",
+          "thu": "p-72b8324d-5c10-455e-b888-79485680d024",
+          "fri": "p-72b8324d-5c10-455e-b888-79485680d024"
+        }
+      },
+      {
+        "id": "t-pm-3",
+        "routeDefinitionId": "rd-t-pm-3",
+        "defaultDriversByDay": {
+          "mon": "p-72b8324d-5c10-455e-b888-79485680d024",
+          "tue": "p-72b8324d-5c10-455e-b888-79485680d024",
+          "wed": "p-72b8324d-5c10-455e-b888-79485680d024",
+          "thu": "p-72b8324d-5c10-455e-b888-79485680d024",
+          "fri": "p-72b8324d-5c10-455e-b888-79485680d024"
+        }
+      },
+      {
+        "id": "t-pm-4",
+        "routeDefinitionId": "rd-t-pm-4",
+        "defaultDriversByDay": {
+          "mon": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+          "tue": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+          "wed": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+          "thu": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+          "fri": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb"
+        }
+      },
+      {
+        "id": "t-pm-5",
+        "routeDefinitionId": "rd-t-pm-5",
+        "defaultDriversByDay": {
+          "mon": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+          "tue": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+          "wed": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+          "thu": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+          "fri": "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb"
+        }
+      },
+      {
+        "id": "t-ad-1",
+        "routeDefinitionId": "rd-t-ad-1",
+        "defaultDriversByDay": {
+          "mon": "drv-3",
+          "tue": "drv-3",
+          "wed": "drv-3",
+          "thu": "drv-3",
+          "fri": "drv-3"
+        }
+      },
+      {
+        "id": "t-ad-2",
+        "routeDefinitionId": "rd-t-ad-2",
+        "defaultDriversByDay": {
+          "mon": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+          "tue": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+          "wed": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+          "thu": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+          "fri": "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6"
+        }
+      },
+      {
+        "id": "t-1776369687688",
+        "routeDefinitionId": "rd-1776369332095",
+        "defaultDriversByDay": {
+          "mon": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+          "tue": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+          "wed": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+          "thu": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+          "fri": "p-890594c5-9365-4fa7-aebe-2f37378679f7"
+        }
+      },
+      {
+        "id": "t-1776370085942",
+        "routeDefinitionId": "rd-1776369355244",
+        "defaultDriversByDay": {
+          "mon": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+          "tue": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+          "wed": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+          "thu": "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+          "fri": "p-890594c5-9365-4fa7-aebe-2f37378679f7"
+        }
+      },
+      {
+        "id": "t-1776370115044",
+        "routeDefinitionId": "rd-1776369363884",
+        "defaultDriversByDay": {
+          "mon": "drv-5",
+          "tue": "drv-5",
+          "wed": "drv-5",
+          "thu": "drv-5",
+          "fri": "drv-5"
+        }
+      },
+      {
+        "id": "t-1776370129143",
+        "routeDefinitionId": "rd-1776369602639",
+        "defaultDriversByDay": {
+          "mon": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+          "tue": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+          "wed": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+          "thu": "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+          "fri": "p-a2269c07-0c2f-456a-a6aa-107890a88a65"
+        }
+      },
+      {
+        "id": "t-1776370158532",
+        "routeDefinitionId": "rd-1776369379448",
+        "defaultDriversByDay": {
+          "mon": "drv-4",
+          "tue": "drv-4",
+          "wed": "drv-4",
+          "thu": "drv-4",
+          "fri": "drv-4"
+        }
+      },
+      {
+        "id": "t-1776370196650",
+        "routeDefinitionId": "rd-1776369394318",
+        "defaultDriversByDay": {
+          "mon": "drv-4",
+          "tue": "drv-4",
+          "wed": "drv-4",
+          "thu": "drv-4",
+          "fri": "drv-4"
+        }
+      },
+      {
+        "id": "t-1776370210640",
+        "routeDefinitionId": "rd-1776369411618",
+        "defaultDriversByDay": {
+          "mon": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+          "tue": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+          "wed": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+          "thu": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+          "fri": "p-8f517bd4-0b56-422c-86f6-5ab070104543"
+        }
+      },
+      {
+        "id": "t-1776370228524",
+        "routeDefinitionId": "rd-1776369418443",
+        "defaultDriversByDay": {
+          "mon": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+          "tue": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+          "wed": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+          "thu": "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+          "fri": "p-8f517bd4-0b56-422c-86f6-5ab070104543"
+        }
+      },
+      {
+        "id": "t-1776370248117",
+        "routeDefinitionId": "rd-1776369423986",
+        "defaultDriversByDay": {
+          "mon": "drv-2",
+          "tue": "drv-2",
+          "wed": "drv-2",
+          "thu": "drv-2",
+          "fri": "drv-2"
+        }
+      },
+      {
+        "id": "t-1776370265058",
+        "routeDefinitionId": "rd-1776369441155",
+        "defaultDriversByDay": {
+          "mon": "drv-2",
+          "tue": "drv-2",
+          "wed": "drv-2",
+          "thu": "drv-2",
+          "fri": "drv-2"
+        }
+      },
+      {
+        "id": "t-1776370277312",
+        "routeDefinitionId": "rd-1776369484638",
+        "defaultDriversByDay": {
+          "mon": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+          "tue": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+          "wed": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+          "thu": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+          "fri": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb"
+        }
+      },
+      {
+        "id": "t-1776370411788",
+        "routeDefinitionId": "rd-1776369495643",
+        "defaultDriversByDay": {
+          "mon": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+          "tue": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+          "wed": "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+          "thu": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+          "fri": "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb"
+        }
+      },
+      {
+        "id": "t-1776370428285",
+        "routeDefinitionId": "rd-1776369500354",
+        "defaultDriversByDay": {
+          "mon": "on-2",
+          "tue": "on-2",
+          "wed": "on-2",
+          "thu": "on-2",
+          "fri": "on-2"
+        }
+      },
+      {
+        "id": "t-1776370444321",
+        "routeDefinitionId": "rd-1776369555994",
+        "defaultDriversByDay": {
+          "mon": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+          "tue": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+          "wed": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+          "thu": "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+          "fri": "p-3bab5711-6891-40fc-ac4c-a2256329e861"
+        }
+      },
+      {
+        "id": "t-1776370487314",
+        "routeDefinitionId": "rd-1776369566859",
+        "defaultDriversByDay": {
+          "mon": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+          "tue": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+          "wed": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+          "thu": "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+          "fri": "p-eadccec5-2ea7-48dd-a472-f847642369d9"
+        }
+      },
+      {
+        "id": "t-1776370509760",
+        "routeDefinitionId": "rd-1776369596074",
+        "defaultDriversByDay": {
+          "mon": "drv-5",
+          "tue": "drv-5",
+          "wed": "drv-5",
+          "thu": "drv-5",
+          "fri": "drv-5"
+        }
+      },
+      {
+        "id": "t-1776370693125",
+        "routeDefinitionId": "rd-1776369359385",
+        "defaultDriversByDay": {
+          "mon": null,
+          "tue": null,
+          "wed": null,
+          "thu": null,
+          "fri": null
+        }
+      },
+      {
+        "id": "t-1776446718991",
+        "routeDefinitionId": "rd-1776446686426",
+        "defaultDriversByDay": {
+          "mon": "on-1",
+          "tue": "on-1",
+          "wed": "on-1",
+          "thu": "on-1",
+          "fri": "on-1"
+        }
+      },
+      {
+        "id": "t-1776446723311",
+        "routeDefinitionId": "rd-1776446691188",
+        "defaultDriversByDay": {
+          "mon": "on-1",
+          "tue": "on-1",
+          "wed": "on-1",
+          "thu": "on-1",
+          "fri": "on-1"
+        }
+      },
+      {
+        "id": "t-1776446769767",
+        "routeDefinitionId": "rd-1776446776904",
+        "defaultDriversByDay": {
+          "mon": "on-1",
+          "tue": "on-1",
+          "wed": "on-1",
+          "thu": "on-1",
+          "fri": "on-1"
+        }
+      },
+      {
+        "id": "t-1776519005678",
+        "routeDefinitionId": "rd-1776518993495",
+        "defaultDriversByDay": {
+          "mon": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+          "tue": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+          "wed": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+          "thu": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+          "fri": "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a"
+        }
+      }
+    ],
+    "fillPriorityIds": [
+      "disp-3",
+      "disp-2",
+      "disp-1",
+      "p-cc99bfdf-306e-4411-a8ad-62322f49ba38",
+      "on-3",
+      "p-eadccec5-2ea7-48dd-a472-f847642369d9",
+      "p-2f092794-abbc-4921-a95a-7d17aeeecdaf",
+      "p-7cc737e3-f72c-4cf7-bdd0-323b84d365eb",
+      "p-fd8bb7ea-e3ca-4333-9388-09dc8db4e07a",
+      "p-c4e7e4a1-bdda-4bdf-aa96-030787fb60ec",
+      "drv-1",
+      "drv-2",
+      "drv-3",
+      "drv-4",
+      "drv-5",
+      "on-1",
+      "on-2",
+      "p-3bab5711-6891-40fc-ac4c-a2256329e861",
+      "p-890594c5-9365-4fa7-aebe-2f37378679f7",
+      "p-8f517bd4-0b56-422c-86f6-5ab070104543",
+      "p-0ca341d1-a2f6-4955-9c3a-285abe5691e6",
+      "p-0aed3cf3-74ad-4337-86e0-a40e3bd6bcbb",
+      "p-afe264f8-0ef6-462e-b4a8-9765e7893e9a",
+      "p-ca780eb9-ed34-49d0-9af9-84e0bef4ad93",
+      "p-1cfda62c-dcf9-42dd-8495-39d3c0ce3863",
+      "p-72b8324d-5c10-455e-b888-79485680d024",
+      "p-c0124724-7820-4a5f-877d-cd06784ec07e",
+      "p-a2269c07-0c2f-456a-a6aa-107890a88a65",
+      "p-2b742511-24b2-4339-8aad-13698f5dc8bf",
+      "p-2c459fa5-9f0a-4ee2-80af-fcfdd4033e50"
+    ],
+    "defaultWeekStart": "2026-05-11"
+  }
+}
