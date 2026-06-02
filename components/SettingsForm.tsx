@@ -59,6 +59,7 @@ export function SettingsForm() {
     role: "full_time_driver" as PersonRole,
     email: "",
     phone: "",
+    hiredAt: formatISODate(mondayOfWeekContaining(new Date())),
   });
 
   const [terminateTarget, setTerminateTarget] = useState<{ id: string; name: string } | null>(
@@ -149,6 +150,7 @@ export function SettingsForm() {
         role: newPerson.role,
         email: newPerson.email || undefined,
         phone: newPerson.phone || undefined,
+        hiredAt: newPerson.hiredAt,
       }),
     });
     if (!res.ok) {
@@ -157,7 +159,13 @@ export function SettingsForm() {
       return;
     }
     setData(await res.json());
-    setNewPerson({ name: "", role: "full_time_driver", email: "", phone: "" });
+    setNewPerson({
+      name: "",
+      role: "full_time_driver",
+      email: "",
+      phone: "",
+      hiredAt: formatISODate(mondayOfWeekContaining(new Date())),
+    });
     setSaved("Team member added.");
   };
 
@@ -556,6 +564,10 @@ export function SettingsForm() {
 
         <form onSubmit={addPerson} className="mt-6 space-y-3 rounded border border-cc-line bg-white p-4">
           <p className="text-sm font-medium text-cc-ink">Add team member</p>
+          <p className="text-xs text-cc-muted">
+            Hire date is the first day they may appear on the schedule. Days before that are never
+            backfilled, even if you set them as a default on schedule rows.
+          </p>
           <div className="flex flex-wrap gap-2">
             <input
               required
@@ -589,6 +601,16 @@ export function SettingsForm() {
               onChange={(e) => setNewPerson({ ...newPerson, phone: e.target.value })}
               className="rounded border border-cc-line px-2 py-1 text-sm"
             />
+            <label className="flex items-center gap-2 text-sm text-cc-ink">
+              Hire date
+              <input
+                type="date"
+                required
+                value={newPerson.hiredAt}
+                onChange={(e) => setNewPerson({ ...newPerson, hiredAt: e.target.value })}
+                className="rounded border border-cc-line px-2 py-1 font-serif"
+              />
+            </label>
             <button type="submit" className="rounded bg-cc-gold px-3 py-1 text-sm text-white">
               Add
             </button>

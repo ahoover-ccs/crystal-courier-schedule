@@ -314,7 +314,7 @@ export function ScheduleBoard() {
       });
       const blankCount = rowSlots.filter((s) => s && !s.driverId).length;
       const nonDefaultCount = rowSlots.filter(
-        (s) => s && isNonDefaultAssignmentForSlot(t, s)
+        (s) => s && isNonDefaultAssignmentForSlot(t, s, data)
       ).length;
       const pendingTimeOffCount = rowSlots.filter(
         (s) =>
@@ -566,7 +566,7 @@ export function ScheduleBoard() {
                         <SlotCell
                           slot={slot}
                           occupantName={slot.driverId ? nameById.get(slot.driverId) ?? "?" : null}
-                          isNonDefaultAssignment={isNonDefaultAssignmentForSlot(template, slot)}
+                          isNonDefaultAssignment={isNonDefaultAssignmentForSlot(template, slot, data)}
                           isPendingTimeOff={
                             slot.driverId
                               ? hasPendingTimeOffForSlot(data, slot.driverId, slot.date, slot.routeType)

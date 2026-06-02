@@ -1,5 +1,5 @@
 import { isActivePerson } from "./active-people";
-import { defaultDriverForTemplateDate } from "./availability-helpers";
+import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import { refreshSlotOverrideFromSlot, templateIdFromSlotId } from "./slot-overrides";
 import { canAssignDriver } from "./suggestions";
 import type { AppData } from "./types";
@@ -25,7 +25,7 @@ export function applyDefaultDriversToEmptySlots(data: AppData): {
 
     const tid = templateIdFromSlotId(slot.id);
     const t = data.settings.slotTemplates.find((x) => x.id === tid);
-    const def = t ? defaultDriverForTemplateDate(slot.date, t) : null;
+    const def = t ? effectiveDefaultDriverForDate(data, slot.date, t) : null;
     if (!def) continue;
     const defPerson = data.people.find((p) => p.id === def);
     if (!defPerson || !isActivePerson(defPerson)) continue;

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { parseISO } from "date-fns";
-import { defaultDriverForTemplateDate, slotTemplateForSlot } from "@/lib/availability-helpers";
+import { slotTemplateForSlot } from "@/lib/availability-helpers";
+import { effectiveDefaultDriverForDate } from "@/lib/person-roster-dates";
 import { ensureDb, writeDb } from "@/lib/db";
 import { sendTransactionalEmail } from "@/lib/email-sender";
 import { sendTransactionalSms } from "@/lib/sms-sender";
@@ -41,7 +42,7 @@ export async function GET(req: Request) {
     if (!s.driverId) continue;
     const template = slotTemplateForSlot(data, s);
     if (!template) continue;
-    const def = defaultDriverForTemplateDate(s.date, template);
+    const def = effectiveDefaultDriverForDate(data, s.date, template);
     if (def == null || def === s.driverId) continue;
 
     const key = reminderKey(s, s.driverId);

@@ -1,9 +1,9 @@
-import { isActivePerson } from "./active-people";
+import { isActivePerson, isPersonEffectiveOnDate } from "./active-people";
 import {
-  defaultDriverForTemplateDate,
   isPersonAvailableForSlotOnDate,
   slotTemplateForSlot,
 } from "./availability-helpers";
+import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import { canStaffOfficeSlot } from "./roles";
 import type { AppData, Person, RouteType, ScheduleSlot } from "./types";
 import { conflictsWithDayAssignments } from "./route-windows";
@@ -68,12 +68,15 @@ export function suggestFillIns(
     });
 
   const template = slotTemplateForSlot(data, slot);
-  const defaultDriverId = template ? defaultDriverForTemplateDate(slot.date, template) : null;
+  const defaultDriverId = template
+    ? effectiveDefaultDriverForDate(data, slot.date, template)
+    : null;
   /** If the default assignee is not on this slot, treat them as unavailable for fill-in here. */
   const excludeDefault =
     defaultDriverId != null && slot.driverId !== defaultDriverId;
 
   const passesFilters = (p: Person): boolean => {
+    if (!isPersonEffectiveOnDate(p, slot.date)) return false;
     if (excludeDefault && p.id === defaultDriverId) return false;
     if (slot.isOfficeSlot && !canStaffOfficeSlot(p)) return false;
     if (!isPersonAvailableForSlotOnDate(p, slot.date, slot.routeType)) return false;
@@ -107,6 +110,9 @@ export function canAssignDriver(
   if (!person) return { ok: false, reason: "Person not found" };
   if (!isActivePerson(person)) {
     return { ok: false, reason: "That person is no longer on the active roster." };
+  }
+  if (!isPersonEffectiveOnDate(person, slot.date)) {
+    return { ok: false, reason: "That person is not on the roster for this date." };
   }
   if (slot.isOfficeSlot && !canStaffOfficeSlot(person)) {
     return {

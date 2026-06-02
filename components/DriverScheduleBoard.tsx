@@ -88,7 +88,9 @@ export function DriverScheduleBoard() {
         return data.slots.find((s) => s.id === id) ?? null;
       });
       const blankCount = rowSlots.filter((s) => s && !s.driverId).length;
-      const nonDefaultCount = rowSlots.filter((s) => s && isNonDefaultAssignmentForSlot(t, s)).length;
+      const nonDefaultCount = rowSlots.filter(
+        (s) => s && isNonDefaultAssignmentForSlot(t, s, data)
+      ).length;
       const pendingTimeOffCount = rowSlots.filter(
         (s) =>
           s &&
@@ -211,7 +213,9 @@ export function DriverScheduleBoard() {
                 </div>
 
                 {rowSlots.map((slot, i) => {
-                  const isNonDefault = slot ? isNonDefaultAssignmentForSlot(template, slot) : false;
+                  const isNonDefault = slot
+                    ? isNonDefaultAssignmentForSlot(template, slot, data)
+                    : false;
                   const isPendingTimeOff =
                     slot && slot.driverId
                       ? hasPendingTimeOffForSlot(data, slot.driverId, slot.date, slot.routeType)

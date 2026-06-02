@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ensureDb, writeDb } from "@/lib/db";
+import { clearPersonFromScheduleBeforeDate } from "@/lib/person-roster-dates";
 import { createDefaultWeeklyShiftAvailability } from "@/lib/availability-helpers";
 import { newProfileToken } from "@/lib/profile-token";
 import { roleNeedsProfileToken } from "@/lib/roles";
@@ -14,14 +15,18 @@ function newId(): string {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, role, email, phone } = body as {
+  const { name, role, email, phone, hiredAt } = body as {
     name: string;
     role: PersonRole;
     email?: string;
     phone?: string;
+    hiredAt?: string;
   };
   if (!name?.trim() || !role) {
     return NextResponse.json({ error: "name and role required" }, { status: 400 });
+  }
+  if (!hiredAt || !/^\d{4}-\d{2}-\d{2}$/.test(hiredAt)) {
+    return NextResponse.json({ error: "hiredAt (YYYY-MM-DD) required" }, { status: 400 });
   }
   const data = await ensureDb();
   const id = newId();
@@ -32,12 +37,14 @@ export async function POST(req: NextRequest) {
     email: email?.trim() || undefined,
     phone: phone?.trim() || undefined,
     weeklyShiftAvailability: createDefaultWeeklyShiftAvailability(),
+    hiredAt,
     ...(roleNeedsProfileToken(role) ? { profileToken: newProfileToken() } : {}),
   };
   data.people.push(person);
   if (!data.settings.fillPriorityIds.includes(id)) {
     data.settings.fillPriorityIds.push(id);
   }
+  clearPersonFromScheduleBeforeDate(data, id, hiredAt);
   await writeDb(data);
   return NextResponse.json(data);
 }

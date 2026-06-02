@@ -1,4 +1,5 @@
 import { getISODay, parseISO } from "date-fns";
+import { isPersonEffectiveOnDate } from "./active-people";
 import type {
   AppData,
   DayShiftAvailability,
@@ -58,10 +59,15 @@ export function defaultDriverForTemplateDate(
 /** Matches gold “non-default” styling when no weekday default is set (any assignee is non-default). */
 export function isNonDefaultAssignmentForSlot(
   template: SlotTemplate,
-  slot: ScheduleSlot
+  slot: ScheduleSlot,
+  data?: AppData
 ): boolean {
   if (!slot.driverId) return false;
-  const def = defaultDriverForTemplateDate(slot.date, template);
+  let def = defaultDriverForTemplateDate(slot.date, template);
+  if (data && def) {
+    const p = data.people.find((x) => x.id === def);
+    if (!p || !isPersonEffectiveOnDate(p, slot.date)) def = null;
+  }
   return slot.driverId !== def;
 }
 

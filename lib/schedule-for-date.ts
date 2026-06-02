@@ -1,4 +1,5 @@
-import { defaultDriverForTemplateDate, resolveTemplateLabel } from "./availability-helpers";
+import { resolveTemplateLabel } from "./availability-helpers";
+import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import type { AppData, ScheduleSlot } from "./types";
 
 /** Reconstruct Mon–Fri slots for one calendar day from templates + saved overrides. */
@@ -8,7 +9,7 @@ export function slotsForDate(data: AppData, date: string): ScheduleSlot[] {
   return slotTemplates.map((t) => {
     const id = `${date}__${t.id}`;
     const { label, routeType, isOfficeRoute } = resolveTemplateLabel(t, routeDefinitions);
-    const def = defaultDriverForTemplateDate(date, t);
+    const def = effectiveDefaultDriverForDate(data, date, t);
     const base: ScheduleSlot = {
       id,
       date,

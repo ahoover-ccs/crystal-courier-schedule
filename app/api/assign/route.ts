@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { unplannedGapReason } from "@/lib/absence-labels";
 import { incrementCoveredAbsence } from "@/lib/absence-stats";
-import { defaultDriverForTemplateDate, slotTemplateForSlot } from "@/lib/availability-helpers";
+import { slotTemplateForSlot } from "@/lib/availability-helpers";
+import { effectiveDefaultDriverForDate } from "@/lib/person-roster-dates";
 import { ensureDb, writeDb } from "@/lib/db";
 import { refreshSlotOverrideFromSlot } from "@/lib/slot-overrides";
 import { canAssignDriver, hasApprovedTimeOffForSlot } from "@/lib/suggestions";
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
   if (driverId === null) {
     const removedId = prev.driverId;
     const template = slotTemplateForSlot(data, prev);
-    const def = template ? defaultDriverForTemplateDate(prev.date, template) : null;
+    const def = template ? effectiveDefaultDriverForDate(data, prev.date, template) : null;
     const hadApprovedTimeOff =
       removedId != null &&
       hasApprovedTimeOffForSlot(data, removedId, prev.date, prev.routeType);

@@ -1,6 +1,6 @@
 import { subMonths, format } from "date-fns";
-import { defaultDriverForTemplateDate } from "./availability-helpers";
 import { slotsForDate } from "./schedule-for-date";
+import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import type { AppData } from "./types";
 
 /** Distinct calendar days in the trailing N months the person was out (approved time off or gap for them). */
@@ -52,7 +52,7 @@ export function othersOutOnDate(
   for (const slot of slots) {
     const tid = slot.id.slice(slot.id.indexOf("__") + 2);
     const template = data.settings.slotTemplates.find((t) => t.id === tid);
-    const def = template ? defaultDriverForTemplateDate(date, template) : null;
+    const def = template ? effectiveDefaultDriverForDate(data, date, template) : null;
 
     if (!slot.driverId) {
       count += 1;

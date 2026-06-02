@@ -16,7 +16,9 @@ import type {
   WeekdayKey,
 } from "./types";
 import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "./week-utils";
+import { isPersonEffectiveOnDate } from "./active-people";
 import { normalizeAppData } from "./normalize";
+import { applyRosterDateRulesToSlots } from "./person-roster-dates";
 import { mergeSlotOverridesIntoSlots } from "./slot-overrides";
 import { createDefaultWeeklyShiftAvailability } from "./availability-helpers";
 import { newProfileToken } from "./profile-token";
@@ -198,14 +200,18 @@ function seedPeople(): Person[] {
 function buildSlotsForWeek(
   weekStart: string,
   templates: SlotTemplate[],
-  definitions: RouteDefinition[]
+  definitions: RouteDefinition[],
+  people: Person[]
 ): ScheduleSlot[] {
   const days = weekDaysFromMonday(weekStart);
   const slots: ScheduleSlot[] = [];
   for (const date of days) {
     for (const t of templates) {
       const { label, routeType, isOfficeRoute } = resolveTemplateLabel(t, definitions);
-      const driverId = defaultDriverForTemplateDate(date, t);
+      const raw = defaultDriverForTemplateDate(date, t);
+      const person = raw ? people.find((p) => p.id === raw) : undefined;
+      const driverId =
+        raw && person && isPersonEffectiveOnDate(person, date) ? raw : null;
       slots.push({
         id: `${date}__${t.id}`,
         date,
@@ -254,7 +260,7 @@ export function createSeedData(): AppData {
   };
   return normalizeAppData({
     people,
-    slots: buildSlotsForWeek(defaultWeek, slotTemplates, routeDefinitions),
+    slots: buildSlotsForWeek(defaultWeek, slotTemplates, routeDefinitions, people),
     timeOffRequests: [],
     openShifts: [],
     announcements: [],
@@ -425,9 +431,11 @@ export function rebuildSlotsForWeek(data: AppData, weekStart: string): AppData {
   const fresh = buildSlotsForWeek(
     weekStart,
     data.settings.slotTemplates,
-    data.settings.routeDefinitions
+    data.settings.routeDefinitions,
+    data.people
   );
-  const slots = mergeSlotOverridesIntoSlots(fresh, data.slotOverrides);
+  const merged = mergeSlotOverridesIntoSlots(fresh, data.slotOverrides);
+  const slots = applyRosterDateRulesToSlots(merged, data.people);
   return normalizeAppData({
     ...data,
     slots,

@@ -32,6 +32,8 @@ export type Person = {
   profileToken?: string;
   /** When set (YYYY-MM-DD), person is off the active roster; schedule before this date is unchanged. */
   terminatedAt?: string;
+  /** First day this person may appear on the schedule (YYYY-MM-DD). Earlier dates are never backfilled. */
+  hiredAt?: string;
 };
 
 /** Reusable route catalog (dropdown in schedule rows). */

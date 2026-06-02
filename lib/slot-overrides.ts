@@ -1,4 +1,4 @@
-import { defaultDriverForTemplateDate } from "./availability-helpers";
+import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import type { AppData, ScheduleSlot, SlotOverrideState } from "./types";
 
 export function templateIdFromSlotId(slotId: string): string {
@@ -32,7 +32,7 @@ export function mergeSlotOverridesIntoSlots(
  */
 export function refreshSlotOverrideFromSlot(data: AppData, slot: ScheduleSlot): void {
   const t = data.settings.slotTemplates.find((x) => x.id === templateIdFromSlotId(slot.id));
-  const def = t ? defaultDriverForTemplateDate(slot.date, t) : null;
+  const def = t ? effectiveDefaultDriverForDate(data, slot.date, t) : null;
 
   const isTimeOffGap =
     slot.isGap &&
