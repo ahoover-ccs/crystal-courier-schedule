@@ -8,7 +8,9 @@ import {
   isNonDefaultAssignmentForSlot,
   resolveTemplateLabel,
 } from "@/lib/availability-helpers";
+import { dayNoteForDate } from "@/lib/schedule-day-notes";
 import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
+import { ScheduleDayHeader } from "./ScheduleDayHeader";
 
 function routeStyle(rt: RouteType): string {
   switch (rt) {
@@ -191,9 +193,7 @@ export function DriverScheduleBoard() {
             Route
           </div>
           {weekDays.map((d) => (
-            <div key={d} className="bg-cc-navy px-2 py-2 text-center text-xs font-medium text-cc-paper">
-              {format(parseISO(d), "EEE M/d")}
-            </div>
+            <ScheduleDayHeader key={d} date={d} note={dayNoteForDate(data, d)} />
           ))}
 
           {slotsByTemplate.map(({ template, rowSlots }) => {

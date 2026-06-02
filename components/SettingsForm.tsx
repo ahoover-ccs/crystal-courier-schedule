@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { isActivePerson } from "@/lib/active-people";
 import { normalizeWeeklyAvailability } from "@/lib/availability-helpers";
+import { syncSlotTemplatesWithCatalog } from "@/lib/sync-catalog-templates";
 import { formatISODate, mondayOfWeekContaining } from "@/lib/week-utils";
 import { ROLE_OPTIONS, roleLabel, roleNeedsProfileToken } from "@/lib/roles";
 import type {
@@ -113,12 +114,14 @@ export function SettingsForm() {
     if (!data) return;
     setErr(null);
     setSaved(null);
+    const syncedTemplates = syncSlotTemplatesWithCatalog(routeDefs, templates);
+    setTemplates(syncedTemplates);
     const res = await fetch("/api/settings", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         routeDefinitions: routeDefs,
-        slotTemplates: templates,
+        slotTemplates: syncedTemplates,
       }),
     });
     if (!res.ok) {
@@ -135,7 +138,9 @@ export function SettingsForm() {
         defaultDriversByDay: { ...t.defaultDriversByDay },
       }))
     );
-    setSaved("Route catalog and schedule rows saved. Open the Schedule page and use Refresh if you added rows.");
+    setSaved(
+      "Route catalog and schedule rows saved. The current week on the schedule board was updated."
+    );
   };
 
   const addPerson = async (e: React.FormEvent) => {
@@ -322,14 +327,31 @@ export function SettingsForm() {
   };
 
   const addRouteDefinition = () => {
+    const routeId = `rd-${Date.now()}`;
+    const empty: Record<WeekdayKey, string | null> = {
+      mon: null,
+      tue: null,
+      wed: null,
+      thu: null,
+      fri: null,
+    };
     setRouteDefs((r) => [
       ...r,
       {
-        id: `rd-${Date.now()}`,
+        id: routeId,
         name: "New route",
         routeType: "morning",
       },
     ]);
+    setTemplates((t) => [
+      ...t,
+      {
+        id: `t-${Date.now()}`,
+        routeDefinitionId: routeId,
+        defaultDriversByDay: { ...empty },
+      },
+    ]);
+    setSaved(null);
   };
 
   const removeRouteDefinition = (id: string) => {
@@ -686,7 +708,9 @@ export function SettingsForm() {
         <h2 className="font-serif text-2xl text-cc-navy">Route catalog</h2>
         <p className="mt-2 text-sm text-cc-muted">
           Define each customer/route once. Use shift type &ldquo;Office&rdquo; for in-office coverage rows
-          (only Ops / Dispatch / Owner can be assigned).
+          (only Ops / Dispatch / Owner can be assigned). Adding a route also creates a matching row on
+          the weekly grid below — click <strong className="font-medium text-cc-ink">Save</strong> to
+          keep your changes.
         </p>
         <div className="mt-4 space-y-2 rounded border border-cc-line bg-cc-paper p-4">
           {routeDefs.map((rd) => (
@@ -729,13 +753,22 @@ export function SettingsForm() {
               </button>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={addRouteDefinition}
-            className="text-sm text-cc-navy underline"
-          >
-            Add route to catalog
-          </button>
+          <div className="flex flex-wrap gap-2 pt-2">
+            <button
+              type="button"
+              onClick={addRouteDefinition}
+              className="rounded border border-cc-navy px-3 py-1.5 text-sm text-cc-navy hover:bg-cc-navy/5"
+            >
+              Add route to catalog
+            </button>
+            <button
+              type="button"
+              onClick={() => void saveRoutesAndCatalog()}
+              className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep"
+            >
+              Save route catalog &amp; grid
+            </button>
+          </div>
         </div>
       </section>
 
@@ -831,7 +864,7 @@ export function SettingsForm() {
             onClick={saveRoutesAndCatalog}
             className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep"
           >
-            Save catalog &amp; schedule rows
+            Save schedule rows &amp; grid
           </button>
         </div>
       </section>

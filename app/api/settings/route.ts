@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ensureDb, writeDb } from "@/lib/db";
+import { applyDefaultDriversToEmptySlots } from "@/lib/apply-defaults";
+import { ensureDb, rebuildSlotsForWeek, writeDb } from "@/lib/db";
+import { syncSlotTemplatesWithCatalog } from "@/lib/sync-catalog-templates";
 import { sanitizeTemplateDefaults } from "@/lib/terminate-person";
 import type { AppSettings, RouteDefinition, SlotTemplate, WeekdayKey } from "@/lib/types";
 import { WEEKDAY_KEYS } from "@/lib/types";
@@ -30,16 +32,30 @@ export async function PATCH(req: NextRequest) {
   const { fillPriorityIds, slotTemplates, defaultWeekStart, routeDefinitions } = body as Partial<
     AppSettings & { routeDefinitions?: RouteDefinition[] }
   >;
-  const data = await ensureDb();
+  let data = await ensureDb();
   if (fillPriorityIds) {
     data.settings.fillPriorityIds = fillPriorityIds;
   }
-  if (routeDefinitions?.length) {
+
+  const catalogChanged = routeDefinitions !== undefined;
+  const rowsChanged = slotTemplates !== undefined;
+
+  if (routeDefinitions !== undefined) {
     data.settings.routeDefinitions = normalizeRouteDefinitions(routeDefinitions);
   }
-  if (slotTemplates?.length) {
+  if (slotTemplates !== undefined) {
     data.settings.slotTemplates = normalizeSlotTemplates(slotTemplates);
   }
+  if (catalogChanged || rowsChanged) {
+    data.settings.slotTemplates = syncSlotTemplatesWithCatalog(
+      data.settings.routeDefinitions,
+      data.settings.slotTemplates
+    );
+    data = rebuildSlotsForWeek(data, data.settings.defaultWeekStart);
+    const { data: filled } = applyDefaultDriversToEmptySlots(data);
+    data = filled;
+  }
+
   if (defaultWeekStart) {
     data.settings.defaultWeekStart = defaultWeekStart;
   }

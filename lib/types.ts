@@ -119,6 +119,14 @@ export type NonDefaultShiftReminder = {
   sentAt: string;
 };
 
+/** Team-wide note shown above a day on the weekly route board (management can edit). */
+export type ScheduleDayNote = {
+  date: string;
+  body: string;
+  updatedAt: string;
+  authorName?: string;
+};
+
 export type AppSettings = {
   routeDefinitions: RouteDefinition[];
   slotTemplates: SlotTemplate[];
@@ -145,5 +153,6 @@ export type AppData = {
   /** Keys like `nd-{slotId}-{driverId}` once a non-default 24h reminder was sent */
   nonDefaultShiftReminders?: NonDefaultShiftReminder[];
   slotOverrides?: Record<string, SlotOverrideState>;
+  scheduleDayNotes?: ScheduleDayNote[];
   settings: AppSettings;
 };

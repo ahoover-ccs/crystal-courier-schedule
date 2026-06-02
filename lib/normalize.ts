@@ -264,6 +264,12 @@ export function normalizeAppData(raw: AppData): AppData {
     slotOverrides: pruneSlotOverrides(
       data.slotOverrides && Object.keys(data.slotOverrides).length ? data.slotOverrides : undefined
     ),
+    scheduleDayNotes: (() => {
+      const notes = (data.scheduleDayNotes ?? []).filter(
+        (n) => n.date && typeof n.body === "string" && n.body.trim()
+      );
+      return notes.length ? notes : undefined;
+    })(),
     settings: {
       routeDefinitions,
       slotTemplates,
