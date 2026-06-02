@@ -61,6 +61,12 @@ export function SettingsForm() {
     phone: "",
   });
 
+  const [terminateTarget, setTerminateTarget] = useState<{ id: string; name: string } | null>(
+    null
+  );
+  const [terminateEffectiveDate, setTerminateEffectiveDate] = useState("");
+  const [terminateBusy, setTerminateBusy] = useState(false);
+
   const load = useCallback(async () => {
     const r = await fetch("/api/data");
     const d = (await r.json()) as AppData;
@@ -186,41 +192,49 @@ export function SettingsForm() {
     setSaved("Person updated.");
   };
 
-  const removePerson = async (id: string) => {
+  const openTerminateDialog = (id: string) => {
     const name = data?.people.find((p) => p.id === id)?.name ?? "this person";
-    const defaultEffective = formatISODate(mondayOfWeekContaining(new Date()));
-    const raw = window.prompt(
-      `Terminate ${name}?\n\nEnter the date when removal takes effect on the schedule (YYYY-MM-DD). ` +
-        `Past schedule data before this date is kept unchanged. Shift availability, schedule row defaults, ` +
-        `and fill-in priority are removed immediately.`,
-      defaultEffective
-    );
-    if (raw === null) return;
-    const effectiveDate = raw.trim();
+    setTerminateEffectiveDate(formatISODate(mondayOfWeekContaining(new Date())));
+    setTerminateTarget({ id, name });
+  };
+
+  const confirmTerminate = async () => {
+    if (!terminateTarget) return;
+    const effectiveDate = terminateEffectiveDate.trim();
     if (!/^\d{4}-\d{2}-\d{2}$/.test(effectiveDate)) {
-      setErr("Enter a valid date as YYYY-MM-DD.");
+      setErr("Enter a valid effective date (YYYY-MM-DD).");
       return;
     }
     setErr(null);
-    const res = await fetch(`/api/people/${id}/terminate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ effectiveDate }),
-    });
-    if (!res.ok) {
+    setTerminateBusy(true);
+    try {
+      const res = await fetch(`/api/people/${terminateTarget.id}/terminate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ effectiveDate }),
+      });
       const j = await res.json();
-      setErr(j.error ?? "Termination failed");
-      return;
+      if (!res.ok) {
+        setErr(j.error ?? "Termination failed");
+        return;
+      }
+      const next = j as AppData;
+      setData(next);
+      setTemplates(
+        next.settings.slotTemplates.map((t) => ({
+          ...t,
+          defaultDriversByDay: { ...t.defaultDriversByDay },
+        }))
+      );
+      setSaved(
+        `${terminateTarget.name} terminated effective ${effectiveDate}. Past schedule before that date is unchanged.`
+      );
+      setTerminateTarget(null);
+    } catch {
+      setErr("Termination failed — check your connection and try again.");
+    } finally {
+      setTerminateBusy(false);
     }
-    const next = (await res.json()) as AppData;
-    setData(next);
-    setTemplates(
-      next.settings.slotTemplates.map((t) => ({
-        ...t,
-        defaultDriversByDay: { ...t.defaultDriversByDay },
-      }))
-    );
-    setSaved(`${name} terminated effective ${effectiveDate}. Past schedule before that date is unchanged.`);
   };
 
   const setPersonDayShift = (
@@ -358,6 +372,57 @@ export function SettingsForm() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-14">
+      {terminateTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-cc-navy/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="terminate-dialog-title"
+          onClick={() => !terminateBusy && setTerminateTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded border border-cc-line bg-cc-paper p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="terminate-dialog-title" className="font-serif text-xl text-cc-navy">
+              Terminate {terminateTarget.name}
+            </h2>
+            <p className="mt-2 text-sm text-cc-muted">
+              Shift availability, schedule row defaults, and fill-in priority are removed
+              immediately. The schedule keeps this person&apos;s history before the effective date;
+              on and after that date they are cleared from assignments.
+            </p>
+            <label className="mt-4 block text-sm font-medium text-cc-ink">
+              Effective date on schedule
+              <input
+                type="date"
+                value={terminateEffectiveDate}
+                onChange={(e) => setTerminateEffectiveDate(e.target.value)}
+                className="mt-1 w-full rounded border border-cc-line bg-white px-3 py-2 font-serif"
+                disabled={terminateBusy}
+              />
+            </label>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={terminateBusy}
+                onClick={() => setTerminateTarget(null)}
+                className="rounded border border-cc-line px-4 py-2 text-sm text-cc-ink hover:bg-cc-cream"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={terminateBusy}
+                onClick={() => void confirmTerminate()}
+                className="rounded bg-red-800 px-4 py-2 text-sm text-white hover:bg-red-900 disabled:opacity-50"
+              >
+                {terminateBusy ? "Terminating…" : "Terminate"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {err && (
         <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{err}</p>
       )}
@@ -458,7 +523,7 @@ export function SettingsForm() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => removePerson(p.id)}
+                        onClick={() => openTerminateDialog(p.id)}
                         className="text-sm text-red-700 underline"
                       >
                         Terminate
