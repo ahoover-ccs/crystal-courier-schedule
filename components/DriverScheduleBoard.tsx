@@ -9,6 +9,7 @@ import {
   resolveTemplateLabel,
 } from "@/lib/availability-helpers";
 import { dayNoteForDate } from "@/lib/schedule-day-notes";
+import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
 import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 
@@ -144,7 +145,7 @@ export function DriverScheduleBoard() {
   }
 
   return (
-    <div className="min-w-0 flex-1 overflow-x-auto">
+    <div className="min-w-0 flex-1">
       <div className="mb-4 flex flex-wrap items-end gap-3">
         <div>
           <label className="block text-xs uppercase tracking-wide text-cc-muted">
@@ -184,12 +185,12 @@ export function DriverScheduleBoard() {
         read-only for drivers.
       </p>
 
-      <div className="min-w-[640px] rounded border border-cc-line bg-cc-paper shadow-sm">
+      <div className="w-full min-w-0 rounded border border-cc-line bg-cc-paper shadow-sm">
         <div
           className="grid gap-px bg-cc-line"
-          style={{ gridTemplateColumns: `10rem repeat(${weekDays.length}, minmax(0,1fr))` }}
+          style={{ gridTemplateColumns: SCHEDULE_GRID_COLUMNS }}
         >
-          <div className="bg-cc-navy px-2 py-2 text-xs font-medium uppercase tracking-wide text-cc-paper">
+          <div className="bg-cc-navy px-1.5 py-1.5 text-[10px] font-medium uppercase tracking-wide text-cc-paper">
             Route
           </div>
           {weekDays.map((d) => (
@@ -206,10 +207,10 @@ export function DriverScheduleBoard() {
               <Fragment key={template.id}>
                 <div
                   key={`label-${template.id}`}
-                  className={`flex flex-col justify-center bg-white px-2 py-2 text-sm ${routeStyle(routeType)}`}
+                  className={`flex flex-col justify-center bg-white px-1.5 py-1.5 text-sm ${routeStyle(routeType)}`}
                 >
-                  <span className="text-xs font-semibold text-cc-muted">{routeLabel(routeType)}</span>
-                  <span className="leading-tight text-cc-ink">{routeRowLabel}</span>
+                  <span className="text-[10px] font-semibold text-cc-muted">{routeLabel(routeType)}</span>
+                  <span className="text-xs leading-tight text-cc-ink">{routeRowLabel}</span>
                 </div>
 
                 {rowSlots.map((slot, i) => {
@@ -226,9 +227,9 @@ export function DriverScheduleBoard() {
                       ? "bg-cc-gold"
                       : "bg-cc-navy";
                   return (
-                    <div key={slot?.id ?? `missing-${template.id}-${i}`} className="bg-cc-cream/40 p-1">
+                    <div key={slot?.id ?? `missing-${template.id}-${i}`} className="bg-cc-cream/40 p-0.5">
                       <div
-                        className={`min-h-[4.5rem] rounded border border-dashed border-cc-line p-2 ${
+                        className={`min-h-[4rem] rounded border border-dashed border-cc-line p-1.5 ${
                           slot?.isGap && !slot.driverId ? "ring-1 ring-amber-500/50" : ""
                         }`}
                       >

@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { ScheduleDayNote } from "@/lib/types";
 
 const NOTE_CLASS =
-  "mb-1 rounded px-1.5 py-1 text-left text-[11px] leading-snug bg-cc-sky/25 text-cc-ink ring-1 ring-cc-sky/40";
+  "mt-1 rounded px-1.5 py-1 text-left text-[11px] leading-snug bg-white text-cc-navy";
 
 type Props = {
   date: string;
@@ -36,15 +36,15 @@ export function ScheduleDayHeader({ date, note, editable, busy, onSave }: Props)
   };
 
   return (
-    <div className="flex min-h-[3.25rem] flex-col bg-cc-navy px-1.5 py-1.5 text-cc-paper">
+    <div className="flex min-h-[2.75rem] flex-col bg-cc-navy px-1 py-1.5 text-cc-paper">
+      <div className="text-center text-xs font-medium">{format(parseISO(date), "EEE M/d")}</div>
       {note?.body && !editing && (
         <p className={NOTE_CLASS} title={note.authorName ? `From ${note.authorName}` : undefined}>
           {note.body}
         </p>
       )}
-      <div className="text-center text-xs font-medium">{format(parseISO(date), "EEE M/d")}</div>
       {editable && onSave && (
-        <div className="mt-1">
+        <div className="mt-0.5">
           {editing ? (
             <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
               <textarea
@@ -52,7 +52,7 @@ export function ScheduleDayHeader({ date, note, editable, busy, onSave }: Props)
                 onChange={(e) => setDraft(e.target.value)}
                 rows={2}
                 placeholder="Note for the team…"
-                className="w-full rounded border border-cc-line bg-white px-1.5 py-1 text-[11px] text-cc-ink"
+                className="w-full rounded border border-cc-line bg-white px-1.5 py-1 text-[11px] text-cc-navy"
                 disabled={busy}
               />
               <div className="flex justify-center gap-2 text-[10px]">

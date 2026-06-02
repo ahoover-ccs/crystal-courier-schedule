@@ -30,7 +30,7 @@ export function SiteNav() {
 
   return (
     <header className="border-b border-cc-line bg-cc-navy text-cc-paper shadow-sm">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex max-w-[88rem] flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
           <BrandLogo />
           <div className="hidden h-10 w-px bg-cc-line/40 sm:block" aria-hidden />

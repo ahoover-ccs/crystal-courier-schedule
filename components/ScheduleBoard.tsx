@@ -25,6 +25,7 @@ import { roleLabel } from "@/lib/roles";
 import { dayNoteForDate } from "@/lib/schedule-day-notes";
 import { suggestFillIns } from "@/lib/suggestions";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
+import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
 import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
 
 const SYNC_DEFAULTS_NOTICE =
@@ -486,9 +487,9 @@ export function ScheduleBoard() {
   return (
     <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
       <div className="flex flex-col gap-6 lg:flex-row">
-        <aside className="lg:w-64 lg:shrink-0">
-          <h2 className="mb-2 font-serif text-lg text-cc-navy">Team roster</h2>
-          <p className="mb-3 text-xs text-cc-muted">
+        <aside className="lg:w-52 lg:shrink-0">
+          <h2 className="mb-1.5 font-serif text-base text-cc-navy">Team roster</h2>
+          <p className="mb-2 text-[11px] leading-snug text-cc-muted">
             Drag to adjust or cover gaps. One person can hold multiple non-overlapping routes per day.
             Change the week with the date control or use Refresh—both reload from disk and fill only
             empty, non–gap cells from Settings (saved assignments stay via overrides).
@@ -507,7 +508,7 @@ export function ScheduleBoard() {
           </div>
         </aside>
 
-        <div className="min-w-0 flex-1 overflow-x-auto">
+        <div className="min-w-0 flex-1">
           <div className="mb-4 flex flex-wrap items-end gap-3">
             <div>
               <label className="block text-xs uppercase tracking-wide text-cc-muted">
@@ -547,14 +548,12 @@ export function ScheduleBoard() {
             </p>
           )}
 
-          <div className="min-w-[640px] rounded border border-cc-line bg-cc-paper shadow-sm">
+          <div className="w-full min-w-0 rounded border border-cc-line bg-cc-paper shadow-sm">
             <div
               className="grid gap-px bg-cc-line"
-              style={{
-                gridTemplateColumns: `10rem repeat(${weekDays.length}, minmax(0,1fr))`,
-              }}
+              style={{ gridTemplateColumns: SCHEDULE_GRID_COLUMNS }}
             >
-              <div className="bg-cc-navy px-2 py-2 text-xs font-medium uppercase tracking-wide text-cc-paper">
+              <div className="bg-cc-navy px-1.5 py-1.5 text-[10px] font-medium uppercase tracking-wide text-cc-paper">
                 Route
               </div>
               {weekDays.map((d) => (
@@ -576,16 +575,16 @@ export function ScheduleBoard() {
                 return (
                 <Fragment key={template.id}>
                   <div
-                    className={`flex flex-col justify-center bg-white px-2 py-2 text-sm ${routeStyle(routeType)}`}
+                    className={`flex flex-col justify-center bg-white px-1.5 py-1.5 text-sm ${routeStyle(routeType)}`}
                   >
-                    <span className="text-xs font-semibold text-cc-muted">
+                    <span className="text-[10px] font-semibold text-cc-muted">
                       {routeLabel(routeType)}
                     </span>
-                    <span className="leading-tight text-cc-ink">{routeRowLabel}</span>
+                    <span className="text-xs leading-tight text-cc-ink">{routeRowLabel}</span>
                   </div>
                   {rowSlots.map((slot, i) =>
                     slot ? (
-                      <div key={slot.id} className="bg-cc-cream/40 p-1">
+                      <div key={slot.id} className="bg-cc-cream/40 p-0.5">
                         <SlotCell
                           slot={slot}
                           occupantName={slot.driverId ? nameById.get(slot.driverId) ?? "?" : null}
@@ -610,15 +609,15 @@ export function ScheduleBoard() {
           </div>
         </div>
 
-        <aside className="lg:w-80 lg:shrink-0">
-          <h2 className="mb-2 font-serif text-lg text-cc-navy">Gaps &amp; fill-ins</h2>
-          <p className="mb-3 text-xs text-cc-muted">
+        <aside className="lg:w-60 lg:shrink-0">
+          <h2 className="mb-1.5 font-serif text-base text-cc-navy">Gaps &amp; fill-ins</h2>
+          <p className="mb-2 text-[11px] leading-snug text-cc-muted">
             After time off or unassigning, suggested names follow your priority order in Settings. Use
             notify to email/SMS everyone with no assignment that day (see Resend &amp; Twilio env vars).
           </p>
-          <ul className="flex max-h-[60vh] flex-col gap-3 overflow-y-auto">
+          <ul className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto">
             {gaps.length === 0 && (
-              <li className="rounded border border-cc-line bg-white px-3 py-2 text-sm text-cc-muted">
+              <li className="rounded border border-cc-line bg-white px-2 py-1.5 text-xs text-cc-muted">
                 No open routes this week.
               </li>
             )}
@@ -627,7 +626,7 @@ export function ScheduleBoard() {
               return (
                 <li
                   key={slot.id}
-                  className="rounded border border-cc-line bg-white p-3 text-sm shadow-sm"
+                  className="rounded border border-cc-line bg-white p-2 text-xs shadow-sm"
                 >
                   <p className="font-medium text-cc-ink">
                     {slot.label} · {format(parseISO(slot.date), "EEE M/d")}
@@ -635,8 +634,8 @@ export function ScheduleBoard() {
                   {slot.gapReason && (
                     <p className="text-xs text-amber-800">{slot.gapReason}</p>
                   )}
-                  <p className="mt-2 text-xs uppercase text-cc-muted">Suggested</p>
-                  <ul className="mt-1 space-y-1">
+                  <p className="mt-1.5 text-[10px] uppercase text-cc-muted">Suggested</p>
+                  <ul className="mt-0.5 space-y-0.5">
                     {sug.map((p) => (
                       <li key={p.id}>
                         <button
@@ -657,7 +656,7 @@ export function ScheduleBoard() {
                     type="button"
                     disabled={busy}
                     onClick={() => notifyTeamForOpenSlot(slot.id)}
-                    className="mt-3 w-full rounded border border-cc-navy px-2 py-1.5 text-xs font-medium text-cc-navy hover:bg-cc-navy hover:text-cc-paper"
+                    className="mt-2 w-full rounded border border-cc-navy px-2 py-1 text-[11px] font-medium text-cc-navy hover:bg-cc-navy hover:text-cc-paper"
                   >
                     Notify team (email / SMS)
                   </button>
