@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   DndContext,
   DragOverlay,
@@ -14,6 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { format, parseISO } from "date-fns";
 import type { AppData, Person, RouteType, ScheduleSlot } from "@/lib/types";
+import { isActivePerson } from "@/lib/active-people";
 import {
   hasPendingTimeOffForSlot,
   isNonDefaultAssignmentForSlot,
@@ -183,6 +185,8 @@ function UnassignPool() {
 }
 
 export function ScheduleBoard() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [data, setData] = useState<AppData | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -190,6 +194,7 @@ export function ScheduleBoard() {
   const [weekInput, setWeekInput] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const weekSwitchSeq = useRef(0);
+  const jumpedToCurrentWeek = useRef(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
@@ -203,14 +208,48 @@ export function ScheduleBoard() {
       const json = (await res.json()) as AppData;
       setData(json);
       setWeekInput(json.settings.defaultWeekStart);
+      return json;
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Error");
+      return null;
     }
   }, []);
 
   useEffect(() => {
-    load();
+    void load();
   }, [load]);
+
+  useEffect(() => {
+    if (jumpedToCurrentWeek.current) return;
+    if (searchParams.get("week") !== "current") return;
+
+    jumpedToCurrentWeek.current = true;
+    router.replace("/schedule", { scroll: false });
+
+    void (async () => {
+      const json = data ?? (await load());
+      if (!json) return;
+      const currentMonday = formatISODate(mondayOfWeekContaining(new Date()));
+      if (json.settings.defaultWeekStart === currentMonday) return;
+
+      setBusy(true);
+      try {
+        const res = await fetch("/api/week", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ weekStart: currentMonday }),
+        });
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error ?? "Week change failed");
+        setData(body.data as AppData);
+        setWeekInput((body.data as AppData).settings.defaultWeekStart);
+      } catch (e) {
+        setLoadError(e instanceof Error ? e.message : "Error");
+      } finally {
+        setBusy(false);
+      }
+    })();
+  }, [searchParams, data, load, router]);
 
   useEffect(() => {
     if (!weekInput || !data) return;
@@ -435,6 +474,7 @@ export function ScheduleBoard() {
           </p>
           <div className="flex max-h-[50vh] flex-col gap-1 overflow-y-auto rounded border border-cc-line bg-cc-paper p-2 lg:max-h-[70vh]">
             {data.people
+              .filter(isActivePerson)
               .slice()
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((p) => (

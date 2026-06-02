@@ -19,6 +19,8 @@ export type DayShiftAvailability = Record<RouteType, boolean>;
 /** Mon–Fri × shift types — granular availability for suggestions. */
 export type WeeklyShiftAvailability = Record<WeekdayKey, DayShiftAvailability>;
 
+export type AbsenceType = "planned" | "unplanned";
+
 export type Person = {
   id: string;
   name: string;
@@ -28,6 +30,8 @@ export type Person = {
   weeklyShiftAvailability: WeeklyShiftAvailability;
   /** Secret token for /my-availability (drivers & on-call). */
   profileToken?: string;
+  /** When set (YYYY-MM-DD), person is off the active roster; schedule before this date is unchanged. */
+  terminatedAt?: string;
 };
 
 /** Reusable route catalog (dropdown in schedule rows). */
@@ -54,6 +58,7 @@ export type ScheduleSlot = {
   driverId: string | null;
   isGap: boolean;
   gapReason?: string;
+  absenceType?: AbsenceType;
   /** Set when gap created by this person's time off — used for coverage stats */
   gapForDriverId?: string | null;
   isOfficeSlot: boolean;
@@ -124,6 +129,7 @@ export type SlotOverrideState = {
   driverId: string | null;
   isGap: boolean;
   gapReason?: string;
+  absenceType?: AbsenceType;
   gapForDriverId?: string | null;
 };
 

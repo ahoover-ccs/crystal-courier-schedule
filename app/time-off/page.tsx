@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
+import { activePeople } from "@/lib/active-people";
 import type { AppData, Person, RouteType } from "@/lib/types";
 
 const ROUTE_OPTIONS: { value: RouteType; label: string }[] = [
@@ -14,13 +15,8 @@ const ROUTE_OPTIONS: { value: RouteType; label: string }[] = [
 ];
 
 type Preview = {
-  estimate: { percent: number; warnLow: boolean; message: string };
-  stats: {
-    requestedDaysThisYear: number;
-    projectedRequestedDaysThisYear: number;
-    coveredAbsenceDaysThisYear: number;
-    warnManyDaysOff: boolean;
-  };
+  othersAlreadyOut: number;
+  trailing12MonthsDaysOff: number;
   daysInRange?: number;
 };
 
@@ -46,7 +42,7 @@ export default function TimeOffPage() {
   }, []);
 
   const people: Person[] =
-    data?.people.slice().sort((a, b) => a.name.localeCompare(b.name)) ?? [];
+    data ? activePeople(data).slice().sort((a, b) => a.name.localeCompare(b.name)) : [];
 
   const effectiveEnd = endDate.trim() && endDate >= startDate ? endDate : undefined;
 
@@ -200,39 +196,24 @@ export default function TimeOffPage() {
         </fieldset>
 
         {preview && (
-          <div
-            className={`rounded border px-3 py-3 text-sm ${
-              preview.estimate.warnLow
-                ? "border-amber-400 bg-amber-50 text-amber-950"
-                : "border-cc-line bg-white text-cc-ink"
-            }`}
-          >
+          <div className="rounded border border-cc-line bg-white px-3 py-3 text-sm text-cc-ink">
             {preview.daysInRange != null && preview.daysInRange > 1 && (
               <p className="mb-2 text-xs text-cc-muted">
-                Range: {preview.daysInRange} calendar day{preview.daysInRange === 1 ? "" : "s"} (preview
-                uses the tightest approval estimate in the range).
+                Range: {preview.daysInRange} calendar day{preview.daysInRange === 1 ? "" : "s"} (counts
+                use the busiest day in the range for coverage).
               </p>
             )}
-            <p className="font-medium">Estimated approval likelihood: ~{preview.estimate.percent}%</p>
-            <p className="mt-1">{preview.estimate.message}</p>
-            {preview.estimate.warnLow && (
-              <p className="mt-2 font-semibold">
-                Whoa! Don&apos;t make any plans yet. There&apos;s a very low chance that we will be able to
-                approve your request!
-              </p>
-            )}
-            <p className="mt-2 text-xs text-cc-muted">
-              Time off days this year (before this request): {preview.stats.requestedDaysThisYear}. If
-              approved, distinct days this year would be about{" "}
-              {preview.stats.projectedRequestedDaysThisYear}. Days others covered your routes this
-              year: {preview.stats.coveredAbsenceDaysThisYear}.
+            <p>
+              <span className="font-medium text-cc-navy">Others already out: </span>
+              {preview.othersAlreadyOut} — drivers off their default route or open shifts not yet
+              filled on the hardest day in this range.
             </p>
-            {preview.stats.warnManyDaysOff && (
-              <p className="mt-2 font-medium text-amber-900">
-                You&apos;ve reached more than 12 days off this year — please try to limit further
-                requests when you can. You can still submit this one.
-              </p>
-            )}
+            <p className="mt-2">
+              <span className="font-medium text-cc-navy">Your days off (trailing 12 months): </span>
+              {preview.trailing12MonthsDaysOff} calendar day
+              {preview.trailing12MonthsDaysOff === 1 ? "" : "s"} with approved time off or recorded
+              absences.
+            </p>
           </div>
         )}
 

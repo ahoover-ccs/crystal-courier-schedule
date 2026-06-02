@@ -1,3 +1,4 @@
+import { plannedTimeOffGapReason } from "./absence-labels";
 import { refreshSlotOverridesForSlots } from "./slot-overrides";
 import type { AppData, TimeOffRequest } from "./types";
 
@@ -17,7 +18,8 @@ export function applyApprovedTimeOffRequestToData(
       ...s,
       driverId: null,
       isGap: true,
-      gapReason: `Time off — ${req.driverName}`,
+      absenceType: "planned",
+      gapReason: plannedTimeOffGapReason(req.driverName),
       gapForDriverId: req.driverId,
     };
     cleared += 1;

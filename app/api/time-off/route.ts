@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   const data = await ensureDb();
-  const person = data.people.find((p) => p.id === driverId);
+  const person = data.people.find((p) => p.id === driverId && !p.terminatedAt);
   if (!person) {
     return NextResponse.json({ error: "Driver not found" }, { status: 404 });
   }

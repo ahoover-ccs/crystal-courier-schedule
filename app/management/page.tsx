@@ -11,7 +11,7 @@ export default function ManagementPortalPage() {
 
       <div className="mt-10 flex flex-wrap gap-4">
         <Link
-          href="/schedule"
+          href="/schedule?week=current"
           className="rounded bg-cc-navy px-6 py-3 text-cc-paper shadow hover:bg-cc-navy-deep"
         >
           Open schedule board

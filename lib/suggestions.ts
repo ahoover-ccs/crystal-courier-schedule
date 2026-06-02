@@ -1,3 +1,4 @@
+import { isActivePerson } from "./active-people";
 import {
   defaultDriverForTemplateDate,
   isPersonAvailableForSlotOnDate,
@@ -50,7 +51,8 @@ export function suggestFillIns(
   /** Caps the primary (driver + dispatch) list; managerial roles are always appended. Omit for no cap. */
   limit?: number
 ): Person[] {
-  const { people, slots, settings } = data;
+  const { slots, settings } = data;
+  const people = data.people.filter(isActivePerson);
   const existingTypes = (driverId: string) =>
     assignmentsForDriverOnDate(slots, slot.date, driverId, slot.id);
 
@@ -103,6 +105,9 @@ export function canAssignDriver(
   if (!slot) return { ok: false, reason: "Slot not found" };
   const person = data.people.find((p) => p.id === driverId);
   if (!person) return { ok: false, reason: "Person not found" };
+  if (!isActivePerson(person)) {
+    return { ok: false, reason: "That person is no longer on the active roster." };
+  }
   if (slot.isOfficeSlot && !canStaffOfficeSlot(person)) {
     return {
       ok: false,

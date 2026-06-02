@@ -1,3 +1,4 @@
+import { plannedTimeOffGapReason } from "./absence-labels";
 import type { AppData } from "./types";
 
 /** Re-clear slots for approved time off (e.g. after rebuilding the week grid). Skips slots with a persisted slotOverrides entry so manual coverage wins. */
@@ -16,7 +17,8 @@ export function reapplyApprovedTimeOffToSlots(data: AppData): AppData {
         ...s,
         driverId: null,
         isGap: true,
-        gapReason: `Time off — ${req.driverName}`,
+        absenceType: "planned",
+        gapReason: plannedTimeOffGapReason(req.driverName),
         gapForDriverId: req.driverId,
       };
     }

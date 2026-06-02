@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { isActivePerson } from "@/lib/active-people";
 import { normalizeWeeklyAvailability } from "@/lib/availability-helpers";
+import { formatISODate, mondayOfWeekContaining } from "@/lib/week-utils";
 import { ROLE_OPTIONS, roleLabel, roleNeedsProfileToken } from "@/lib/roles";
 import type {
   AppData,
@@ -185,14 +187,29 @@ export function SettingsForm() {
   };
 
   const removePerson = async (id: string) => {
-    if (!confirm("Remove this person from the roster? Their defaults and assignments are cleared.")) {
+    const name = data?.people.find((p) => p.id === id)?.name ?? "this person";
+    const defaultEffective = formatISODate(mondayOfWeekContaining(new Date()));
+    const raw = window.prompt(
+      `Terminate ${name}?\n\nEnter the date when removal takes effect on the schedule (YYYY-MM-DD). ` +
+        `Past schedule data before this date is kept unchanged. Shift availability, schedule row defaults, ` +
+        `and fill-in priority are removed immediately.`,
+      defaultEffective
+    );
+    if (raw === null) return;
+    const effectiveDate = raw.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(effectiveDate)) {
+      setErr("Enter a valid date as YYYY-MM-DD.");
       return;
     }
     setErr(null);
-    const res = await fetch(`/api/people/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/people/${id}/terminate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ effectiveDate }),
+    });
     if (!res.ok) {
       const j = await res.json();
-      setErr(j.error ?? "Delete failed");
+      setErr(j.error ?? "Termination failed");
       return;
     }
     const next = (await res.json()) as AppData;
@@ -203,7 +220,7 @@ export function SettingsForm() {
         defaultDriversByDay: { ...t.defaultDriversByDay },
       }))
     );
-    setSaved("Person removed.");
+    setSaved(`${name} terminated effective ${effectiveDate}. Past schedule before that date is unchanged.`);
   };
 
   const setPersonDayShift = (
@@ -239,7 +256,7 @@ export function SettingsForm() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        updates: data.people.map((p) => ({
+        updates: data.people.filter(isActivePerson).map((p) => ({
           id: p.id,
           weeklyShiftAvailability: normalizeWeeklyAvailability(p.weeklyShiftAvailability),
         })),
@@ -335,6 +352,7 @@ export function SettingsForm() {
   if (!data) return <p className="text-cc-muted">Loading…</p>;
 
   const peopleAlpha = data.people
+    .filter(isActivePerson)
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -353,6 +371,8 @@ export function SettingsForm() {
           Data file: <code className="rounded bg-cc-cream px-1">data/schedule.json</code>. Add a catalog
           entry with shift type &ldquo;Office&rdquo;, then add a schedule row so an Ops Manager,
           Dispatch, or Owner can be assigned. Office rows can be left open just like any other route.
+          Changes here affect future weeks only on the schedule board—past dates stay as saved in
+          per-cell overrides unless you edit them manually on the board.
         </p>
       </section>
 
@@ -441,7 +461,7 @@ export function SettingsForm() {
                         onClick={() => removePerson(p.id)}
                         className="text-sm text-red-700 underline"
                       >
-                        Remove
+                        Terminate
                       </button>
                     </div>
                     {roleNeedsProfileToken(p.role) && p.profileToken && (

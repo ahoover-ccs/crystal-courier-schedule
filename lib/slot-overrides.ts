@@ -19,6 +19,7 @@ export function mergeSlotOverridesIntoSlots(
       driverId: o.driverId,
       isGap: o.isGap,
       gapReason: o.gapReason,
+      absenceType: o.absenceType,
       gapForDriverId: o.gapForDriverId ?? null,
     };
   });
@@ -35,7 +36,8 @@ export function refreshSlotOverrideFromSlot(data: AppData, slot: ScheduleSlot): 
 
   const isTimeOffGap =
     slot.isGap &&
-    Boolean(slot.gapReason?.includes("Time off")) &&
+    (slot.absenceType === "planned" ||
+      Boolean(slot.gapReason?.includes("Time off"))) &&
     slot.gapForDriverId != null;
 
   const matchesNaiveTemplateDefault =
@@ -57,6 +59,7 @@ export function refreshSlotOverrideFromSlot(data: AppData, slot: ScheduleSlot): 
     driverId: slot.driverId,
     isGap: slot.isGap,
     gapReason: slot.gapReason,
+    absenceType: slot.absenceType,
     gapForDriverId: slot.gapForDriverId ?? null,
   };
   data.slotOverrides = { ...(data.slotOverrides ?? {}), [slot.id]: row };

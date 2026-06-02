@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { unplannedGapReason } from "@/lib/absence-labels";
 import { incrementCoveredAbsence } from "@/lib/absence-stats";
+import { defaultDriverForTemplateDate, slotTemplateForSlot } from "@/lib/availability-helpers";
 import { ensureDb, writeDb } from "@/lib/db";
 import { refreshSlotOverrideFromSlot } from "@/lib/slot-overrides";
-import { canAssignDriver } from "@/lib/suggestions";
+import { canAssignDriver, hasApprovedTimeOffForSlot } from "@/lib/suggestions";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -27,21 +29,43 @@ export async function POST(req: NextRequest) {
   }
 
   if (driverId === null) {
+    const removedId = prev.driverId;
+    const template = slotTemplateForSlot(data, prev);
+    const def = template ? defaultDriverForTemplateDate(prev.date, template) : null;
+    const hadApprovedTimeOff =
+      removedId != null &&
+      hasApprovedTimeOffForSlot(data, removedId, prev.date, prev.routeType);
     const keepTimeOffMeta =
-      Boolean(prev.gapReason?.includes("Time off")) && prev.gapForDriverId != null;
-    data.slots[idx] = {
-      ...prev,
-      driverId: null,
-      isGap: true,
-      gapReason: keepTimeOffMeta ? prev.gapReason : undefined,
-      gapForDriverId: keepTimeOffMeta ? prev.gapForDriverId : null,
-    };
+      (prev.absenceType === "planned" || Boolean(prev.gapReason?.includes("Time off"))) &&
+      prev.gapForDriverId != null;
+
+    if (removedId && !hadApprovedTimeOff && !keepTimeOffMeta && removedId === def) {
+      const p = data.people.find((x) => x.id === removedId);
+      data.slots[idx] = {
+        ...prev,
+        driverId: null,
+        isGap: true,
+        absenceType: "unplanned",
+        gapReason: unplannedGapReason(p?.name ?? "Driver"),
+        gapForDriverId: removedId,
+      };
+    } else {
+      data.slots[idx] = {
+        ...prev,
+        driverId: null,
+        isGap: true,
+        gapReason: keepTimeOffMeta ? prev.gapReason : undefined,
+        absenceType: keepTimeOffMeta ? "planned" : undefined,
+        gapForDriverId: keepTimeOffMeta ? prev.gapForDriverId : null,
+      };
+    }
   } else {
     data.slots[idx] = {
       ...prev,
       driverId,
       isGap: false,
       gapReason: undefined,
+      absenceType: undefined,
       gapForDriverId: null,
     };
   }

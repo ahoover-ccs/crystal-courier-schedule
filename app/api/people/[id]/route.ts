@@ -50,24 +50,31 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
   return NextResponse.json(data);
 }
 
-export async function DELETE(_req: NextRequest, ctx: Ctx) {
+/** @deprecated Use POST /api/people/[id]/terminate with an effective date instead. */
+export async function DELETE(req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params;
+  let effectiveDate: string | undefined;
+  try {
+    const body = await req.json();
+    effectiveDate = (body as { effectiveDate?: string }).effectiveDate;
+  } catch {
+    /* no body */
+  }
+  if (!effectiveDate) {
+    return NextResponse.json(
+      {
+        error:
+          "Termination requires an effective date. Use POST /api/people/{id}/terminate with { effectiveDate }.",
+      },
+      { status: 400 }
+    );
+  }
   const data = await ensureDb();
   if (!data.people.some((p) => p.id === id)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  data.people = data.people.filter((p) => p.id !== id);
-  data.settings.fillPriorityIds = data.settings.fillPriorityIds.filter((x) => x !== id);
-  data.settings.slotTemplates = data.settings.slotTemplates.map((t) => {
-    const days = { ...t.defaultDriversByDay } as Record<WeekdayKey, string | null>;
-    for (const d of WEEKDAY_KEYS) {
-      if (days[d] === id) days[d] = null;
-    }
-    return { ...t, defaultDriversByDay: days };
-  });
-  data.slots = data.slots.map((s) =>
-    s.driverId === id ? { ...s, driverId: null, isGap: s.isGap, gapReason: s.gapReason } : s
-  );
+  const { terminatePersonInData } = await import("@/lib/terminate-person");
+  terminatePersonInData(data, id, effectiveDate);
   await writeDb(data);
   return NextResponse.json(data);
 }

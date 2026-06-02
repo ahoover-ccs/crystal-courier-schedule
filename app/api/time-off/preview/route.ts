@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { inclusiveDateRangeISO } from "@/lib/date-range";
 import { ensureDb } from "@/lib/db";
-import { distinctApprovedTimeOffDaysInYear, coveredAbsenceDaysInYear } from "@/lib/absence-stats";
-import { estimateTimeOffApproval } from "@/lib/time-off-likelihood";
+import {
+  maxOthersOutInRange,
+  trailingMonthsAbsenceDayCount,
+} from "@/lib/time-off-preview-stats";
 import type { RouteType } from "@/lib/types";
 
 const MAX_RANGE_DAYS = 60;
@@ -32,47 +34,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unknown person" }, { status: 400 });
   }
 
-  const year = parseInt(date.slice(0, 4), 10);
-  let minPercent = 100;
-  let worstMessage = "";
-  for (const d of dates) {
-    const est = estimateTimeOffApproval(data, driverId, d, routeTypes);
-    if (est.percent < minPercent) {
-      minPercent = est.percent;
-      worstMessage = est.message;
-    }
-  }
-  const estimate = {
-    percent: minPercent,
-    warnLow: minPercent < 50,
-    message: worstMessage || "Estimate based on the hardest day in this range.",
-  };
-
-  const requestedDays = distinctApprovedTimeOffDaysInYear(data, driverId, year);
-  const coveredDays = coveredAbsenceDaysInYear(data, driverId, year);
-  const willBeRequested = new Set(
-    data.timeOffRequests
-      .filter(
-        (r) =>
-          r.driverId === driverId &&
-          r.date.startsWith(String(year)) &&
-          r.status !== "rejected"
-      )
-      .map((r) => r.date)
-  );
-  for (const d of dates) {
-    if (d.startsWith(String(year))) willBeRequested.add(d);
-  }
-  const projectedRequested = willBeRequested.size;
+  const othersAlreadyOut = maxOthersOutInRange(data, dates, driverId);
+  const trailing12MonthsDaysOff = trailingMonthsAbsenceDayCount(data, driverId, 12, date);
 
   return NextResponse.json({
-    estimate,
-    stats: {
-      requestedDaysThisYear: requestedDays,
-      projectedRequestedDaysThisYear: projectedRequested,
-      coveredAbsenceDaysThisYear: coveredDays,
-      warnManyDaysOff: projectedRequested > 12,
-    },
+    othersAlreadyOut,
+    trailing12MonthsDaysOff,
     daysInRange: dates.length,
   });
 }

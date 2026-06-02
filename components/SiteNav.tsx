@@ -7,11 +7,10 @@ import { BrandLogo } from "./BrandLogo";
 const managementLinks = [
   { href: "/", label: "Home" },
   { href: "/management", label: "Management portal" },
-  { href: "/schedule", label: "Schedule" },
+  { href: "/schedule?week=current", label: "Schedule" },
   { href: "/approvals", label: "Approvals needed" },
   { href: "/time-off", label: "Request time off" },
   { href: "/open-shifts", label: "Open shifts" },
-  { href: "/my-availability", label: "My availability" },
   { href: "/announcements", label: "Announcements" },
   { href: "/settings", label: "Settings" },
 ];

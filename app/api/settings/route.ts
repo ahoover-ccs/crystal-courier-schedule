@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ensureDb, writeDb } from "@/lib/db";
+import { sanitizeTemplateDefaults } from "@/lib/terminate-person";
 import type { AppSettings, RouteDefinition, SlotTemplate, WeekdayKey } from "@/lib/types";
 import { WEEKDAY_KEYS } from "@/lib/types";
 
@@ -42,6 +43,7 @@ export async function PATCH(req: NextRequest) {
   if (defaultWeekStart) {
     data.settings.defaultWeekStart = defaultWeekStart;
   }
+  sanitizeTemplateDefaults(data);
   await writeDb(data);
   return NextResponse.json(data);
 }
