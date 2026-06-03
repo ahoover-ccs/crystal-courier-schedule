@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { incrementCoveredAbsence } from "@/lib/absence-stats";
+import { isActivePerson } from "@/lib/active-people";
 import { ensureDb, writeDb } from "@/lib/db";
 import { assignOpenShiftToDriver } from "@/lib/open-shift-assign";
 import { refreshSlotOverrideFromSlot } from "@/lib/slot-overrides";
@@ -83,6 +84,12 @@ export async function POST(req: NextRequest) {
   const person = data.people.find((p) => p.id === driverId);
   if (!person) {
     return NextResponse.json({ error: "Person not found" }, { status: 404 });
+  }
+  if (!isActivePerson(person)) {
+    return NextResponse.json(
+      { error: "That person is no longer on the active roster." },
+      { status: 409 }
+    );
   }
 
   if (slotId) {

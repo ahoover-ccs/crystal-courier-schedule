@@ -1,10 +1,20 @@
-import { activePeople } from "./active-people";
-import type { AppData, Person } from "./types";
+import { isPersonEffectiveOnDate, activePeople } from "./active-people";
+import { canAssignDriver } from "./suggestions";
+import { isDriverLike } from "./roles";
+import type { AppData, Person, ScheduleSlot } from "./types";
 
-/** Everyone not assigned to any slot on this calendar day (any role). */
-export function peopleNotScheduledOnDate(data: AppData, date: string): Person[] {
-  const assignedIds = new Set(
-    data.slots.filter((s) => s.date === date && s.driverId).map((s) => s.driverId as string)
-  );
-  return activePeople(data).filter((p) => !assignedIds.has(p.id));
+/**
+ * Active drivers who could take this open slot (including those already on
+ * non-overlapping routes that day). Approval emails use the same roster record;
+ * this list controls who gets the initial "open shift posted" blast.
+ */
+export function peopleEligibleForOpenShiftNotify(
+  data: AppData,
+  slot: ScheduleSlot
+): Person[] {
+  return activePeople(data)
+    .filter((p) => isDriverLike(p.role))
+    .filter((p) => isPersonEffectiveOnDate(p, slot.date))
+    .filter((p) => canAssignDriver(data, slot.id, p.id).ok)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }

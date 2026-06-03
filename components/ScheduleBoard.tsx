@@ -638,7 +638,7 @@ export function ScheduleBoard() {
           <h2 className="mb-1.5 font-serif text-base text-cc-navy">Gaps &amp; fill-ins</h2>
           <p className="mb-2 text-[11px] leading-snug text-cc-muted">
             After time off or unassigning, suggested names follow your priority order in Settings. Use
-            notify to email/SMS everyone with no assignment that day (see Resend &amp; Twilio env vars).
+            notify to email/SMS active drivers who can cover the shift (see Resend &amp; Twilio env vars).
           </p>
           <ul className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto">
             {gaps.length === 0 && (

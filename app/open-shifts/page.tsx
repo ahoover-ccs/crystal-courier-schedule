@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { addDays, format, parseISO } from "date-fns";
 import type { AppData, OpenShift, Person } from "@/lib/types";
+import { isActivePerson } from "@/lib/active-people";
 import { isDriverLike } from "@/lib/roles";
 
 export default function OpenShiftsPage() {
@@ -27,11 +28,17 @@ export default function OpenShiftsPage() {
   const drivers: Person[] = useMemo(
     () =>
       data?.people
-        .filter((p) => isDriverLike(p.role))
+        .filter((p) => isActivePerson(p) && isDriverLike(p.role))
         .slice()
         .sort((a, b) => a.name.localeCompare(b.name)) ?? [],
     [data]
   );
+
+  useEffect(() => {
+    if (claimerId && !drivers.some((p) => p.id === claimerId)) {
+      setClaimerId("");
+    }
+  }, [claimerId, drivers]);
 
   /** Only shifts managers posted with “Notify team” — still open on the schedule. */
   const postedOpenShifts: OpenShift[] = useMemo(() => {

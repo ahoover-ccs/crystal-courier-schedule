@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ensureDb, writeDb } from "@/lib/db";
 import { sendTransactionalEmail } from "@/lib/email-sender";
-import { peopleNotScheduledOnDate } from "@/lib/open-shift-recipients";
+import { peopleEligibleForOpenShiftNotify } from "@/lib/open-shift-recipients";
 import { driverPortalUrl } from "@/lib/public-urls";
 import { sendTransactionalSms } from "@/lib/sms-sender";
 import type { OpenShift } from "@/lib/types";
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Open shift already exists for this slot" }, { status: 409 });
   }
 
-  const recipients = peopleNotScheduledOnDate(data, slot.date);
+  const recipients = peopleEligibleForOpenShiftNotify(data, slot);
   const portalUrl = driverPortalUrl(new URL(req.url).origin);
 
   const stamp = new Date().toISOString();
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     {
       at: stamp,
       channel: "in-app",
-      message: `Open shift posted: ${slot.label} on ${slot.date} — notified ${recipients.length} team member(s) with no assignment that day (email and/or SMS per contact info).`,
+      message: `Open shift posted: ${slot.label} on ${slot.date} — notified ${recipients.length} active driver(s) who can cover this shift (email and/or SMS per contact info).`,
     },
   ];
 
