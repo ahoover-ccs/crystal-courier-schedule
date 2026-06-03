@@ -551,11 +551,15 @@ export function SettingsForm() {
                   <div>
                     <span className="font-medium text-cc-ink">{p.name}</span>
                     <span className="ml-2 text-xs text-cc-muted">({roleLabel(p.role)})</span>
-                    {(p.email || p.phone) && (
+                    {(p.email || p.phone) ? (
                       <p className="text-xs text-cc-muted">
                         {p.email}
                         {p.email && p.phone ? " · " : ""}
                         {p.phone}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-amber-800">
+                        No email or phone — open-shift and announcement notifications skip this person.
                       </p>
                     )}
                   </div>
@@ -951,8 +955,11 @@ export function SettingsForm() {
         <p className="mt-2 text-sm text-cc-muted">
           Time off notifies <strong>ahoover@crystalcourier.com</strong> by default. Set{" "}
           <code className="rounded bg-cc-cream px-1">RESEND_API_KEY</code> and{" "}
-          <code className="rounded bg-cc-cream px-1">RESEND_FROM</code> for delivery. Availability links
-          use the same sender.
+          <code className="rounded bg-cc-cream px-1">RESEND_FROM</code> for delivery. Driver emails
+          (announcements, open shifts, approvals) link to{" "}
+          <code className="rounded bg-cc-cream px-1">DRIVER_PORTAL_URL</code> (your Google Sites
+          schedule page). Availability token links use{" "}
+          <code className="rounded bg-cc-cream px-1">APP_PUBLIC_URL</code> (this app on Render).
         </p>
       </section>
     </div>

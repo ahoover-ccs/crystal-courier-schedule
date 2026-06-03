@@ -161,18 +161,46 @@ export default function OpenShiftsPage() {
       <section className="mt-10 border-t border-cc-line pt-8">
         <h2 className="font-serif text-lg text-cc-navy">Recent notification batches</h2>
         <p className="mt-1 text-xs text-cc-muted">
-          From manager “notify team” actions on gaps. Delivery uses Resend / Twilio when configured.
+          Historical log from each <strong className="font-medium text-cc-ink">Notify team</strong> click on
+          the schedule. Names and addresses shown are whatever was on the roster at that moment — editing
+          someone&apos;s email later does not change past entries. Look for{" "}
+          <strong className="font-medium text-cc-ink">Email sent</strong> (Resend delivered) vs{" "}
+          <strong className="font-medium text-cc-ink">Email logged</strong> (API key was missing — nothing
+          was actually sent).
         </p>
-        <ul className="mt-3 max-h-48 space-y-2 overflow-y-auto text-xs text-cc-muted">
-          {data.openShifts
+        <ul className="mt-3 max-h-64 space-y-3 overflow-y-auto text-xs text-cc-muted">
+          {[...data.openShifts]
             .filter((o) => o.notificationLog?.length)
-            .flatMap((o) =>
-              o.notificationLog.map((n, i) => (
-                <li key={`${o.id}-${i}`} className="rounded bg-cc-cream/50 px-2 py-1">
+            .sort(
+              (a, b) =>
+                new Date(b.invitedAt ?? 0).getTime() - new Date(a.invitedAt ?? 0).getTime()
+            )
+            .flatMap((o) => {
+              const header = (
+                <li
+                  key={`${o.id}-header`}
+                  className="border-t border-cc-line/60 pt-2 first:border-0 first:pt-0"
+                >
+                  <span className="font-medium text-cc-ink">
+                    {o.label} · {format(parseISO(o.date), "MMM d, yyyy")}
+                  </span>
+                  {o.invitedAt && (
+                    <span className="ml-2 text-[10px] text-cc-muted">
+                      {format(parseISO(o.invitedAt), "MMM d, yyyy h:mm a")}
+                    </span>
+                  )}
+                </li>
+              );
+              const lines = o.notificationLog.map((n, i) => (
+                <li key={`${o.id}-${i}`} className="rounded bg-cc-cream/50 px-2 py-1 pl-4">
+                  <span className="text-[10px] text-cc-muted">
+                    {format(parseISO(n.at), "h:mm:ss a")}{" "}
+                  </span>
                   [{n.channel}] {n.message}
                 </li>
-              ))
-            )}
+              ));
+              return [header, ...lines];
+            })}
           {data.openShifts.every((o) => !o.notificationLog?.length) && (
             <li>No notification log yet.</li>
           )}

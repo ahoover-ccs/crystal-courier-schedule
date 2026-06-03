@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { applyApprovedTimeOffRequestToData } from "@/lib/apply-time-off-approval";
 import { ensureDb, writeDb } from "@/lib/db";
 import { assignOpenShiftToDriver } from "@/lib/open-shift-assign";
+import { driverPortalUrl } from "@/lib/public-urls";
 import { refreshSlotOverrideFromSlot } from "@/lib/slot-overrides";
 import { isDispatcherLike } from "@/lib/roles";
 import {
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const scheduleUrl = `${(process.env.APP_PUBLIC_URL ?? "").replace(/\/$/, "") || new URL(req.url).origin}/schedule`;
+  const scheduleUrl = driverPortalUrl(new URL(req.url).origin);
 
   if (type === "time-off") {
     const row = data.timeOffRequests.find((r) => r.id === id);

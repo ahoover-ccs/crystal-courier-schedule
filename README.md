@@ -61,6 +61,8 @@ Notifications fall back to console logs if these are unset:
 
 - `RESEND_API_KEY`, `RESEND_FROM` — transactional email via Resend.
 - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` — SMS via Twilio.
+- `APP_PUBLIC_URL` — public URL of this app on Render (for availability token links).
+- `DRIVER_PORTAL_URL` — link in driver emails/SMS (announcements, open shifts, approvals). Set to your employee schedule page, e.g. `https://sites.google.com/crystalcourier.com/employees/schedule?authuser=0`. When unset, emails use `{APP_PUBLIC_URL}/schedule`.
 
 ## Project layout
 

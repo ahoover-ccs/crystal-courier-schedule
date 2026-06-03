@@ -4,6 +4,7 @@ import { slotTemplateForSlot } from "@/lib/availability-helpers";
 import { effectiveDefaultDriverForDate } from "@/lib/person-roster-dates";
 import { ensureDb, writeDb } from "@/lib/db";
 import { sendTransactionalEmail } from "@/lib/email-sender";
+import { driverPortalUrl } from "@/lib/public-urls";
 import { sendTransactionalSms } from "@/lib/sms-sender";
 import type { AppData, NonDefaultShiftReminder, ScheduleSlot } from "@/lib/types";
 import { routeWindow } from "@/lib/route-windows";
@@ -13,9 +14,7 @@ function reminderKey(slot: ScheduleSlot, driverId: string): string {
 }
 
 function publicBaseUrl(req: Request): string {
-  const fromEnv = (process.env.APP_PUBLIC_URL ?? "").replace(/\/$/, "");
-  if (fromEnv) return fromEnv;
-  return new URL(req.url).origin;
+  return driverPortalUrl(new URL(req.url).origin);
 }
 
 /**
@@ -33,7 +32,7 @@ export async function GET(req: Request) {
 
   let data = await ensureDb();
   const now = new Date();
-  const baseUrl = publicBaseUrl(req);
+  const portalUrl = publicBaseUrl(req);
   const sent = new Set((data.nonDefaultShiftReminders ?? []).map((r) => r.key));
   const newRows: NonDefaultShiftReminder[] = [];
   const log: string[] = [];
@@ -68,10 +67,10 @@ You’re scheduled (covering a route that isn’t the usual default) in about 24
 • ${s.label}
 • ${s.date}
 
-Schedule: ${baseUrl}/schedule
+Schedule: ${portalUrl}
 
 — Crystal Courier`;
-    const sms = `Crystal Courier: you’re on ${s.label} ${s.date}. ${baseUrl}/schedule`;
+    const sms = `Crystal Courier: you’re on ${s.label} ${s.date}. ${portalUrl}`;
 
     if (person.email?.trim()) {
       await sendTransactionalEmail({

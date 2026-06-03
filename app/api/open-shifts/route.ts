@@ -2,12 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { ensureDb, writeDb } from "@/lib/db";
 import { sendTransactionalEmail } from "@/lib/email-sender";
 import { peopleNotScheduledOnDate } from "@/lib/open-shift-recipients";
+import { driverPortalUrl } from "@/lib/public-urls";
 import { sendTransactionalSms } from "@/lib/sms-sender";
 import type { OpenShift } from "@/lib/types";
-
-function publicAppUrl(): string {
-  return (process.env.APP_PUBLIC_URL ?? "").replace(/\/$/, "");
-}
 
 /** Manager: notify team not on the schedule that day about an open shift */
 export async function POST(req: NextRequest) {
@@ -27,8 +24,7 @@ export async function POST(req: NextRequest) {
   }
 
   const recipients = peopleNotScheduledOnDate(data, slot.date);
-  const baseUrl = publicAppUrl() || new URL(req.url).origin;
-  const openShiftsUrl = `${baseUrl}/open-shifts`;
+  const portalUrl = driverPortalUrl(new URL(req.url).origin);
 
   const stamp = new Date().toISOString();
   const log: OpenShift["notificationLog"] = [
@@ -55,7 +51,7 @@ There’s an open route on the schedule you may be able to cover:
 • ${slot.label}
 • ${slot.date}
 
-First to claim in the app gets it: ${openShiftsUrl}
+View schedule and claim open shifts: ${portalUrl}
 
 — Crystal Courier`;
       try {
@@ -64,14 +60,25 @@ First to claim in the app gets it: ${openShiftsUrl}
           subject: emailSubject,
           text,
         });
-        log.push({
-          at,
-          channel: "email",
-          message:
-            result.channel === "resend"
-              ? `Email sent to ${name} <${email}>`
-              : `Email logged for ${name} <${email}> (set RESEND_API_KEY to send)`,
-        });
+        if (result.ok && result.channel === "resend") {
+          log.push({
+            at,
+            channel: "email",
+            message: `Email sent to ${name} <${email}>`,
+          });
+        } else if (result.ok && result.channel === "log") {
+          log.push({
+            at,
+            channel: "email",
+            message: `Email logged for ${name} <${email}> (set RESEND_API_KEY to send)`,
+          });
+        } else {
+          log.push({
+            at,
+            channel: "email",
+            message: `Email failed for ${name} <${email}>${result.error ? `: ${result.error}` : ""}`,
+          });
+        }
       } catch (e) {
         console.error("[open-shift email]", e);
         log.push({ at, channel: "email", message: `Email failed for ${name} <${email}>` });
@@ -79,7 +86,7 @@ First to claim in the app gets it: ${openShiftsUrl}
     }
 
     if (phone) {
-      const smsBody = `Crystal Courier: open shift ${slot.label} on ${slot.date}. Claim in app: ${openShiftsUrl}`;
+      const smsBody = `Crystal Courier: open shift ${slot.label} on ${slot.date}. ${portalUrl}`;
       try {
         const result = await sendTransactionalSms({ to: phone, body: smsBody });
         log.push({

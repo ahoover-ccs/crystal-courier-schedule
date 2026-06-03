@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ensureDb, writeDb } from "@/lib/db";
 import { sendTransactionalEmail } from "@/lib/email-sender";
+import { appPublicUrl } from "@/lib/public-urls";
 import { newProfileToken } from "@/lib/profile-token";
 import { roleNeedsProfileToken } from "@/lib/roles";
 
@@ -24,10 +25,7 @@ export async function POST(req: NextRequest) {
   data.people[idx] = { ...person, profileToken: token };
   await writeDb(data);
 
-  const origin =
-    baseUrl?.replace(/\/$/, "") ||
-    process.env.APP_PUBLIC_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000";
+  const origin = baseUrl?.replace(/\/$/, "") || appPublicUrl(new URL(req.url).origin);
   const link = `${origin}/my-availability?t=${encodeURIComponent(token)}`;
 
   await sendTransactionalEmail({

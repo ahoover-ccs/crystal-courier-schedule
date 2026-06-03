@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ensureDb, writeDb } from "@/lib/db";
 import { sendTransactionalEmail } from "@/lib/email-sender";
+import { driverPortalUrl } from "@/lib/public-urls";
 import { sendTransactionalSms } from "@/lib/sms-sender";
 import type { Announcement } from "@/lib/types";
-
-function publicAppUrl(req: NextRequest): string {
-  const fromEnv = (process.env.APP_PUBLIC_URL ?? "").replace(/\/$/, "");
-  if (fromEnv) return fromEnv;
-  return new URL(req.url).origin;
-}
 
 export async function GET() {
   const data = await ensureDb();
@@ -40,23 +35,26 @@ export async function POST(req: NextRequest) {
   data.announcements = [...(data.announcements ?? []), row];
   await writeDb(data);
 
-  const base = publicAppUrl(req);
-  const boardUrl = `${base}/announcements`;
-  const mailBody = `${row.body}\n\nView on the board: ${boardUrl}\n\n— Crystal Courier internal schedule`;
+  const portalUrl = driverPortalUrl(new URL(req.url).origin);
+  const mailBody = `${row.body}\n\nView schedule: ${portalUrl}\n\n— Crystal Courier internal schedule`;
 
-  const emails = data.people
-    .map((p) => p.email?.trim())
-    .filter((e): e is string => Boolean(e));
-  const uniqueEmails = [...new Set(emails)];
-  if (uniqueEmails.length) {
-    await sendTransactionalEmail({
-      to: uniqueEmails,
+  for (const p of data.people) {
+    const email = p.email?.trim();
+    if (!email) continue;
+    const result = await sendTransactionalEmail({
+      to: email,
       subject: `[Crystal Courier] ${row.subject}`,
       text: mailBody,
-    }).catch((e) => console.error("[announcement email]", e));
+    }).catch((e) => {
+      console.error("[announcement email]", p.name, e);
+      return { ok: false, channel: "resend" as const, error: String(e) };
+    });
+    if (!result.ok) {
+      console.error("[announcement email] failed for", p.name, email, result.error);
+    }
   }
 
-  const smsBody = `Crystal Courier: ${row.subject}\n\n${row.body.slice(0, 280)}${row.body.length > 280 ? "…" : ""}\n\n${boardUrl}`;
+  const smsBody = `Crystal Courier: ${row.subject}\n\n${row.body.slice(0, 280)}${row.body.length > 280 ? "…" : ""}\n\n${portalUrl}`;
   for (const p of data.people) {
     const phone = p.phone?.trim();
     if (!phone) continue;

@@ -428,6 +428,23 @@ export function ScheduleBoard() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Invite failed");
       setData(json.data as AppData);
+      const log = (json.openShift as { notificationLog?: { message: string }[] } | undefined)
+        ?.notificationLog;
+      const skipped =
+        log?.filter((n) => n.message.startsWith("Skipped ")).map((n) => n.message) ?? [];
+      const failed =
+        log?.filter((n) => n.message.startsWith("Email failed ")).map((n) => n.message) ?? [];
+      if (skipped.length || failed.length) {
+        setNotice(
+          [
+            "Team notified.",
+            skipped.length ? `Skipped (no contact on file): ${skipped.length}.` : "",
+            failed.length ? `Email failed: ${failed.length}. Check Open shifts → notification log.` : "",
+          ]
+            .filter(Boolean)
+            .join(" ")
+        );
+      }
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Error");
     } finally {
