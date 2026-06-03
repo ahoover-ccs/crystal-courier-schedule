@@ -60,7 +60,7 @@ TLS is enabled automatically unless the connection string contains `sslmode=disa
 Notifications fall back to console logs if these are unset:
 
 - `RESEND_API_KEY`, `RESEND_FROM` — transactional email via Resend.
-- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` — SMS via Twilio.
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` — SMS via Twilio.
 
 ## Project layout
 

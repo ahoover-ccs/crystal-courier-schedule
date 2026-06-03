@@ -1,7 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  compareRouteDefinitionsByDisplayOrder,
+  compareSlotTemplatesByDisplayOrder,
+} from "@/lib/route-display-order";
 import { isActivePerson } from "@/lib/active-people";
 import { normalizeWeeklyAvailability } from "@/lib/availability-helpers";
 import { syncSlotTemplatesWithCatalog } from "@/lib/sync-catalog-templates";
@@ -393,6 +397,19 @@ export function SettingsForm() {
     );
   };
 
+  const routeDefsSorted = useMemo(
+    () => routeDefs.slice().sort(compareRouteDefinitionsByDisplayOrder),
+    [routeDefs]
+  );
+
+  const templatesSorted = useMemo(
+    () =>
+      templates
+        .slice()
+        .sort((a, b) => compareSlotTemplatesByDisplayOrder(a, b, routeDefs)),
+    [templates, routeDefs]
+  );
+
   if (!data) return <p className="text-cc-muted">Loading…</p>;
 
   const peopleAlpha = data.people
@@ -713,7 +730,7 @@ export function SettingsForm() {
           keep your changes.
         </p>
         <div className="mt-4 space-y-2 rounded border border-cc-line bg-cc-paper p-4">
-          {routeDefs.map((rd) => (
+          {routeDefsSorted.map((rd) => (
             <div
               key={rd.id}
               className="flex flex-wrap items-center gap-2 border-b border-cc-line/40 py-2 last:border-0"
@@ -792,7 +809,7 @@ export function SettingsForm() {
               </tr>
             </thead>
             <tbody>
-              {templates.map((row) => (
+              {templatesSorted.map((row) => (
                 <tr key={row.id} className="border-b border-cc-line/60">
                   <td className="px-2 py-2">
                     <select
@@ -808,7 +825,7 @@ export function SettingsForm() {
                       }
                       className="w-full max-w-[14rem] rounded border border-cc-line px-2 py-1"
                     >
-                      {routeDefs.map((rd) => (
+                      {routeDefsSorted.map((rd) => (
                         <option key={rd.id} value={rd.id}>
                           {rd.name} ({rd.routeType})
                         </option>

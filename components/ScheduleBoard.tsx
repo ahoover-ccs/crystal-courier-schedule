@@ -26,6 +26,7 @@ import { dayNoteForDate } from "@/lib/schedule-day-notes";
 import { suggestFillIns } from "@/lib/suggestions";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
+import { compareSlotTemplatesByDisplayOrder } from "@/lib/route-display-order";
 import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
 
 const SYNC_DEFAULTS_NOTICE =
@@ -327,13 +328,20 @@ export function ScheduleBoard() {
       ).length;
       return { template: t, rowSlots, blankCount, nonDefaultCount, pendingTimeOffCount, index };
     });
-    // Row order: empty slots first, then rows with non-default (gold) assignments,
-    // then rows with pending-time-off (sky) chips, then the rest in their original order.
+    // Row order: empty slots first, then non-default (gold), then pending-time-off (sky),
+    // then lab → morning → afternoon (other types after), then route name A–Z.
+    const routeDefs = data.settings.routeDefinitions;
     rows.sort((a, b) => {
       if (b.blankCount !== a.blankCount) return b.blankCount - a.blankCount;
       if (b.nonDefaultCount !== a.nonDefaultCount) return b.nonDefaultCount - a.nonDefaultCount;
       if (b.pendingTimeOffCount !== a.pendingTimeOffCount)
         return b.pendingTimeOffCount - a.pendingTimeOffCount;
+      const display = compareSlotTemplatesByDisplayOrder(
+        a.template,
+        b.template,
+        routeDefs
+      );
+      if (display !== 0) return display;
       return a.index - b.index;
     });
     return rows.map(({ template, rowSlots }) => ({ template, rowSlots }));

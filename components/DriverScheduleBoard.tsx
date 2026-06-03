@@ -10,6 +10,7 @@ import {
 } from "@/lib/availability-helpers";
 import { dayNoteForDate } from "@/lib/schedule-day-notes";
 import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
+import { compareSlotTemplatesByDisplayOrder } from "@/lib/route-display-order";
 import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 
@@ -102,11 +103,18 @@ export function DriverScheduleBoard() {
       ).length;
       return { template: t, rowSlots, blankCount, nonDefaultCount, pendingTimeOffCount, index };
     });
+    const routeDefs = data.settings.routeDefinitions;
     rows.sort((a, b) => {
       if (b.blankCount !== a.blankCount) return b.blankCount - a.blankCount;
       if (b.nonDefaultCount !== a.nonDefaultCount) return b.nonDefaultCount - a.nonDefaultCount;
       if (b.pendingTimeOffCount !== a.pendingTimeOffCount)
         return b.pendingTimeOffCount - a.pendingTimeOffCount;
+      const display = compareSlotTemplatesByDisplayOrder(
+        a.template,
+        b.template,
+        routeDefs
+      );
+      if (display !== 0) return display;
       return a.index - b.index;
     });
     return rows.map(({ template, rowSlots }) => ({ template, rowSlots }));
