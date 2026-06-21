@@ -76,7 +76,10 @@ function buildRouteDefinitionsFromLegacy(
 ): RouteDefinition[] {
   const byId = new Map(existing.map((d) => [d.id, d]));
   for (const t of templates) {
-    if (t.routeDefinitionId && byId.has(t.routeDefinitionId)) continue;
+    if (t.routeDefinitionId) {
+      const existingDef = byId.get(t.routeDefinitionId);
+      if (existingDef) continue;
+    }
     const id = t.routeDefinitionId ?? `rd-${t.id}`;
     if (byId.has(id)) continue;
     const name = t.label ?? "Route";

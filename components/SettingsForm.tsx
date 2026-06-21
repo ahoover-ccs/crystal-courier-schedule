@@ -24,6 +24,7 @@ import { WEEKDAY_KEYS } from "@/lib/types";
 
 import {
   ROUTE_TYPE_CATALOG_OPTIONS,
+  SHIFT_AVAILABILITY_ABBR,
   SHIFT_AVAILABILITY_ROUTE_TYPES,
 } from "@/lib/route-types";
 
@@ -35,15 +36,7 @@ const WEEKDAY_LABELS: Record<WeekdayKey, string> = {
   fri: "Fri",
 };
 
-const SHIFT_ABBR: Record<RouteType, string> = {
-  lab: "L",
-  morning: "AM",
-  afternoon: "PM",
-  allday: "AD",
-  office: "Ofc",
-  opener: "Op",
-  closer: "Cl",
-};
+const SHIFT_ABBR = SHIFT_AVAILABILITY_ABBR;
 
 export function SettingsForm() {
   const [data, setData] = useState<AppData | null>(null);
@@ -77,6 +70,7 @@ export function SettingsForm() {
   );
   const [terminateEffectiveDate, setTerminateEffectiveDate] = useState("");
   const [terminateBusy, setTerminateBusy] = useState(false);
+  const [catalogBusy, setCatalogBusy] = useState(false);
 
   const load = useCallback(async () => {
     const r = await fetch("/api/data");
@@ -126,44 +120,62 @@ export function SettingsForm() {
     setData(await res.json());
   };
 
-  const saveRoutesAndCatalog = async () => {
-    if (!data) return;
+  const persistRoutesAndCatalog = async (
+    defs: RouteDefinition[],
+    tpls: SlotTemplate[]
+  ): Promise<boolean> => {
+    if (!data) return false;
     setErr(null);
-    setSaved(null);
-    const syncedTemplates = syncSlotTemplatesWithCatalog(routeDefs, templates);
+    setCatalogBusy(true);
+    const syncedTemplates = syncSlotTemplatesWithCatalog(defs, tpls);
     setTemplates(syncedTemplates);
-    const res = await fetch("/api/settings", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        routeDefinitions: routeDefs,
-        slotTemplates: syncedTemplates,
-      }),
-    });
-    if (!res.ok) {
-      const j = await res.json();
-      setErr(j.error ?? "Save failed");
-      return;
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          routeDefinitions: defs,
+          slotTemplates: syncedTemplates,
+        }),
+      });
+      if (!res.ok) {
+        const j = await res.json();
+        setErr(j.error ?? "Save failed");
+        return false;
+      }
+      const next = (await res.json()) as AppData;
+      setData(next);
+      setRouteDefs(
+        activeRouteDefinitions(next.settings.routeDefinitions).map((x) => ({ ...x }))
+      );
+      const activeIds = new Set(
+        activeRouteDefinitions(next.settings.routeDefinitions).map((r) => r.id)
+      );
+      setTemplates(
+        next.settings.slotTemplates
+          .filter((t) => activeIds.has(t.routeDefinitionId))
+          .map((t) => ({
+            ...t,
+            defaultDriversByDay: { ...t.defaultDriversByDay },
+          }))
+      );
+      return true;
+    } catch {
+      setErr("Save failed");
+      return false;
+    } finally {
+      setCatalogBusy(false);
     }
-    const next = (await res.json()) as AppData;
-    setData(next);
-    setRouteDefs(
-      activeRouteDefinitions(next.settings.routeDefinitions).map((x) => ({ ...x }))
-    );
-    const activeIds = new Set(
-      activeRouteDefinitions(next.settings.routeDefinitions).map((r) => r.id)
-    );
-    setTemplates(
-      next.settings.slotTemplates
-        .filter((t) => activeIds.has(t.routeDefinitionId))
-        .map((t) => ({
-          ...t,
-          defaultDriversByDay: { ...t.defaultDriversByDay },
-        }))
-    );
-    setSaved(
-      "Route catalog and schedule rows saved. The current week on the schedule board was updated."
-    );
+  };
+
+  const saveRoutesAndCatalog = async () => {
+    setSaved(null);
+    const ok = await persistRoutesAndCatalog(routeDefs, templates);
+    if (ok) {
+      setSaved(
+        "Route catalog and schedule rows saved. The current week on the schedule board was updated."
+      );
+    }
   };
 
   const addPerson = async (e: React.FormEvent) => {
@@ -381,18 +393,27 @@ export function SettingsForm() {
     setSaved(null);
   };
 
-  const removeRouteDefinition = (id: string) => {
+  const removeRouteDefinition = async (id: string) => {
     const rd = routeDefs.find((x) => x.id === id);
     if (
       !confirm(
-        `Remove "${rd?.name ?? "this route"}" from the catalog? It will no longer appear on the schedule going forward. Past schedule history is preserved. Click Save route catalog & grid to apply.`
+        `Remove "${rd?.name ?? "this route"}" from the catalog? It will no longer appear on the schedule going forward. Past schedule history is preserved.`
       )
     ) {
       return;
     }
-    setTemplates((t) => t.filter((x) => x.routeDefinitionId !== id));
-    setRouteDefs((r) => r.filter((x) => x.id !== id));
+    const nextRouteDefs = routeDefs.filter((x) => x.id !== id);
+    const nextTemplates = templates.filter((x) => x.routeDefinitionId !== id);
+    setRouteDefs(nextRouteDefs);
+    setTemplates(nextTemplates);
     setSaved(null);
+    const ok = await persistRoutesAndCatalog(nextRouteDefs, nextTemplates);
+    if (ok) {
+      setSaved(`"${rd?.name ?? "Route"}" removed from the catalog and schedule.`);
+    } else {
+      setRouteDefs(routeDefs);
+      setTemplates(templates);
+    }
   };
 
   const addTemplateRow = () => {
@@ -691,9 +712,9 @@ export function SettingsForm() {
       <section className="border-t border-cc-line pt-10">
         <h2 className="font-serif text-2xl text-cc-navy">Shift availability (by day)</h2>
         <p className="mt-2 text-sm text-cc-muted">
-          For each weekday, check the shift types someone can cover for fill-in suggestions. Opener and
-          Closer shifts are available to everyone and do not conflict with other routes — they are not
-          listed here. Drivers can update their own grid via the emailed link on{" "}
+          For each weekday, check the shift types someone can cover for fill-in suggestions and time-off
+          requests. Opener and Closer do not conflict with other routes on the same day. Drivers can
+          update their own grid via the emailed link on{" "}
           <a href="/my-availability" className="text-cc-navy underline">
             My availability
           </a>
@@ -795,8 +816,9 @@ export function SettingsForm() {
               </select>
               <button
                 type="button"
-                onClick={() => removeRouteDefinition(rd.id)}
-                className="text-xs text-red-700 underline"
+                onClick={() => void removeRouteDefinition(rd.id)}
+                disabled={catalogBusy}
+                className="text-xs text-red-700 underline disabled:opacity-50"
               >
                 Remove
               </button>
@@ -806,9 +828,10 @@ export function SettingsForm() {
             <button
               type="button"
               onClick={() => void saveRoutesAndCatalog()}
-              className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep"
+              disabled={catalogBusy}
+              className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep disabled:opacity-50"
             >
-              Save route catalog &amp; grid
+              {catalogBusy ? "Saving…" : "Save route catalog & grid"}
             </button>
           </div>
         </div>
@@ -940,10 +963,11 @@ export function SettingsForm() {
           </button>
           <button
             type="button"
-            onClick={saveRoutesAndCatalog}
-            className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep"
+            onClick={() => void saveRoutesAndCatalog()}
+            disabled={catalogBusy}
+            className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep disabled:opacity-50"
           >
-            Save schedule rows &amp; grid
+            {catalogBusy ? "Saving…" : "Save schedule rows & grid"}
           </button>
         </div>
       </section>

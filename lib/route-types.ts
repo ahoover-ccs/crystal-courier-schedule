@@ -2,6 +2,7 @@ import type { RouteType } from "./types";
 
 export const ADDON_ROUTE_TYPES = ["opener", "closer"] as const satisfies readonly RouteType[];
 
+/** Opener/closer never overlap other routes on the same day (availability is still per-person). */
 export function isAddonRouteType(routeType: RouteType): boolean {
   return routeType === "opener" || routeType === "closer";
 }
@@ -16,10 +17,9 @@ export const ROUTE_TYPE_CATALOG_OPTIONS: { value: RouteType; label: string }[] =
   { value: "closer", label: "Closer" },
 ];
 
-/** Shift types shown in per-person availability grids (excludes universal add-on shifts). */
-export const SHIFT_AVAILABILITY_ROUTE_TYPES = ROUTE_TYPE_CATALOG_OPTIONS.filter(
-  (o) => !isAddonRouteType(o.value)
-);
+export const SHIFT_AVAILABILITY_ROUTE_TYPES = ROUTE_TYPE_CATALOG_OPTIONS;
+
+export const ALL_ROUTE_TYPES: RouteType[] = ROUTE_TYPE_CATALOG_OPTIONS.map((o) => o.value);
 
 export const ROUTE_TYPE_SHORT_LABELS: Record<RouteType, string> = {
   lab: "Lab",
@@ -41,10 +41,12 @@ export const ROUTE_TYPE_TIME_OFF_LABELS: Record<RouteType, string> = {
   closer: "Closer",
 };
 
-export const STANDARD_ROUTE_TYPES: RouteType[] = [
-  "lab",
-  "morning",
-  "afternoon",
-  "allday",
-  "office",
-];
+export const SHIFT_AVAILABILITY_ABBR: Record<RouteType, string> = {
+  lab: "L",
+  morning: "AM",
+  afternoon: "PM",
+  allday: "AD",
+  office: "Ofc",
+  opener: "Op",
+  closer: "Cl",
+};
