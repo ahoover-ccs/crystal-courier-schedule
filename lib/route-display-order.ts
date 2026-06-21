@@ -14,8 +14,12 @@ export function routeTypeDisplayOrder(routeType: RouteType): number {
       return 3;
     case "office":
       return 4;
-    default:
+    case "opener":
       return 5;
+    case "closer":
+      return 6;
+    default:
+      return 7;
   }
 }
 

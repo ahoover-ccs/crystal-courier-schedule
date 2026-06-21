@@ -1,4 +1,11 @@
-export type RouteType = "lab" | "morning" | "afternoon" | "allday" | "office";
+export type RouteType =
+  | "lab"
+  | "morning"
+  | "afternoon"
+  | "allday"
+  | "office"
+  | "opener"
+  | "closer";
 
 export type PersonRole =
   | "owner"
@@ -43,6 +50,8 @@ export type RouteDefinition = {
   routeType: RouteType;
   /** When true, only Ops Manager / Dispatch / Owner may be assigned; at least one office slot should stay filled per day. */
   isOfficeRoute?: boolean;
+  /** First calendar day this route is omitted from the live grid (YYYY-MM-DD). Earlier schedule history is kept. */
+  retiredAt?: string;
 };
 
 export type SlotTemplate = {

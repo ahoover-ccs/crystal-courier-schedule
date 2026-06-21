@@ -1,4 +1,5 @@
 import type { RouteType } from "./types";
+import { isAddonRouteType } from "./route-types";
 
 /** Half-open interval [startMin, endMin) in minutes from midnight */
 export function routeWindow(routeType: RouteType): { start: number; end: number } {
@@ -12,6 +13,10 @@ export function routeWindow(routeType: RouteType): { start: number; end: number 
     case "allday":
     case "office":
       return { start: 9 * 60, end: 17 * 60 };
+    case "opener":
+      return { start: 8 * 60, end: 8 * 60 + 30 };
+    case "closer":
+      return { start: 16 * 60 + 30, end: 17 * 60 };
     default:
       return { start: 0, end: 0 };
   }
@@ -28,6 +33,7 @@ export function slotOverlapsAssignment(
   routeType: RouteType,
   otherRouteType: RouteType
 ): boolean {
+  if (isAddonRouteType(routeType) || isAddonRouteType(otherRouteType)) return false;
   return intervalsOverlap(routeWindow(routeType), routeWindow(otherRouteType));
 }
 
@@ -35,6 +41,8 @@ export function conflictsWithDayAssignments(
   routeType: RouteType,
   existingRouteTypes: RouteType[]
 ): boolean {
+  if (isAddonRouteType(routeType)) return false;
+  const conflicting = existingRouteTypes.filter((t) => !isAddonRouteType(t));
   const w = routeWindow(routeType);
-  return existingRouteTypes.some((t) => intervalsOverlap(w, routeWindow(t)));
+  return conflicting.some((t) => intervalsOverlap(w, routeWindow(t)));
 }

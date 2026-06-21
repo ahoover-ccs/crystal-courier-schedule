@@ -3,6 +3,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { addDays, format, parseISO } from "date-fns";
 import type { AppData, RouteType } from "@/lib/types";
+import { ROUTE_TYPE_SHORT_LABELS } from "@/lib/route-types";
 import {
   hasPendingTimeOffForSlot,
   isNonDefaultAssignmentForSlot,
@@ -11,7 +12,8 @@ import {
 import { dayNoteForDate } from "@/lib/schedule-day-notes";
 import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
 import { compareSlotTemplatesByDisplayOrder } from "@/lib/route-display-order";
-import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
+import { formatISODate, weekStartContaining, weekWorkdaysFromWeekStart } from "@/lib/week-utils";
+import { isTemplateActiveInWeek } from "@/lib/route-catalog";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 
 function routeStyle(rt: RouteType): string {
@@ -26,26 +28,17 @@ function routeStyle(rt: RouteType): string {
       return "border-l-4 border-l-[#6b4c9a] bg-[#f3eef9]";
     case "office":
       return "border-l-4 border-l-[#1e3a5f] bg-[#e8eef5]";
+    case "opener":
+      return "border-l-4 border-l-[#0d9488] bg-[#ecfdf8]";
+    case "closer":
+      return "border-l-4 border-l-[#7c3aed] bg-[#f5f3ff]";
     default:
       return "";
   }
 }
 
 function routeLabel(rt: RouteType): string {
-  switch (rt) {
-    case "lab":
-      return "Lab";
-    case "morning":
-      return "AM";
-    case "afternoon":
-      return "PM";
-    case "allday":
-      return "All day";
-    case "office":
-      return "Office";
-    default:
-      return rt;
-  }
+  return ROUTE_TYPE_SHORT_LABELS[rt] ?? rt;
 }
 
 export function DriverScheduleBoard() {
@@ -73,7 +66,7 @@ export function DriverScheduleBoard() {
 
   const weekDays = useMemo(() => {
     if (!data) return [];
-    return weekDaysFromMonday(data.settings.defaultWeekStart);
+    return weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
   }, [data]);
 
   const nameById = useMemo(() => {
@@ -84,8 +77,11 @@ export function DriverScheduleBoard() {
 
   const slotsByTemplate = useMemo(() => {
     if (!data) return [];
-    const days = weekDaysFromMonday(data.settings.defaultWeekStart);
-    const templates = data.settings.slotTemplates;
+    const days = weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
+    const routeDefs = data.settings.routeDefinitions;
+    const templates = data.settings.slotTemplates.filter((t) =>
+      isTemplateActiveInWeek(t, routeDefs, days)
+    );
     const rows = templates.map((t, index) => {
       const rowSlots = days.map((d) => {
         const id = `${d}__${t.id}`;
@@ -103,7 +99,6 @@ export function DriverScheduleBoard() {
       ).length;
       return { template: t, rowSlots, blankCount, nonDefaultCount, pendingTimeOffCount, index };
     });
-    const routeDefs = data.settings.routeDefinitions;
     rows.sort((a, b) => {
       if (b.blankCount !== a.blankCount) return b.blankCount - a.blankCount;
       if (b.nonDefaultCount !== a.nonDefaultCount) return b.nonDefaultCount - a.nonDefaultCount;
@@ -144,8 +139,8 @@ export function DriverScheduleBoard() {
   const jumpWeek = (days: number) => {
     if (!data) return;
     const base = parseISO(data.settings.defaultWeekStart);
-    const targetMonday = formatISODate(mondayOfWeekContaining(addDays(base, days)));
-    void loadWeek(targetMonday);
+    const targetWeekStart = formatISODate(weekStartContaining(addDays(base, days)));
+    void loadWeek(targetWeekStart);
   };
 
   if (!data) {

@@ -1,6 +1,7 @@
 import { createDefaultWeeklyShiftAvailability, normalizeWeeklyAvailability } from "./availability-helpers";
 import { migratePersonRole } from "./roles";
 import { newProfileToken } from "./profile-token";
+import { normalizeStoredWeekStart } from "./week-utils";
 import type {
   AppData,
   Person,
@@ -36,6 +37,8 @@ function migratePerson(p: Person & { shiftAvailability?: LegacyShiftAvailability
       afternoon: p.shiftAvailability.afternoon !== false,
       allday: p.shiftAvailability.allday !== false,
       office: (p.shiftAvailability as LegacyShiftAvailability).office !== false,
+      opener: true,
+      closer: true,
     };
     weekly = {
       mon: { ...day },
@@ -274,7 +277,7 @@ export function normalizeAppData(raw: AppData): AppData {
       routeDefinitions,
       slotTemplates,
       fillPriorityIds: data.settings.fillPriorityIds ?? [],
-      defaultWeekStart: data.settings.defaultWeekStart ?? "",
+      defaultWeekStart: normalizeStoredWeekStart(data.settings.defaultWeekStart ?? ""),
     },
   };
   syncAbsenceStatsRequested(out);

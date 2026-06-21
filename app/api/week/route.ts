@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { applyDefaultDriversToEmptySlots } from "@/lib/apply-defaults";
 import { ensureDb, writeDb, rebuildSlotsForWeek } from "@/lib/db";
-import { formatISODate, mondayOfWeekContaining, parseISO } from "@/lib/week-utils";
+import { formatISODate, weekStartContaining, parseISO } from "@/lib/week-utils";
 
 /**
  * Same pipeline as POST /api/sync-defaults, after rebuilding the Mon–Fri grid for the chosen week.
@@ -13,9 +13,9 @@ export async function POST(req: NextRequest) {
   if (!weekStart) {
     return NextResponse.json({ error: "weekStart (YYYY-MM-DD) required" }, { status: 400 });
   }
-  const monday = formatISODate(mondayOfWeekContaining(parseISO(weekStart)));
+  const weekStartNorm = formatISODate(weekStartContaining(parseISO(weekStart)));
   let data = await ensureDb();
-  data = rebuildSlotsForWeek(data, monday);
+  data = rebuildSlotsForWeek(data, weekStartNorm);
   const { data: next, errors } = applyDefaultDriversToEmptySlots(data);
   await writeDb(next);
   return NextResponse.json({ data: next, errors });

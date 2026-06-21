@@ -2,17 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { activePeople } from "@/lib/active-people";
+import { routeTypesAvailableForPerson } from "@/lib/availability-helpers";
+import { inclusiveDateRangeISO } from "@/lib/date-range";
+import { ROUTE_TYPE_TIME_OFF_LABELS } from "@/lib/route-types";
 import type { AppData, Person, RouteType } from "@/lib/types";
-
-const ROUTE_OPTIONS: { value: RouteType; label: string }[] = [
-  { value: "lab", label: "Lab run (early)" },
-  { value: "morning", label: "Morning route" },
-  { value: "afternoon", label: "Afternoon route" },
-  { value: "allday", label: "All day route" },
-  { value: "office", label: "Office" },
-];
 
 type Preview = {
   othersAlreadyOut: number;
@@ -45,6 +40,30 @@ export default function TimeOffPage() {
     data ? activePeople(data).slice().sort((a, b) => a.name.localeCompare(b.name)) : [];
 
   const effectiveEnd = endDate.trim() && endDate >= startDate ? endDate : undefined;
+
+  const selectedPerson = useMemo(
+    () => people.find((p) => p.id === driverId),
+    [people, driverId]
+  );
+
+  const requestDates = useMemo(() => {
+    if (!startDate) return undefined;
+    if (effectiveEnd) return inclusiveDateRangeISO(startDate, effectiveEnd);
+    return [startDate];
+  }, [startDate, effectiveEnd]);
+
+  const routeOptions = useMemo(() => {
+    if (!selectedPerson) return [];
+    const available = routeTypesAvailableForPerson(selectedPerson, requestDates);
+    return available.map((value) => ({ value, label: ROUTE_TYPE_TIME_OFF_LABELS[value] }));
+  }, [selectedPerson, requestDates]);
+
+  useEffect(() => {
+    if (types.length === 0) return;
+    const allowed = new Set(routeOptions.map((o) => o.value));
+    const next = types.filter((t) => allowed.has(t));
+    if (next.length !== types.length) setTypes(next);
+  }, [routeOptions, types]);
 
   const runPreview = useCallback(async () => {
     if (!driverId || !startDate || types.length === 0) {
@@ -146,7 +165,10 @@ export default function TimeOffPage() {
           <select
             required
             value={driverId}
-            onChange={(e) => setDriverId(e.target.value)}
+            onChange={(e) => {
+              setDriverId(e.target.value);
+              setTypes([]);
+            }}
             className="mt-1 w-full rounded border border-cc-line bg-white px-3 py-2 font-serif"
           >
             <option value="">Select…</option>
@@ -181,18 +203,27 @@ export default function TimeOffPage() {
         </div>
         <fieldset>
           <legend className="text-sm font-medium text-cc-ink">Route types off</legend>
-          <div className="mt-2 space-y-2">
-            {ROUTE_OPTIONS.map((o) => (
-              <label key={o.value} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={types.includes(o.value)}
-                  onChange={() => toggleType(o.value)}
-                />
-                {o.label}
-              </label>
-            ))}
-          </div>
+          {!driverId ? (
+            <p className="mt-2 text-sm text-cc-muted">Select a team member to see their route types.</p>
+          ) : routeOptions.length === 0 ? (
+            <p className="mt-2 text-sm text-cc-muted">
+              No route types are available for this person on the selected date
+              {effectiveEnd ? "s" : ""} (check shift availability in Settings).
+            </p>
+          ) : (
+            <div className="mt-2 space-y-2">
+              {routeOptions.map((o) => (
+                <label key={o.value} className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={types.includes(o.value)}
+                    onChange={() => toggleType(o.value)}
+                  />
+                  {o.label}
+                </label>
+              ))}
+            </div>
+          )}
         </fieldset>
 
         {preview && (

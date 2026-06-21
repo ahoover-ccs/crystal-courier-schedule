@@ -9,7 +9,8 @@ import {
 import { isActivePerson } from "@/lib/active-people";
 import { normalizeWeeklyAvailability } from "@/lib/availability-helpers";
 import { syncSlotTemplatesWithCatalog } from "@/lib/sync-catalog-templates";
-import { formatISODate, mondayOfWeekContaining } from "@/lib/week-utils";
+import { activeRouteDefinitions } from "@/lib/route-catalog";
+import { formatISODate, weekStartContaining } from "@/lib/week-utils";
 import { ROLE_OPTIONS, roleLabel, roleNeedsProfileToken } from "@/lib/roles";
 import type {
   AppData,
@@ -21,13 +22,10 @@ import type {
 } from "@/lib/types";
 import { WEEKDAY_KEYS } from "@/lib/types";
 
-const ROUTE_TYPES: { value: RouteType; label: string }[] = [
-  { value: "lab", label: "Lab" },
-  { value: "morning", label: "Morning" },
-  { value: "afternoon", label: "Afternoon" },
-  { value: "allday", label: "All day" },
-  { value: "office", label: "Office" },
-];
+import {
+  ROUTE_TYPE_CATALOG_OPTIONS,
+  SHIFT_AVAILABILITY_ROUTE_TYPES,
+} from "@/lib/route-types";
 
 const WEEKDAY_LABELS: Record<WeekdayKey, string> = {
   mon: "Mon",
@@ -43,6 +41,8 @@ const SHIFT_ABBR: Record<RouteType, string> = {
   afternoon: "PM",
   allday: "AD",
   office: "Ofc",
+  opener: "Op",
+  closer: "Cl",
 };
 
 export function SettingsForm() {
@@ -64,7 +64,12 @@ export function SettingsForm() {
     role: "full_time_driver" as PersonRole,
     email: "",
     phone: "",
-    hiredAt: formatISODate(mondayOfWeekContaining(new Date())),
+    hiredAt: formatISODate(weekStartContaining(new Date())),
+  });
+
+  const [newRoute, setNewRoute] = useState({
+    name: "",
+    routeType: "morning" as RouteType,
   });
 
   const [terminateTarget, setTerminateTarget] = useState<{ id: string; name: string } | null>(
@@ -77,8 +82,15 @@ export function SettingsForm() {
     const r = await fetch("/api/data");
     const d = (await r.json()) as AppData;
     setData(d);
-    setRouteDefs(d.settings.routeDefinitions.map((x) => ({ ...x })));
-    setTemplates(d.settings.slotTemplates.map((t) => ({ ...t, defaultDriversByDay: { ...t.defaultDriversByDay } })));
+    setRouteDefs(
+      activeRouteDefinitions(d.settings.routeDefinitions).map((x) => ({ ...x }))
+    );
+    const activeIds = new Set(activeRouteDefinitions(d.settings.routeDefinitions).map((r) => r.id));
+    setTemplates(
+      d.settings.slotTemplates
+        .filter((t) => activeIds.has(t.routeDefinitionId))
+        .map((t) => ({ ...t, defaultDriversByDay: { ...t.defaultDriversByDay } }))
+    );
   }, []);
 
   useEffect(() => {
@@ -135,12 +147,19 @@ export function SettingsForm() {
     }
     const next = (await res.json()) as AppData;
     setData(next);
-    setRouteDefs(next.settings.routeDefinitions.map((x) => ({ ...x })));
+    setRouteDefs(
+      activeRouteDefinitions(next.settings.routeDefinitions).map((x) => ({ ...x }))
+    );
+    const activeIds = new Set(
+      activeRouteDefinitions(next.settings.routeDefinitions).map((r) => r.id)
+    );
     setTemplates(
-      next.settings.slotTemplates.map((t) => ({
-        ...t,
-        defaultDriversByDay: { ...t.defaultDriversByDay },
-      }))
+      next.settings.slotTemplates
+        .filter((t) => activeIds.has(t.routeDefinitionId))
+        .map((t) => ({
+          ...t,
+          defaultDriversByDay: { ...t.defaultDriversByDay },
+        }))
     );
     setSaved(
       "Route catalog and schedule rows saved. The current week on the schedule board was updated."
@@ -173,7 +192,7 @@ export function SettingsForm() {
       role: "full_time_driver",
       email: "",
       phone: "",
-      hiredAt: formatISODate(mondayOfWeekContaining(new Date())),
+      hiredAt: formatISODate(weekStartContaining(new Date())),
     });
     setSaved("Team member added.");
   };
@@ -211,7 +230,7 @@ export function SettingsForm() {
 
   const openTerminateDialog = (id: string) => {
     const name = data?.people.find((p) => p.id === id)?.name ?? "this person";
-    setTerminateEffectiveDate(formatISODate(mondayOfWeekContaining(new Date())));
+    setTerminateEffectiveDate(formatISODate(weekStartContaining(new Date())));
     setTerminateTarget({ id, name });
   };
 
@@ -330,7 +349,10 @@ export function SettingsForm() {
     setSaved("New personal link generated — copy it again for this person.");
   };
 
-  const addRouteDefinition = () => {
+  const addRouteDefinition = (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newRoute.name.trim();
+    if (!name) return;
     const routeId = `rd-${Date.now()}`;
     const empty: Record<WeekdayKey, string | null> = {
       mon: null,
@@ -343,8 +365,8 @@ export function SettingsForm() {
       ...r,
       {
         id: routeId,
-        name: "New route",
-        routeType: "morning",
+        name,
+        routeType: newRoute.routeType,
       },
     ]);
     setTemplates((t) => [
@@ -355,17 +377,22 @@ export function SettingsForm() {
         defaultDriversByDay: { ...empty },
       },
     ]);
+    setNewRoute({ name: "", routeType: "morning" });
     setSaved(null);
   };
 
   const removeRouteDefinition = (id: string) => {
-    if (templates.some((t) => t.routeDefinitionId === id)) {
-      if (!confirm("This route is used on the schedule grid. Remove those rows first or change them.")) {
-        return;
-      }
-      setTemplates((t) => t.filter((x) => x.routeDefinitionId !== id));
+    const rd = routeDefs.find((x) => x.id === id);
+    if (
+      !confirm(
+        `Remove "${rd?.name ?? "this route"}" from the catalog? It will no longer appear on the schedule going forward. Past schedule history is preserved. Click Save route catalog & grid to apply.`
+      )
+    ) {
+      return;
     }
+    setTemplates((t) => t.filter((x) => x.routeDefinitionId !== id));
     setRouteDefs((r) => r.filter((x) => x.id !== id));
+    setSaved(null);
   };
 
   const addTemplateRow = () => {
@@ -664,8 +691,9 @@ export function SettingsForm() {
       <section className="border-t border-cc-line pt-10">
         <h2 className="font-serif text-2xl text-cc-navy">Shift availability (by day)</h2>
         <p className="mt-2 text-sm text-cc-muted">
-          For each weekday, check the shift types someone can cover for fill-in suggestions. Drivers can
-          update their own grid via the emailed link on{" "}
+          For each weekday, check the shift types someone can cover for fill-in suggestions. Opener and
+          Closer shifts are available to everyone and do not conflict with other routes — they are not
+          listed here. Drivers can update their own grid via the emailed link on{" "}
           <a href="/my-availability" className="text-cc-navy underline">
             My availability
           </a>
@@ -695,7 +723,7 @@ export function SettingsForm() {
                     {WEEKDAY_KEYS.map((d) => (
                       <td key={d} className="px-1 py-2 align-top">
                         <div className="flex flex-col gap-0.5">
-                          {ROUTE_TYPES.map((rt) => (
+                          {SHIFT_AVAILABILITY_ROUTE_TYPES.map((rt) => (
                             <label key={rt.value} className="flex cursor-pointer items-center gap-1 text-xs">
                               <input
                                 type="checkbox"
@@ -759,7 +787,7 @@ export function SettingsForm() {
                 }
                 className="rounded border border-cc-line px-2 py-1"
               >
-                {ROUTE_TYPES.map((rt) => (
+                {ROUTE_TYPE_CATALOG_OPTIONS.map((rt) => (
                   <option key={rt.value} value={rt.value}>
                     {rt.label}
                   </option>
@@ -777,13 +805,6 @@ export function SettingsForm() {
           <div className="flex flex-wrap gap-2 pt-2">
             <button
               type="button"
-              onClick={addRouteDefinition}
-              className="rounded border border-cc-navy px-3 py-1.5 text-sm text-cc-navy hover:bg-cc-navy/5"
-            >
-              Add route to catalog
-            </button>
-            <button
-              type="button"
               onClick={() => void saveRoutesAndCatalog()}
               className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep"
             >
@@ -791,6 +812,43 @@ export function SettingsForm() {
             </button>
           </div>
         </div>
+        <form
+          onSubmit={addRouteDefinition}
+          className="mt-4 space-y-3 rounded border border-cc-line bg-white p-4"
+        >
+          <p className="text-sm font-medium text-cc-ink">Add route to catalog</p>
+          <div className="flex flex-wrap items-end gap-2">
+            <label className="flex flex-col gap-1 text-sm text-cc-ink">
+              Route name
+              <input
+                required
+                placeholder="e.g. Morning route 3"
+                value={newRoute.name}
+                onChange={(e) => setNewRoute({ ...newRoute, name: e.target.value })}
+                className="min-w-[10rem] rounded border border-cc-line px-2 py-1"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-sm text-cc-ink">
+              Shift type
+              <select
+                value={newRoute.routeType}
+                onChange={(e) =>
+                  setNewRoute({ ...newRoute, routeType: e.target.value as RouteType })
+                }
+                className="rounded border border-cc-line px-2 py-1"
+              >
+                {ROUTE_TYPE_CATALOG_OPTIONS.map((rt) => (
+                  <option key={rt.value} value={rt.value}>
+                    {rt.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button type="submit" className="rounded bg-cc-gold px-3 py-1 text-sm text-white">
+              Add
+            </button>
+          </div>
+        </form>
       </section>
 
       <section className="border-t border-cc-line pt-10">

@@ -12,6 +12,7 @@ import type {
   WeeklyShiftAvailability,
 } from "./types";
 import { WEEKDAY_KEYS } from "./types";
+import { ADDON_ROUTE_TYPES, isAddonRouteType, STANDARD_ROUTE_TYPES } from "./route-types";
 
 const ISO_TO_KEY: Record<number, WeekdayKey | undefined> = {
   1: "mon",
@@ -33,6 +34,8 @@ export function createDefaultDayAvailability(): DayShiftAvailability {
     afternoon: true,
     allday: true,
     office: true,
+    opener: true,
+    closer: true,
   };
 }
 
@@ -96,6 +99,7 @@ export function isPersonAvailableForSlotOnDate(
   date: string,
   routeType: RouteType
 ): boolean {
+  if (isAddonRouteType(routeType)) return true;
   const day = dateToWeekdayKey(date);
   if (!day) return false;
   const dayMap = person.weeklyShiftAvailability?.[day];
@@ -117,6 +121,30 @@ export function hasPendingTimeOffForSlot(
       r.date === date &&
       r.routeTypes.includes(routeType)
   );
+}
+
+/** Route shift types a person may cover — optionally limited to weekdays in `dates`. */
+export function routeTypesAvailableForPerson(
+  person: Person,
+  dates?: string[]
+): RouteType[] {
+  let days: WeekdayKey[];
+  if (dates && dates.length > 0) {
+    const keys = new Set<WeekdayKey>();
+    for (const iso of dates) {
+      const k = dateToWeekdayKey(iso);
+      if (k) keys.add(k);
+    }
+    days = [...keys];
+    if (days.length === 0) return [...ADDON_ROUTE_TYPES];
+  } else {
+    days = [...WEEKDAY_KEYS];
+  }
+
+  const standard = STANDARD_ROUTE_TYPES.filter((rt) =>
+    days.some((day) => person.weeklyShiftAvailability?.[day]?.[rt] !== false)
+  );
+  return [...standard, ...ADDON_ROUTE_TYPES];
 }
 
 /** Merge partial weekly availability with full defaults */

@@ -8,16 +8,9 @@ import {
   createDefaultWeeklyShiftAvailability,
   normalizeWeeklyAvailability,
 } from "@/lib/availability-helpers";
+import { SHIFT_AVAILABILITY_ROUTE_TYPES } from "@/lib/route-types";
 
 const STORAGE_KEY = "cc_profile_token";
-
-const ROUTE_TYPES: { value: RouteType; label: string }[] = [
-  { value: "lab", label: "Lab" },
-  { value: "morning", label: "Morning" },
-  { value: "afternoon", label: "Afternoon" },
-  { value: "allday", label: "All day" },
-  { value: "office", label: "Office" },
-];
 
 const DAY_LABEL: Record<WeekdayKey, string> = {
   mon: "Monday",
@@ -212,7 +205,7 @@ function MyAvailabilityInner() {
             <div key={day} className="rounded border border-cc-line bg-white p-4">
               <p className="font-medium text-cc-navy">{DAY_LABEL[day]}</p>
               <ul className="mt-2 grid gap-2 sm:grid-cols-2">
-                {ROUTE_TYPES.map(({ value, label }) => (
+                {SHIFT_AVAILABILITY_ROUTE_TYPES.map(({ value, label }) => (
                   <li key={value}>
                     <label className="flex items-center gap-2 text-sm">
                       <input

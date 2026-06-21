@@ -13,7 +13,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, addDays } from "date-fns";
 import type { AppData, Person, RouteType, ScheduleSlot } from "@/lib/types";
 import { isActivePerson } from "@/lib/active-people";
 import {
@@ -27,7 +27,9 @@ import { suggestFillIns } from "@/lib/suggestions";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
 import { compareSlotTemplatesByDisplayOrder } from "@/lib/route-display-order";
-import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "@/lib/week-utils";
+import { formatISODate, weekStartContaining, weekWorkdaysFromWeekStart } from "@/lib/week-utils";
+import { isTemplateActiveInWeek } from "@/lib/route-catalog";
+import { ROUTE_TYPE_SHORT_LABELS } from "@/lib/route-types";
 
 const SYNC_DEFAULTS_NOTICE =
   "Refreshed from disk: time-off gaps re-applied, then empty cells filled from Settings defaults.";
@@ -44,26 +46,17 @@ function routeStyle(rt: RouteType): string {
       return "border-l-4 border-l-[#6b4c9a] bg-[#f3eef9]";
     case "office":
       return "border-l-4 border-l-[#1e3a5f] bg-[#e8eef5]";
+    case "opener":
+      return "border-l-4 border-l-[#0d9488] bg-[#ecfdf8]";
+    case "closer":
+      return "border-l-4 border-l-[#7c3aed] bg-[#f5f3ff]";
     default:
       return "";
   }
 }
 
 function routeLabel(rt: RouteType): string {
-  switch (rt) {
-    case "lab":
-      return "Lab";
-    case "morning":
-      return "AM";
-    case "afternoon":
-      return "PM";
-    case "allday":
-      return "All day";
-    case "office":
-      return "Office";
-    default:
-      return rt;
-  }
+  return ROUTE_TYPE_SHORT_LABELS[rt] ?? rt;
 }
 
 function DraggableRosterCard({ person }: { person: Person }) {
@@ -233,15 +226,15 @@ export function ScheduleBoard() {
     void (async () => {
       const json = data ?? (await load());
       if (!json) return;
-      const currentMonday = formatISODate(mondayOfWeekContaining(new Date()));
-      if (json.settings.defaultWeekStart === currentMonday) return;
+      const currentWeekStart = formatISODate(weekStartContaining(new Date()));
+      if (json.settings.defaultWeekStart === currentWeekStart) return;
 
       setBusy(true);
       try {
         const res = await fetch("/api/week", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ weekStart: currentMonday }),
+          body: JSON.stringify({ weekStart: currentWeekStart }),
         });
         const body = await res.json();
         if (!res.ok) throw new Error(body.error ?? "Week change failed");
@@ -257,16 +250,16 @@ export function ScheduleBoard() {
 
   useEffect(() => {
     if (!weekInput || !data) return;
-    let targetMonday: string;
+    let targetWeekStart: string;
     try {
-      targetMonday = formatISODate(mondayOfWeekContaining(parseISO(weekInput)));
+      targetWeekStart = formatISODate(weekStartContaining(parseISO(weekInput)));
     } catch {
       return;
     }
-    if (targetMonday === data.settings.defaultWeekStart) return;
+    if (targetWeekStart === data.settings.defaultWeekStart) return;
 
     const seq = ++weekSwitchSeq.current;
-    const previousMonday = data.settings.defaultWeekStart;
+    const previousWeekStart = data.settings.defaultWeekStart;
 
     void (async () => {
       if (seq !== weekSwitchSeq.current) return;
@@ -277,7 +270,7 @@ export function ScheduleBoard() {
         const res = await fetch("/api/week", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ weekStart: targetMonday }),
+          body: JSON.stringify({ weekStart: targetWeekStart }),
         });
         const json = await res.json();
         if (seq !== weekSwitchSeq.current) return;
@@ -292,7 +285,7 @@ export function ScheduleBoard() {
       } catch (e) {
         if (seq !== weekSwitchSeq.current) return;
         setLoadError(e instanceof Error ? e.message : "Error");
-        setWeekInput(previousMonday);
+        setWeekInput(previousWeekStart);
       } finally {
         if (seq === weekSwitchSeq.current) {
           setBusy(false);
@@ -303,14 +296,16 @@ export function ScheduleBoard() {
 
   const weekDays = useMemo(() => {
     if (!data) return [];
-    return weekDaysFromMonday(data.settings.defaultWeekStart);
+    return weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
   }, [data]);
 
   const slotsByTemplate = useMemo(() => {
     if (!data) return [];
-    const monday = data.settings.defaultWeekStart;
-    const days = weekDaysFromMonday(monday);
-    const templates = data.settings.slotTemplates;
+    const days = weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
+    const routeDefs = data.settings.routeDefinitions;
+    const templates = data.settings.slotTemplates.filter((t) =>
+      isTemplateActiveInWeek(t, routeDefs, days)
+    );
     const rows = templates.map((t, index) => {
       const rowSlots = days.map((d) => {
         const id = `${d}__${t.id}`;
@@ -330,7 +325,6 @@ export function ScheduleBoard() {
     });
     // Row order: empty slots first, then non-default (gold), then pending-time-off (sky),
     // then lab → morning → afternoon (other types after), then route name A–Z.
-    const routeDefs = data.settings.routeDefinitions;
     rows.sort((a, b) => {
       if (b.blankCount !== a.blankCount) return b.blankCount - a.blankCount;
       if (b.nonDefaultCount !== a.nonDefaultCount) return b.nonDefaultCount - a.nonDefaultCount;
@@ -396,6 +390,13 @@ export function ScheduleBoard() {
     } finally {
       setBusy(false);
     }
+  };
+
+  const jumpWeek = (days: number) => {
+    if (!data) return;
+    const base = parseISO(data.settings.defaultWeekStart);
+    const targetWeekStart = formatISODate(weekStartContaining(addDays(base, days)));
+    setWeekInput(targetWeekStart);
   };
 
   const saveDayNote = async (date: string, text: string) => {
@@ -546,6 +547,22 @@ export function ScheduleBoard() {
                 className="mt-1 rounded border border-cc-line bg-white px-2 py-1 font-serif text-cc-ink"
               />
             </div>
+            <button
+              type="button"
+              onClick={() => jumpWeek(-7)}
+              disabled={busy || !data}
+              className="rounded border border-cc-line bg-white px-3 py-2 text-sm text-cc-ink hover:bg-cc-cream/60 disabled:opacity-50"
+            >
+              Previous week
+            </button>
+            <button
+              type="button"
+              onClick={() => jumpWeek(7)}
+              disabled={busy || !data}
+              className="rounded border border-cc-line bg-white px-3 py-2 text-sm text-cc-ink hover:bg-cc-cream/60 disabled:opacity-50"
+            >
+              Next week
+            </button>
             <button
               type="button"
               onClick={() => refreshSchedule()}

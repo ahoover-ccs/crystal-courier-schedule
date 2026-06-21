@@ -3,14 +3,14 @@ import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import { refreshSlotOverrideFromSlot, templateIdFromSlotId } from "./slot-overrides";
 import { canAssignDriver } from "./suggestions";
 import type { AppData } from "./types";
-import { weekDaysFromMonday } from "./week-utils";
+import { weekWorkdaysFromWeekStart } from "./week-utils";
 
 /** Fill slots that are empty and not time-off gaps, using route default drivers (respects weekday toggles). */
 export function applyDefaultDriversToEmptySlots(data: AppData): {
   data: AppData;
   errors: string[];
 } {
-  const weekDays = weekDaysFromMonday(data.settings.defaultWeekStart);
+  const weekDays = weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
   const errors: string[] = [];
   const slots = data.slots.map((s) => ({ ...s }));
   /** Single mutable copy so `refreshSlotOverrideFromSlot` updates `slotOverrides` on the returned object. */

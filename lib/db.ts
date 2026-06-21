@@ -15,7 +15,8 @@ import type {
   SlotTemplate,
   WeekdayKey,
 } from "./types";
-import { formatISODate, mondayOfWeekContaining, weekDaysFromMonday } from "./week-utils";
+import { formatISODate, weekStartContaining, weekWorkdaysFromWeekStart } from "./week-utils";
+import { isRouteActiveOnDate } from "./route-catalog";
 import { isPersonEffectiveOnDate } from "./active-people";
 import { normalizeAppData } from "./normalize";
 import { applyRosterDateRulesToSlots } from "./person-roster-dates";
@@ -203,10 +204,12 @@ function buildSlotsForWeek(
   definitions: RouteDefinition[],
   people: Person[]
 ): ScheduleSlot[] {
-  const days = weekDaysFromMonday(weekStart);
+  const days = weekWorkdaysFromWeekStart(weekStart);
   const slots: ScheduleSlot[] = [];
   for (const date of days) {
     for (const t of templates) {
+      const def = definitions.find((d) => d.id === t.routeDefinitionId);
+      if (def && !isRouteActiveOnDate(def, date)) continue;
       const { label, routeType, isOfficeRoute } = resolveTemplateLabel(t, definitions);
       const raw = defaultDriverForTemplateDate(date, t);
       const person = raw ? people.find((p) => p.id === raw) : undefined;
@@ -228,7 +231,7 @@ function buildSlotsForWeek(
 }
 
 function defaultWeekStart(): string {
-  return formatISODate(mondayOfWeekContaining(new Date()));
+  return formatISODate(weekStartContaining(new Date()));
 }
 
 export function createSeedData(): AppData {
