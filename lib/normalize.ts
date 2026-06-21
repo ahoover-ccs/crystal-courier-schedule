@@ -77,11 +77,15 @@ function buildRouteDefinitionsFromLegacy(
   const byId = new Map(existing.map((d) => [d.id, d]));
   for (const t of templates) {
     if (t.routeDefinitionId) {
-      const existingDef = byId.get(t.routeDefinitionId);
-      if (existingDef) continue;
+      if (byId.has(t.routeDefinitionId)) continue;
     }
     const id = t.routeDefinitionId ?? `rd-${t.id}`;
     if (byId.has(id)) continue;
+    // Do not resurrect a route that was retired but dropped from the stored catalog list.
+    const retiredMatch = existing.find(
+      (d) => d.retiredAt && (d.id === id || d.id === t.routeDefinitionId)
+    );
+    if (retiredMatch) continue;
     const name = t.label ?? "Route";
     const routeType = (t.routeType ?? "morning") as RouteDefinition["routeType"];
     const wantOffice =

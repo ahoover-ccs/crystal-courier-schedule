@@ -72,9 +72,7 @@ export function SettingsForm() {
   const [terminateBusy, setTerminateBusy] = useState(false);
   const [catalogBusy, setCatalogBusy] = useState(false);
 
-  const load = useCallback(async () => {
-    const r = await fetch("/api/data");
-    const d = (await r.json()) as AppData;
+  const applyCatalogFromAppData = useCallback((d: AppData) => {
     setData(d);
     setRouteDefs(
       activeRouteDefinitions(d.settings.routeDefinitions).map((x) => ({ ...x }))
@@ -86,6 +84,12 @@ export function SettingsForm() {
         .map((t) => ({ ...t, defaultDriversByDay: { ...t.defaultDriversByDay } }))
     );
   }, []);
+
+  const load = useCallback(async () => {
+    const r = await fetch("/api/data");
+    const d = (await r.json()) as AppData;
+    applyCatalogFromAppData(d);
+  }, [applyCatalogFromAppData]);
 
   useEffect(() => {
     load();
@@ -144,21 +148,7 @@ export function SettingsForm() {
         return false;
       }
       const next = (await res.json()) as AppData;
-      setData(next);
-      setRouteDefs(
-        activeRouteDefinitions(next.settings.routeDefinitions).map((x) => ({ ...x }))
-      );
-      const activeIds = new Set(
-        activeRouteDefinitions(next.settings.routeDefinitions).map((r) => r.id)
-      );
-      setTemplates(
-        next.settings.slotTemplates
-          .filter((t) => activeIds.has(t.routeDefinitionId))
-          .map((t) => ({
-            ...t,
-            defaultDriversByDay: { ...t.defaultDriversByDay },
-          }))
-      );
+      applyCatalogFromAppData(next);
       return true;
     } catch {
       setErr("Save failed");
@@ -395,24 +385,33 @@ export function SettingsForm() {
 
   const removeRouteDefinition = async (id: string) => {
     const rd = routeDefs.find((x) => x.id === id);
-    if (
-      !confirm(
-        `Remove "${rd?.name ?? "this route"}" from the catalog? It will no longer appear on the schedule going forward. Past schedule history is preserved.`
-      )
-    ) {
-      return;
-    }
-    const nextRouteDefs = routeDefs.filter((x) => x.id !== id);
-    const nextTemplates = templates.filter((x) => x.routeDefinitionId !== id);
-    setRouteDefs(nextRouteDefs);
-    setTemplates(nextTemplates);
+    const prevDefs = routeDefs;
+    const prevTemplates = templates;
+    const prevData = data;
+
+    setRouteDefs((r) => r.filter((x) => x.id !== id));
+    setTemplates((t) => t.filter((x) => x.routeDefinitionId !== id));
+    setErr(null);
     setSaved(null);
-    const ok = await persistRoutesAndCatalog(nextRouteDefs, nextTemplates);
-    if (ok) {
+    setCatalogBusy(true);
+
+    try {
+      const res = await fetch(`/api/settings/routes/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error ?? "Could not remove route");
+      }
+      applyCatalogFromAppData(json as AppData);
       setSaved(`"${rd?.name ?? "Route"}" removed from the catalog and schedule.`);
-    } else {
-      setRouteDefs(routeDefs);
-      setTemplates(templates);
+    } catch (e) {
+      if (prevData) setData(prevData);
+      setRouteDefs(prevDefs);
+      setTemplates(prevTemplates);
+      setErr(e instanceof Error ? e.message : "Could not remove route");
+    } finally {
+      setCatalogBusy(false);
     }
   };
 
@@ -779,8 +778,8 @@ export function SettingsForm() {
         <p className="mt-2 text-sm text-cc-muted">
           Define each customer/route once. Use shift type &ldquo;Office&rdquo; for in-office coverage rows
           (only Ops / Dispatch / Owner can be assigned). Adding a route also creates a matching row on
-          the weekly grid below — click <strong className="font-medium text-cc-ink">Save</strong> to
-          keep your changes.
+          the weekly grid below. Use <strong className="font-medium text-cc-ink">Remove</strong> to
+          drop a route from the live catalog and schedule (past history is kept).
         </p>
         <div className="mt-4 space-y-2 rounded border border-cc-line bg-cc-paper p-4">
           {routeDefsSorted.map((rd) => (
