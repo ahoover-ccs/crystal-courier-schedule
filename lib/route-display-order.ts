@@ -12,14 +12,12 @@ export function routeTypeDisplayOrder(routeType: RouteType): number {
       return 2;
     case "allday":
       return 3;
-    case "office":
-      return 4;
     case "opener":
-      return 5;
+      return 4;
     case "closer":
-      return 6;
+      return 5;
     default:
-      return 7;
+      return 6;
   }
 }
 

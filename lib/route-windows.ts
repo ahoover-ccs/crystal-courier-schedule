@@ -11,7 +11,6 @@ export function routeWindow(routeType: RouteType): { start: number; end: number 
     case "afternoon":
       return { start: 12 * 60 + 30, end: 17 * 60 };
     case "allday":
-    case "office":
       return { start: 9 * 60, end: 17 * 60 };
     case "opener":
       return { start: 8 * 60, end: 8 * 60 + 30 };

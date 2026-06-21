@@ -7,12 +7,27 @@ export function isAddonRouteType(routeType: RouteType): boolean {
   return routeType === "opener" || routeType === "closer";
 }
 
+const ROUTE_TYPE_VALUES: RouteType[] = [
+  "lab",
+  "morning",
+  "afternoon",
+  "allday",
+  "opener",
+  "closer",
+];
+
+/** Migrate legacy persisted values (e.g. removed shift types) to a valid RouteType. */
+export function migrateRouteType(raw: string): RouteType {
+  if (raw === "office") return "allday";
+  if (ROUTE_TYPE_VALUES.includes(raw as RouteType)) return raw as RouteType;
+  return "morning";
+}
+
 export const ROUTE_TYPE_CATALOG_OPTIONS: { value: RouteType; label: string }[] = [
   { value: "lab", label: "Lab" },
   { value: "morning", label: "Morning" },
   { value: "afternoon", label: "Afternoon" },
   { value: "allday", label: "All day" },
-  { value: "office", label: "Office" },
   { value: "opener", label: "Opener" },
   { value: "closer", label: "Closer" },
 ];
@@ -26,7 +41,6 @@ export const ROUTE_TYPE_SHORT_LABELS: Record<RouteType, string> = {
   morning: "AM",
   afternoon: "PM",
   allday: "All day",
-  office: "Office",
   opener: "Open",
   closer: "Close",
 };
@@ -36,7 +50,6 @@ export const ROUTE_TYPE_TIME_OFF_LABELS: Record<RouteType, string> = {
   morning: "Morning route",
   afternoon: "Afternoon route",
   allday: "All day route",
-  office: "Office",
   opener: "Opener",
   closer: "Closer",
 };
@@ -46,7 +59,6 @@ export const SHIFT_AVAILABILITY_ABBR: Record<RouteType, string> = {
   morning: "AM",
   afternoon: "PM",
   allday: "AD",
-  office: "Ofc",
   opener: "Op",
   closer: "Cl",
 };

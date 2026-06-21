@@ -26,8 +26,6 @@ function routeStyle(rt: RouteType): string {
       return "border-l-4 border-l-[#b45309] bg-[#fff6e9]";
     case "allday":
       return "border-l-4 border-l-[#6b4c9a] bg-[#f3eef9]";
-    case "office":
-      return "border-l-4 border-l-[#1e3a5f] bg-[#e8eef5]";
     case "opener":
       return "border-l-4 border-l-[#0d9488] bg-[#ecfdf8]";
     case "closer":

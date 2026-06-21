@@ -21,10 +21,6 @@ export function isDriverLike(role: PersonRole): boolean {
   );
 }
 
-export function canStaffOfficeSlot(person: Person): boolean {
-  return isDispatcherLike(person.role);
-}
-
 export function roleNeedsProfileToken(role: PersonRole): boolean {
   return isDriverLike(role);
 }

@@ -8,7 +8,7 @@ export function slotsForDate(data: AppData, date: string): ScheduleSlot[] {
   const overrides = data.slotOverrides ?? {};
   return slotTemplates.map((t) => {
     const id = `${date}__${t.id}`;
-    const { label, routeType, isOfficeRoute } = resolveTemplateLabel(t, routeDefinitions);
+    const { label, routeType } = resolveTemplateLabel(t, routeDefinitions);
     const def = effectiveDefaultDriverForDate(data, date, t);
     const base: ScheduleSlot = {
       id,
@@ -17,7 +17,7 @@ export function slotsForDate(data: AppData, date: string): ScheduleSlot[] {
       label,
       driverId: def,
       isGap: false,
-      isOfficeSlot: isOfficeRoute === true,
+      isOfficeSlot: false,
       gapForDriverId: null,
     };
     const o = overrides[id];

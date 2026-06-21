@@ -527,11 +527,10 @@ export function SettingsForm() {
       <section>
         <h1 className="font-serif text-3xl text-cc-navy">Settings</h1>
         <p className="mt-2 text-sm text-cc-muted">
-          Data file: <code className="rounded bg-cc-cream px-1">data/schedule.json</code>. Add a catalog
-          entry with shift type &ldquo;Office&rdquo;, then add a schedule row so an Ops Manager,
-          Dispatch, or Owner can be assigned. Office rows can be left open just like any other route.
-          Changes here affect future weeks only on the schedule board—past dates stay as saved in
-          per-cell overrides unless you edit them manually on the board.
+          Data file: <code className="rounded bg-cc-cream px-1">data/schedule.json</code>.
+          Configure the route catalog and schedule rows below. Changes here affect future weeks on
+          the schedule board—past dates stay as saved in per-cell overrides unless you edit them
+          manually on the board.
         </p>
       </section>
 
@@ -776,10 +775,9 @@ export function SettingsForm() {
       <section className="border-t border-cc-line pt-10">
         <h2 className="font-serif text-2xl text-cc-navy">Route catalog</h2>
         <p className="mt-2 text-sm text-cc-muted">
-          Define each customer/route once. Use shift type &ldquo;Office&rdquo; for in-office coverage rows
-          (only Ops / Dispatch / Owner can be assigned). Adding a route also creates a matching row on
-          the weekly grid below. Use <strong className="font-medium text-cc-ink">Remove</strong> to
-          drop a route from the live catalog and schedule (past history is kept).
+          Define each customer/route once. Adding a route also creates a matching row on the weekly
+          grid below. Use <strong className="font-medium text-cc-ink">Remove</strong> to drop a route
+          from the live catalog and schedule (past history is kept).
         </p>
         <div className="mt-4 space-y-2 rounded border border-cc-line bg-cc-paper p-4">
           {routeDefsSorted.map((rd) => (

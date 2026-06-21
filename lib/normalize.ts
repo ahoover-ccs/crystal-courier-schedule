@@ -1,6 +1,7 @@
 import { createDefaultWeeklyShiftAvailability, normalizeWeeklyAvailability } from "./availability-helpers";
 import { migratePersonRole } from "./roles";
 import { newProfileToken } from "./profile-token";
+import { migrateRouteType } from "./route-types";
 import { normalizeStoredWeekStart } from "./week-utils";
 import type {
   AppData,
@@ -36,7 +37,6 @@ function migratePerson(p: Person & { shiftAvailability?: LegacyShiftAvailability
       morning: p.shiftAvailability.morning !== false,
       afternoon: p.shiftAvailability.afternoon !== false,
       allday: p.shiftAvailability.allday !== false,
-      office: (p.shiftAvailability as LegacyShiftAvailability).office !== false,
       opener: true,
       closer: true,
     };
@@ -70,37 +70,39 @@ function migratePerson(p: Person & { shiftAvailability?: LegacyShiftAvailability
   return x;
 }
 
+function normalizeRouteDefinition(d: RouteDefinition): RouteDefinition {
+  return {
+    id: d.id,
+    name: d.name,
+    routeType: migrateRouteType(d.routeType as string),
+    ...(d.retiredAt ? { retiredAt: d.retiredAt } : {}),
+  };
+}
+
 function buildRouteDefinitionsFromLegacy(
   templates: LegacySlotTemplate[],
   existing: RouteDefinition[]
 ): RouteDefinition[] {
-  const byId = new Map(existing.map((d) => [d.id, d]));
+  const byId = new Map(existing.map((d) => [d.id, normalizeRouteDefinition(d)]));
   for (const t of templates) {
     if (t.routeDefinitionId) {
       if (byId.has(t.routeDefinitionId)) continue;
     }
     const id = t.routeDefinitionId ?? `rd-${t.id}`;
     if (byId.has(id)) continue;
-    // Do not resurrect a route that was retired but dropped from the stored catalog list.
     const retiredMatch = existing.find(
       (d) => d.retiredAt && (d.id === id || d.id === t.routeDefinitionId)
     );
     if (retiredMatch) continue;
     const name = t.label ?? "Route";
-    const routeType = (t.routeType ?? "morning") as RouteDefinition["routeType"];
-    const wantOffice =
-      name.toLowerCase().includes("office") || routeType === ("office" as string);
+    const routeType = migrateRouteType(t.routeType ?? "morning");
     byId.set(id, {
       id,
       name,
-      routeType: wantOffice ? "office" : routeType,
-      isOfficeRoute: wantOffice,
+      routeType,
     });
   }
-  return Array.from(byId.values()).map((d) => ({
-    ...d,
-    isOfficeRoute: d.routeType === "office",
-  }));
+  return Array.from(byId.values());
 }
 
 function migrateSlotTemplates(
@@ -165,18 +167,12 @@ function migrateSlotTemplates(
 }
 
 function migrateSlots(slots: AppData["slots"]): AppData["slots"] {
-  return slots.map((s) => {
-    const rt = s.routeType as string;
-    const inferredOffice =
-      Boolean(s.label?.toLowerCase().includes("office")) || rt === "office";
-    return {
-      ...s,
-      routeType: rt === "office" ? "office" : s.routeType,
-      isOfficeSlot:
-        typeof s.isOfficeSlot === "boolean" ? s.isOfficeSlot : inferredOffice,
-      gapForDriverId: s.gapForDriverId ?? null,
-    };
-  });
+  return slots.map((s) => ({
+    ...s,
+    routeType: migrateRouteType(s.routeType as string),
+    isOfficeSlot: false,
+    gapForDriverId: s.gapForDriverId ?? null,
+  }));
 }
 
 function syncAbsenceStatsRequested(data: AppData): void {
@@ -250,6 +246,7 @@ export function normalizeAppData(raw: AppData): AppData {
 
   const openShifts = (data.openShifts ?? []).map((o) => ({
     ...o,
+    routeType: migrateRouteType(o.routeType as string),
     pendingClaimDriverId: o.pendingClaimDriverId ?? null,
     pendingClaimDriverName: o.pendingClaimDriverName ?? null,
     pendingClaimAt: o.pendingClaimAt ?? null,
@@ -257,6 +254,7 @@ export function normalizeAppData(raw: AppData): AppData {
 
   const timeOffRequests = (data.timeOffRequests ?? []).map((r) => ({
     ...r,
+    routeTypes: r.routeTypes.map((rt) => migrateRouteType(rt as string)),
     status:
       r.status === "pending" || r.status === "approved" || r.status === "rejected"
         ? r.status

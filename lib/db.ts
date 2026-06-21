@@ -210,7 +210,7 @@ function buildSlotsForWeek(
     for (const t of templates) {
       const def = definitions.find((d) => d.id === t.routeDefinitionId);
       if (def && !isRouteActiveOnDate(def, date)) continue;
-      const { label, routeType, isOfficeRoute } = resolveTemplateLabel(t, definitions);
+      const { label, routeType } = resolveTemplateLabel(t, definitions);
       const raw = defaultDriverForTemplateDate(date, t);
       const person = raw ? people.find((p) => p.id === raw) : undefined;
       const driverId =
@@ -222,7 +222,7 @@ function buildSlotsForWeek(
         label,
         driverId,
         isGap: false,
-        isOfficeSlot: isOfficeRoute === true,
+        isOfficeSlot: false,
         gapForDriverId: null,
       });
     }

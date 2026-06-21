@@ -3,7 +3,6 @@ export type RouteType =
   | "morning"
   | "afternoon"
   | "allday"
-  | "office"
   | "opener"
   | "closer";
 
@@ -20,7 +19,7 @@ export type WeekdayKey = "mon" | "tue" | "wed" | "thu" | "fri";
 
 export const WEEKDAY_KEYS: WeekdayKey[] = ["mon", "tue", "wed", "thu", "fri"];
 
-/** Per shift type for one day (all route kinds including office for staff who cover office). */
+/** Per shift type for one day. */
 export type DayShiftAvailability = Record<RouteType, boolean>;
 
 /** Mon–Fri × shift types — granular availability for suggestions. */
@@ -48,8 +47,6 @@ export type RouteDefinition = {
   id: string;
   name: string;
   routeType: RouteType;
-  /** When true, only Ops Manager / Dispatch / Owner may be assigned; at least one office slot should stay filled per day. */
-  isOfficeRoute?: boolean;
   /** First calendar day this route is omitted from the live grid (YYYY-MM-DD). Earlier schedule history is kept. */
   retiredAt?: string;
 };

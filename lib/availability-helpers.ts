@@ -33,7 +33,6 @@ export function createDefaultDayAvailability(): DayShiftAvailability {
     morning: true,
     afternoon: true,
     allday: true,
-    office: true,
     opener: true,
     closer: true,
   };
@@ -84,12 +83,11 @@ export function slotTemplateForSlot(data: AppData, slot: ScheduleSlot): SlotTemp
 export function resolveTemplateLabel(
   template: SlotTemplate,
   definitions: RouteDefinition[]
-): { label: string; routeType: RouteType; isOfficeRoute: boolean } {
+): { label: string; routeType: RouteType } {
   const def = definitions.find((d) => d.id === template.routeDefinitionId);
   return {
     label: def?.name ?? "Unknown route",
     routeType: def?.routeType ?? "morning",
-    isOfficeRoute: def?.routeType === "office",
   };
 }
 
@@ -154,7 +152,10 @@ export function normalizeWeeklyAvailability(
   for (const d of WEEKDAY_KEYS) {
     const dayPartial = raw[d];
     if (dayPartial) {
-      base[d] = { ...base[d], ...dayPartial };
+      const { office: _legacyOffice, ...withoutOffice } = dayPartial as typeof dayPartial & {
+        office?: boolean;
+      };
+      base[d] = { ...base[d], ...withoutOffice };
     }
   }
   return base;

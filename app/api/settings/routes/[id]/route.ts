@@ -24,7 +24,7 @@ export async function DELETE(_req: NextRequest, ctx: Ctx) {
 
   const retiredToday = formatISODate(new Date());
   data.settings.routeDefinitions = data.settings.routeDefinitions.map((d) =>
-    d.id === id ? { ...d, retiredAt: retiredToday, isOfficeRoute: d.routeType === "office" } : d
+    d.id === id ? { ...d, retiredAt: retiredToday } : d
   );
 
   data.settings.slotTemplates = syncSlotTemplatesWithCatalog(

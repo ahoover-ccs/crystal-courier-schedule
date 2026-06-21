@@ -4,7 +4,6 @@ import {
   slotTemplateForSlot,
 } from "./availability-helpers";
 import { effectiveDefaultDriverForDate } from "./person-roster-dates";
-import { canStaffOfficeSlot } from "./roles";
 import type { AppData, Person, RouteType, ScheduleSlot } from "./types";
 import { conflictsWithDayAssignments } from "./route-windows";
 
@@ -78,7 +77,6 @@ export function suggestFillIns(
   const passesFilters = (p: Person): boolean => {
     if (!isPersonEffectiveOnDate(p, slot.date)) return false;
     if (excludeDefault && p.id === defaultDriverId) return false;
-    if (slot.isOfficeSlot && !canStaffOfficeSlot(p)) return false;
     if (!isPersonAvailableForSlotOnDate(p, slot.date, slot.routeType)) return false;
     if (hasApprovedTimeOffForSlot(data, p.id, slot.date, slot.routeType)) return false;
     const busyTypes = existingTypes(p.id);
@@ -113,12 +111,6 @@ export function canAssignDriver(
   }
   if (!isPersonEffectiveOnDate(person, slot.date)) {
     return { ok: false, reason: "That person is not on the roster for this date." };
-  }
-  if (slot.isOfficeSlot && !canStaffOfficeSlot(person)) {
-    return {
-      ok: false,
-      reason: "Office routes require Ops Manager, Dispatch, or Owner.",
-    };
   }
   const busyTypes = assignmentsForDriverOnDate(data.slots, slot.date, driverId, slotId);
   if (conflictsWithDayAssignments(slot.routeType, busyTypes)) {

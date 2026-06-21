@@ -3,14 +3,17 @@ import { applyDefaultDriversToEmptySlots } from "@/lib/apply-defaults";
 import { ensureDb, rebuildSlotsForWeek, writeDb } from "@/lib/db";
 import { syncSlotTemplatesWithCatalog } from "@/lib/sync-catalog-templates";
 import { sanitizeTemplateDefaults } from "@/lib/terminate-person";
+import { migrateRouteType } from "@/lib/route-types";
 import { formatISODate } from "@/lib/week-utils";
 import type { AppSettings, RouteDefinition, SlotTemplate, WeekdayKey } from "@/lib/types";
 import { WEEKDAY_KEYS } from "@/lib/types";
 
 function normalizeRouteDefinitions(defs: RouteDefinition[]): RouteDefinition[] {
   return defs.map((d) => ({
-    ...d,
-    isOfficeRoute: d.routeType === "office",
+    id: d.id,
+    name: d.name,
+    routeType: migrateRouteType(d.routeType as string),
+    ...(d.retiredAt ? { retiredAt: d.retiredAt } : {}),
   }));
 }
 
@@ -37,7 +40,7 @@ function mergeRetiredRoutes(
 
   const newlyRetired = previous
     .filter((d) => !d.retiredAt && !incomingIds.has(d.id))
-    .map((d) => ({ ...d, retiredAt: retiredToday }));
+    .map((d) => ({ ...normalizeRouteDefinitions([d])[0], retiredAt: retiredToday }));
 
   const stillRetired = previous.filter((d) => d.retiredAt && !incomingIds.has(d.id));
 
