@@ -19,18 +19,16 @@ import { isActivePerson } from "@/lib/active-people";
 import {
   hasPendingTimeOffForSlot,
   isNonDefaultAssignmentForSlot,
-  resolveTemplateLabel,
 } from "@/lib/availability-helpers";
 import { roleLabel } from "@/lib/roles";
 import { dayNoteForDate } from "@/lib/schedule-day-notes";
 import { suggestFillIns } from "@/lib/suggestions";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
-import { compareSlotTemplatesByDisplayOrder } from "@/lib/route-display-order";
 import { formatISODate, isWeekdayISO, weekStartContaining, weekWorkdaysFromWeekStart } from "@/lib/week-utils";
-import { isTemplateActiveInWeek } from "@/lib/route-catalog";
 import { ROUTE_TYPE_SHORT_LABELS } from "@/lib/route-types";
-import { SPECIAL_ROUTE_TYPES, specialRouteSlotId, specialRoutesInWeek } from "@/lib/special-routes";
+import { SPECIAL_ROUTE_TYPES } from "@/lib/special-routes";
+import { buildScheduleGridRows } from "@/lib/schedule-grid-rows";
 
 const SYNC_DEFAULTS_NOTICE =
   "Refreshed from disk: time-off gaps re-applied, then empty cells filled from Settings defaults.";
@@ -302,60 +300,7 @@ export function ScheduleBoard() {
     return weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
   }, [data]);
 
-  const slotsByTemplate = useMemo(() => {
-    if (!data) return [];
-    const days = weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
-    const routeDefs = data.settings.routeDefinitions;
-    const templates = data.settings.slotTemplates.filter((t) =>
-      isTemplateActiveInWeek(t, routeDefs, days)
-    );
-    const rows = templates.map((t, index) => {
-      const rowSlots = days.map((d) => {
-        const id = `${d}__${t.id}`;
-        return data.slots.find((s) => s.id === id) ?? null;
-      });
-      const blankCount = rowSlots.filter((s) => s && !s.driverId).length;
-      const nonDefaultCount = rowSlots.filter(
-        (s) => s && isNonDefaultAssignmentForSlot(t, s, data)
-      ).length;
-      const pendingTimeOffCount = rowSlots.filter(
-        (s) =>
-          s &&
-          s.driverId &&
-          hasPendingTimeOffForSlot(data, s.driverId, s.date, s.routeType)
-      ).length;
-      return { template: t, rowSlots, blankCount, nonDefaultCount, pendingTimeOffCount, index };
-    });
-    // Row order: empty slots first, then non-default (gold), then pending-time-off (sky),
-    // then lab → morning → afternoon (other types after), then route name A–Z.
-    rows.sort((a, b) => {
-      if (b.blankCount !== a.blankCount) return b.blankCount - a.blankCount;
-      if (b.nonDefaultCount !== a.nonDefaultCount) return b.nonDefaultCount - a.nonDefaultCount;
-      if (b.pendingTimeOffCount !== a.pendingTimeOffCount)
-        return b.pendingTimeOffCount - a.pendingTimeOffCount;
-      const display = compareSlotTemplatesByDisplayOrder(
-        a.template,
-        b.template,
-        routeDefs
-      );
-      if (display !== 0) return display;
-      return a.index - b.index;
-    });
-    return rows.map(({ template, rowSlots }) => ({ template, rowSlots }));
-  }, [data]);
-
-  const specialRows = useMemo(() => {
-    if (!data) return [];
-    const days = weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
-    return specialRoutesInWeek(data, data.settings.defaultWeekStart).map((route) => ({
-      route,
-      rowSlots: days.map((d) => {
-        if (d !== route.date) return null;
-        const id = specialRouteSlotId(route);
-        return data.slots.find((s) => s.id === id) ?? null;
-      }),
-    }));
-  }, [data]);
+  const gridRows = useMemo(() => (data ? buildScheduleGridRows(data) : []), [data]);
 
   const nameById = useMemo(() => {
     const m = new Map<string, string>();
@@ -684,69 +629,42 @@ export function ScheduleBoard() {
                 />
               ))}
 
-              {slotsByTemplate.map(({ template, rowSlots }) => {
-                const { label: routeRowLabel, routeType } = resolveTemplateLabel(
-                  template,
-                  data.settings.routeDefinitions
-                );
+              {gridRows.map((row) => {
+                const isSpecial = row.kind === "special";
                 return (
-                <Fragment key={template.id}>
+                <Fragment key={row.key}>
                   <div
-                    className={`flex flex-col justify-center bg-white px-1.5 py-1.5 text-sm ${routeStyle(routeType)}`}
+                    className={`flex flex-col justify-center bg-white px-1.5 py-1.5 text-sm ${routeStyle(row.routeType)}`}
                   >
                     <span className="text-[10px] font-semibold text-cc-muted">
-                      {routeLabel(routeType)}
+                      {routeLabel(row.routeType)}
+                      {isSpecial ? " · Special" : ""}
                     </span>
-                    <span className="text-xs leading-tight text-cc-ink">{routeRowLabel}</span>
+                    <span className="text-xs leading-tight text-cc-ink">{row.label}</span>
+                    {isSpecial && row.special && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void removeSpecialRoute(row.special!.id)}
+                        className="mt-1 text-left text-[10px] text-red-700 underline disabled:opacity-50"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
-                  {rowSlots.map((slot, i) =>
+                  {row.rowSlots.map((slot, i) =>
                     slot ? (
                       <div key={slot.id} className="bg-cc-cream/40 p-0.5">
                         <SlotCell
                           slot={slot}
                           occupantName={slot.driverId ? nameById.get(slot.driverId) ?? "?" : null}
-                          isNonDefaultAssignment={isNonDefaultAssignmentForSlot(template, slot, data)}
-                          isPendingTimeOff={
-                            slot.driverId
-                              ? hasPendingTimeOffForSlot(data, slot.driverId, slot.date, slot.routeType)
-                              : false
+                          isNonDefaultAssignment={
+                            isSpecial
+                              ? Boolean(slot.driverId)
+                              : row.template
+                                ? isNonDefaultAssignmentForSlot(row.template, slot, data)
+                                : false
                           }
-                        />
-                      </div>
-                    ) : (
-                      <div key={`missing-${template.id}-${i}`} className="bg-zinc-100 p-2 text-xs">
-                        —
-                      </div>
-                    )
-                  )}
-                </Fragment>
-              );
-              })}
-              {specialRows.map(({ route, rowSlots }) => (
-                <Fragment key={route.id}>
-                  <div
-                    className={`flex flex-col justify-center bg-white px-1.5 py-1.5 text-sm ${routeStyle(route.routeType)}`}
-                  >
-                    <span className="text-[10px] font-semibold text-cc-muted">
-                      {routeLabel(route.routeType)} · Special
-                    </span>
-                    <span className="text-xs leading-tight text-cc-ink">{route.name}</span>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => void removeSpecialRoute(route.id)}
-                      className="mt-1 text-left text-[10px] text-red-700 underline disabled:opacity-50"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  {rowSlots.map((slot, i) =>
-                    slot ? (
-                      <div key={slot.id} className="bg-cc-cream/40 p-0.5">
-                        <SlotCell
-                          slot={slot}
-                          occupantName={slot.driverId ? nameById.get(slot.driverId) ?? "?" : null}
-                          isNonDefaultAssignment={false}
                           isPendingTimeOff={
                             slot.driverId
                               ? hasPendingTimeOffForSlot(data, slot.driverId, slot.date, slot.routeType)
@@ -756,13 +674,20 @@ export function ScheduleBoard() {
                       </div>
                     ) : (
                       <div
-                        key={`special-empty-${route.id}-${i}`}
-                        className="bg-zinc-100/80 p-2 text-xs text-cc-muted"
-                      />
+                        key={`empty-${row.key}-${i}`}
+                        className={
+                          isSpecial
+                            ? "bg-zinc-100/80 p-2 text-xs text-cc-muted"
+                            : "bg-zinc-100 p-2 text-xs"
+                        }
+                      >
+                        {isSpecial ? "" : "—"}
+                      </div>
                     )
                   )}
                 </Fragment>
-              ))}
+                );
+              })}
             </div>
           </div>
           <div className="mt-3">
