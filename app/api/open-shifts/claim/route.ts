@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { appendActivity } from "@/lib/activity-log";
 import { incrementCoveredAbsence } from "@/lib/absence-stats";
 import { isActivePerson } from "@/lib/active-people";
 import { ensureDb, writeDb } from "@/lib/db";
@@ -99,6 +100,10 @@ export async function POST(req: NextRequest) {
       if (!pending.ok) {
         return NextResponse.json({ error: pending.error }, { status: pending.status });
       }
+      appendActivity(data, {
+        category: "open_shift",
+        summary: `Open shift sign-up: ${person.name} for ${os.label} on ${os.date}`,
+      });
       await writeDb(data);
       return NextResponse.json(data);
     }
@@ -117,6 +122,10 @@ export async function POST(req: NextRequest) {
     }
     assignPersonToSlotDirect(data, idx, driverId, person.name);
     refreshSlotOverrideFromSlot(data, data.slots[idx]);
+    appendActivity(data, {
+      category: "schedule",
+      summary: `Assigned ${person.name} to ${slot.label} on ${slot.date}`,
+    });
     await writeDb(data);
     return NextResponse.json(data);
   }
@@ -129,6 +138,10 @@ export async function POST(req: NextRequest) {
   if (!pending.ok) {
     return NextResponse.json({ error: pending.error }, { status: pending.status });
   }
+  appendActivity(data, {
+    category: "open_shift",
+    summary: `Open shift sign-up: ${person.name} for ${os.label} on ${os.date}`,
+  });
   await writeDb(data);
   return NextResponse.json(data);
 }

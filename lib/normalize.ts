@@ -1,4 +1,5 @@
 import { createDefaultWeeklyShiftAvailability, normalizeWeeklyAvailability } from "./availability-helpers";
+import { ensureActivityLog } from "./activity-log";
 import { migratePersonRole } from "./roles";
 import { newProfileToken } from "./profile-token";
 import { migrateRouteType } from "./route-types";
@@ -269,6 +270,7 @@ export function normalizeAppData(raw: AppData): AppData {
     announcements: data.announcements ?? [],
     absenceStats: data.absenceStats ?? [],
     nonDefaultShiftReminders: data.nonDefaultShiftReminders ?? [],
+    activityLog: ensureActivityLog(data as AppData),
     slotOverrides: pruneSlotOverrides(
       data.slotOverrides && Object.keys(data.slotOverrides).length ? data.slotOverrides : undefined
     ),

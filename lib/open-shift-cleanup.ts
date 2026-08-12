@@ -1,4 +1,5 @@
 import type { AppData } from "./types";
+import { appendActivity } from "./activity-log";
 
 /** Cancel open shifts whose slot id is not in the current grid (e.g. after changing week). */
 export function cancelOrphanOpenShifts(data: AppData): void {
@@ -17,5 +18,11 @@ export function cancelOrphanOpenShifts(data: AppData): void {
           "Auto-cancelled: this posting referred to a slot that is not on the calendar for the selected week.",
       },
     ];
+    appendActivity(data, {
+      category: "open_shift",
+      summary: `Open shift auto-cancelled: ${o.label} on ${o.date}`,
+      detail: "Slot not on the calendar for the selected week",
+      at: stamp,
+    });
   }
 }

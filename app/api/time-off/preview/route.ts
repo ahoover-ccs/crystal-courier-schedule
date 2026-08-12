@@ -5,9 +5,11 @@ import {
   maxOthersOutInRange,
   trailingMonthsAbsenceDayCount,
 } from "@/lib/time-off-preview-stats";
+import {
+  isDateWithinTimeOffWindow,
+  maxTimeOffRequestDateISO,
+} from "@/lib/time-off-dates";
 import type { RouteType } from "@/lib/types";
-
-const MAX_RANGE_DAYS = 60;
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -24,8 +26,16 @@ export async function POST(req: NextRequest) {
     endDate && endDate.trim() && endDate >= date
       ? inclusiveDateRangeISO(date, endDate)
       : [date];
-  if (dates.length > MAX_RANGE_DAYS) {
-    return NextResponse.json({ error: "Range too long" }, { status: 400 });
+  if (dates.length === 0) {
+    return NextResponse.json({ error: "Invalid date range" }, { status: 400 });
+  }
+  const maxDate = maxTimeOffRequestDateISO();
+  const outOfWindow = dates.find((d) => !isDateWithinTimeOffWindow(d));
+  if (outOfWindow) {
+    return NextResponse.json(
+      { error: `Dates must be on or before ${maxDate}` },
+      { status: 400 }
+    );
   }
 
   const data = await ensureDb();

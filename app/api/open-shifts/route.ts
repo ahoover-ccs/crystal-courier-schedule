@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { appendActivity } from "@/lib/activity-log";
 import { ensureDb, writeDb } from "@/lib/db";
 import { sendTransactionalEmail } from "@/lib/email-sender";
 import { peopleEligibleForOpenShiftNotify } from "@/lib/open-shift-recipients";
@@ -128,6 +129,11 @@ View schedule and claim open shifts: ${portalUrl}
     notificationLog: log,
   };
   data.openShifts.push(row);
+  appendActivity(data, {
+    category: "open_shift",
+    summary: `Posted open shift: ${slot.label} on ${slot.date} (${recipients.length} eligible)`,
+    detail: log.map((n) => `[${n.channel}] ${n.message}`).join("\n"),
+  });
   await writeDb(data);
   return NextResponse.json({ data, openShift: row });
 }

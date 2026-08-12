@@ -1,0 +1,17 @@
+# Blueprint for the hourly non-default shift reminder Cron Job.
+# Does not define the existing Web Service (created in the dashboard).
+# After the first push: Render Dashboard → New → Blueprint → this repo,
+# then set APP_PUBLIC_URL (and CRON_SECRET if the web service uses one).
+services:
+  - type: cron
+    name: crystal-courier-shift-reminders
+    runtime: node
+    plan: starter
+    schedule: "0 * * * *"
+    buildCommand: "true"
+    startCommand: node scripts/run-reminders.mjs
+    envVars:
+      - key: APP_PUBLIC_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false

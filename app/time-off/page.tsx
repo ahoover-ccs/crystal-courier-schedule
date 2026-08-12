@@ -7,6 +7,7 @@ import { activePeople } from "@/lib/active-people";
 import { routeTypesAvailableForPerson } from "@/lib/availability-helpers";
 import { inclusiveDateRangeISO } from "@/lib/date-range";
 import { ROUTE_TYPE_TIME_OFF_LABELS } from "@/lib/route-types";
+import { maxTimeOffRequestDateISO } from "@/lib/time-off-dates";
 import type { AppData, Person, RouteType } from "@/lib/types";
 
 type Preview = {
@@ -38,6 +39,8 @@ export default function TimeOffPage() {
 
   const people: Person[] =
     data ? activePeople(data).slice().sort((a, b) => a.name.localeCompare(b.name)) : [];
+
+  const maxRequestDate = maxTimeOffRequestDateISO();
 
   const effectiveEnd = endDate.trim() && endDate >= startDate ? endDate : undefined;
 
@@ -108,6 +111,14 @@ export default function TimeOffPage() {
     }
     if (endDate.trim() && endDate < startDate) {
       setErr("End date must be on or after the start date.");
+      return;
+    }
+    if (startDate > maxRequestDate) {
+      setErr(`Start date must be on or before ${maxRequestDate} (up to 18 months ahead).`);
+      return;
+    }
+    if (effectiveEnd && effectiveEnd > maxRequestDate) {
+      setErr(`End date must be on or before ${maxRequestDate} (up to 18 months ahead).`);
       return;
     }
     setLoading(true);
@@ -187,6 +198,7 @@ export default function TimeOffPage() {
               required
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
+              max={maxRequestDate}
               className="mt-1 w-full rounded border border-cc-line bg-white px-3 py-2 font-serif"
             />
           </div>
@@ -197,6 +209,7 @@ export default function TimeOffPage() {
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               min={startDate || undefined}
+              max={maxRequestDate}
               className="mt-1 w-full rounded border border-cc-line bg-white px-3 py-2 font-serif"
             />
           </div>

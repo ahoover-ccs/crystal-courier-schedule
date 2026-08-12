@@ -27,6 +27,7 @@ import {
   SHIFT_AVAILABILITY_ABBR,
   SHIFT_AVAILABILITY_ROUTE_TYPES,
 } from "@/lib/route-types";
+import { CollapsibleSection } from "./CollapsibleSection";
 
 const WEEKDAY_LABELS: Record<WeekdayKey, string> = {
   mon: "Mon",
@@ -71,6 +72,9 @@ export function SettingsForm() {
   const [terminateEffectiveDate, setTerminateEffectiveDate] = useState("");
   const [terminateBusy, setTerminateBusy] = useState(false);
   const [catalogBusy, setCatalogBusy] = useState(false);
+  const [scheduleRowsEffectiveDate, setScheduleRowsEffectiveDate] = useState(
+    formatISODate(weekStartContaining(new Date()))
+  );
 
   const applyCatalogFromAppData = useCallback((d: AppData) => {
     setData(d);
@@ -126,7 +130,8 @@ export function SettingsForm() {
 
   const persistRoutesAndCatalog = async (
     defs: RouteDefinition[],
-    tpls: SlotTemplate[]
+    tpls: SlotTemplate[],
+    options?: { slotTemplatesEffectiveDate?: string }
   ): Promise<boolean> => {
     if (!data) return false;
     setErr(null);
@@ -140,6 +145,9 @@ export function SettingsForm() {
         body: JSON.stringify({
           routeDefinitions: defs,
           slotTemplates: syncedTemplates,
+          ...(options?.slotTemplatesEffectiveDate
+            ? { slotTemplatesEffectiveDate: options.slotTemplatesEffectiveDate }
+            : {}),
         }),
       });
       if (!res.ok) {
@@ -158,14 +166,25 @@ export function SettingsForm() {
     }
   };
 
-  const saveRoutesAndCatalog = async () => {
+  const saveRoutesAndCatalog = async (options?: { slotTemplatesEffectiveDate?: string }) => {
     setSaved(null);
-    const ok = await persistRoutesAndCatalog(routeDefs, templates);
+    const ok = await persistRoutesAndCatalog(routeDefs, templates, options);
     if (ok) {
       setSaved(
-        "Route catalog and schedule rows saved. The current week on the schedule board was updated."
+        options?.slotTemplatesEffectiveDate
+          ? `Route catalog and schedule rows saved. Grid defaults apply from ${options.slotTemplatesEffectiveDate} forward; earlier dates are unchanged.`
+          : "Route catalog and schedule rows saved. The current week on the schedule board was updated."
       );
     }
+  };
+
+  const saveScheduleRowsWithEffectiveDate = async () => {
+    const effectiveDate = scheduleRowsEffectiveDate.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(effectiveDate)) {
+      setErr("Enter a valid effective date (YYYY-MM-DD) for schedule row changes.");
+      return;
+    }
+    await saveRoutesAndCatalog({ slotTemplatesEffectiveDate: effectiveDate });
   };
 
   const addPerson = async (e: React.FormEvent) => {
@@ -534,8 +553,7 @@ export function SettingsForm() {
         </p>
       </section>
 
-      <section className="border-t border-cc-line pt-10">
-        <h2 className="font-serif text-2xl text-cc-navy">Team roster</h2>
+      <CollapsibleSection title="Team roster" hint="Add, edit, and terminate team members.">
         <ul className="mt-4 space-y-2 rounded border border-cc-line bg-cc-paper p-4">
           {peopleAlpha.map((p) => (
             <li
@@ -705,10 +723,9 @@ export function SettingsForm() {
             </button>
           </div>
         </form>
-      </section>
+      </CollapsibleSection>
 
-      <section className="border-t border-cc-line pt-10">
-        <h2 className="font-serif text-2xl text-cc-navy">Shift availability (by day)</h2>
+      <CollapsibleSection title="Shift availability (by day)" hint="Which route types each person can cover each weekday.">
         <p className="mt-2 text-sm text-cc-muted">
           For each weekday, check the shift types someone can cover for fill-in suggestions and time-off
           requests. Opener and Closer do not conflict with other routes on the same day. Drivers can
@@ -770,10 +787,9 @@ export function SettingsForm() {
         >
           Save shift availability
         </button>
-      </section>
+      </CollapsibleSection>
 
-      <section className="border-t border-cc-line pt-10">
-        <h2 className="font-serif text-2xl text-cc-navy">Route catalog</h2>
+      <CollapsibleSection title="Route catalog" hint="Define customer/route names and shift types.">
         <p className="mt-2 text-sm text-cc-muted">
           Define each customer/route once. Adding a route also creates a matching row on the weekly
           grid below. Use <strong className="font-medium text-cc-ink">Remove</strong> to drop a route
@@ -869,13 +885,13 @@ export function SettingsForm() {
             </button>
           </div>
         </form>
-      </section>
+      </CollapsibleSection>
 
-      <section className="border-t border-cc-line pt-10">
-        <h2 className="font-serif text-2xl text-cc-navy">Schedule rows (weekly grid)</h2>
+      <CollapsibleSection title="Schedule rows (weekly grid)" hint="Default drivers for each Mon–Fri schedule line.">
         <p className="mt-2 text-sm text-cc-muted">
           Each row is one line on the Mon–Fri board. Pick the route, then choose the default driver per
-          weekday (leave blank for open that day).
+          weekday (leave blank for open that day). Set an effective date when saving so earlier
+          schedule dates keep their existing assignments.
         </p>
         <div className="mt-4 overflow-x-auto rounded border border-cc-line bg-cc-paper">
           <table className="w-full min-w-[900px] text-left text-sm">
@@ -950,7 +966,7 @@ export function SettingsForm() {
             </tbody>
           </table>
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap items-end gap-3">
           <button
             type="button"
             onClick={addTemplateRow}
@@ -958,19 +974,27 @@ export function SettingsForm() {
           >
             Add schedule row
           </button>
+          <label className="flex flex-col gap-1 text-sm text-cc-ink">
+            Effective date
+            <input
+              type="date"
+              value={scheduleRowsEffectiveDate}
+              onChange={(e) => setScheduleRowsEffectiveDate(e.target.value)}
+              className="rounded border border-cc-line px-2 py-1.5 font-serif"
+            />
+          </label>
           <button
             type="button"
-            onClick={() => void saveRoutesAndCatalog()}
+            onClick={() => void saveScheduleRowsWithEffectiveDate()}
             disabled={catalogBusy}
             className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep disabled:opacity-50"
           >
             {catalogBusy ? "Saving…" : "Save schedule rows & grid"}
           </button>
         </div>
-      </section>
+      </CollapsibleSection>
 
-      <section className="border-t border-cc-line pt-10">
-        <h2 className="font-serif text-2xl text-cc-navy">Fill-in priority</h2>
+      <CollapsibleSection title="Fill-in priority" hint="Order used when suggesting coverage for open shifts.">
         <ul className="mt-4 space-y-2 rounded border border-cc-line bg-cc-paper p-4">
           {data.settings.fillPriorityIds.map((id, idx) => {
             const p = data.people.find((x) => x.id === id);
@@ -1013,10 +1037,9 @@ export function SettingsForm() {
         >
           Save fill-in priority
         </button>
-      </section>
+      </CollapsibleSection>
 
-      <section className="border-t border-cc-line pt-10">
-        <h2 className="font-serif text-2xl text-cc-navy">Announcements</h2>
+      <CollapsibleSection title="Announcements" hint="Post team-wide messages from the Announcements page.">
         <p className="mt-2 text-sm text-cc-muted">
           Post from the Announcements page: it saves to the board (last 30 days), emails everyone with
           an address on file, and texts everyone with a mobile number (Twilio when configured).
@@ -1027,10 +1050,9 @@ export function SettingsForm() {
         >
           Post an announcement
         </Link>
-      </section>
+      </CollapsibleSection>
 
-      <section className="border-t border-cc-line pt-10">
-        <h2 className="font-serif text-xl text-cc-navy">Email</h2>
+      <CollapsibleSection title="Email" hint="How transactional email and portal URLs are configured.">
         <p className="mt-2 text-sm text-cc-muted">
           Time off notifies <strong>ahoover@crystalcourier.com</strong> by default. Set{" "}
           <code className="rounded bg-cc-cream px-1">RESEND_API_KEY</code> and{" "}
@@ -1040,7 +1062,18 @@ export function SettingsForm() {
           schedule page). Availability token links use{" "}
           <code className="rounded bg-cc-cream px-1">APP_PUBLIC_URL</code> (this app on Render).
         </p>
-      </section>
+      </CollapsibleSection>
+      <p className="mt-12 border-t border-cc-line pt-6 text-sm text-cc-muted">
+        <Link
+          href="/activity"
+          className="font-medium text-cc-navy underline decoration-cc-gold/50 hover:decoration-cc-gold"
+        >
+          Activity log
+        </Link>
+        {" — "}
+        notifications, approvals, reminders, and other key site events.
+      </p>
+
     </div>
   );
 }

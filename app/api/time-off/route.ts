@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { appendActivity } from "@/lib/activity-log";
 import { inclusiveDateRangeISO } from "@/lib/date-range";
 import { ensureDb, writeDb } from "@/lib/db";
 import { notifyTimeOffRequest } from "@/lib/send-time-off-email";
+import {
+  isDateWithinTimeOffWindow,
+  maxTimeOffRequestDateISO,
+} from "@/lib/time-off-dates";
 import type { RouteType, TimeOffRequest } from "@/lib/types";
-
-const MAX_RANGE_DAYS = 60;
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -25,9 +28,14 @@ export async function POST(req: NextRequest) {
     endDate && endDate.trim() && endDate >= date
       ? inclusiveDateRangeISO(date, endDate)
       : [date];
-  if (dates.length > MAX_RANGE_DAYS) {
+  if (dates.length === 0) {
+    return NextResponse.json({ error: "Invalid date range" }, { status: 400 });
+  }
+  const maxDate = maxTimeOffRequestDateISO();
+  const outOfWindow = dates.find((d) => !isDateWithinTimeOffWindow(d));
+  if (outOfWindow) {
     return NextResponse.json(
-      { error: `Date range cannot exceed ${MAX_RANGE_DAYS} days` },
+      { error: `Dates must be on or before ${maxDate} (up to 18 months ahead)` },
       { status: 400 }
     );
   }
@@ -54,6 +62,16 @@ export async function POST(req: NextRequest) {
     };
     data.timeOffRequests.push(reqRow);
   }
+
+  const rangeLabel =
+    dates.length === 1
+      ? dates[0]
+      : `${dates[0]} through ${dates[dates.length - 1]} (${dates.length} days)`;
+  appendActivity(data, {
+    category: "time_off",
+    summary: `Time off requested: ${person.name} — ${rangeLabel}`,
+    detail: routeTypes.join(", ") + (note?.trim() ? `\nNote: ${note.trim()}` : ""),
+  });
 
   await writeDb(data);
 

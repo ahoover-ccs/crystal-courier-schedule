@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { appendActivity } from "@/lib/activity-log";
 import { applyApprovedTimeOffRequestToData } from "@/lib/apply-time-off-approval";
 import { ensureDb, writeDb } from "@/lib/db";
 import { assignOpenShiftToDriver } from "@/lib/open-shift-assign";
@@ -49,12 +50,22 @@ export async function POST(req: NextRequest) {
 
     if (action === "reject") {
       row.status = "rejected";
+      appendActivity(data, {
+        category: "time_off",
+        summary: `Time off rejected: ${row.driverName} on ${row.date} (by ${approver.name})`,
+        detail: row.routeTypes.join(", "),
+      });
       await writeDb(data);
       return NextResponse.json({ data: await ensureDb() });
     }
 
     applyApprovedTimeOffRequestToData(data, row);
     row.status = "approved";
+    appendActivity(data, {
+      category: "time_off",
+      summary: `Time off approved: ${row.driverName} on ${row.date} (by ${approver.name})`,
+      detail: row.routeTypes.join(", "),
+    });
     await writeDb(data);
 
     const person = data.people.find((p) => p.id === row.driverId);
@@ -80,6 +91,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === "reject") {
+      const declinedName = os.pendingClaimDriverName ?? "driver";
       os.pendingClaimDriverId = null;
       os.pendingClaimDriverName = null;
       os.pendingClaimAt = null;
@@ -92,6 +104,10 @@ export async function POST(req: NextRequest) {
           message: `Sign-up declined by ${approver.name}.`,
         },
       ];
+      appendActivity(data, {
+        category: "open_shift",
+        summary: `Open shift sign-up rejected: ${declinedName} for ${os.label} on ${os.date} (by ${approver.name})`,
+      });
       await writeDb(data);
       return NextResponse.json({ data: await ensureDb() });
     }
@@ -123,6 +139,10 @@ export async function POST(req: NextRequest) {
 
     assignOpenShiftToDriver(data, idx, driverId, person.name, os);
     refreshSlotOverrideFromSlot(data, data.slots[idx]);
+    appendActivity(data, {
+      category: "open_shift",
+      summary: `Open shift filled: ${person.name} on ${os.label} (${os.date}) — approved by ${approver.name}`,
+    });
     await writeDb(data);
 
     await notifyShiftSignUpApprovedToDriver({

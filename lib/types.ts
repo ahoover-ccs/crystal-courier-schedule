@@ -125,6 +125,15 @@ export type NonDefaultShiftReminder = {
   sentAt: string;
 };
 
+/** Site-wide activity log (notifications, approvals, roster changes, etc.). */
+export type ActivityLogEntry = {
+  id: string;
+  at: string;
+  category: "open_shift" | "time_off" | "reminder" | "announcement" | "roster" | "schedule";
+  summary: string;
+  detail?: string;
+};
+
 /** Team-wide note shown above a day on the weekly route board (management can edit). */
 export type ScheduleDayNote = {
   date: string;
@@ -158,6 +167,8 @@ export type AppData = {
   absenceStats: AbsenceYearStats[];
   /** Keys like `nd-{slotId}-{driverId}` once a non-default 24h reminder was sent */
   nonDefaultShiftReminders?: NonDefaultShiftReminder[];
+  /** Chronological site activity (newest first); pruned on write */
+  activityLog?: ActivityLogEntry[];
   slotOverrides?: Record<string, SlotOverrideState>;
   scheduleDayNotes?: ScheduleDayNote[];
   settings: AppSettings;

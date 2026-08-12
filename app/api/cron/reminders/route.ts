@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { parseISO } from "date-fns";
+import { appendActivity } from "@/lib/activity-log";
 import { slotTemplateForSlot } from "@/lib/availability-helpers";
 import { effectiveDefaultDriverForDate } from "@/lib/person-roster-dates";
 import { ensureDb, writeDb } from "@/lib/db";
@@ -53,7 +54,8 @@ export async function GET(req: Request) {
     shiftStart.setHours(Math.floor(w.start / 60), w.start % 60, 0, 0);
     const diffMs = shiftStart.getTime() - now.getTime();
     const hours = diffMs / (1000 * 60 * 60);
-    if (hours < 23 || hours > 25) continue;
+    // ~24h window with slack so hourly (or near-hourly) cron does not miss the slot
+    if (hours < 22 || hours > 26) continue;
 
     const person = data.people.find((p) => p.id === s.driverId);
     if (!person) continue;
@@ -72,28 +74,40 @@ Schedule: ${portalUrl}
 — Crystal Courier`;
     const sms = `Crystal Courier: you’re on ${s.label} ${s.date}. ${portalUrl}`;
 
+    let contacted = false;
     if (person.email?.trim()) {
       await sendTransactionalEmail({
         to: person.email.trim(),
         subject,
         text,
       }).catch((e) => console.error("[non-default reminder email]", e));
+      contacted = true;
     }
     if (person.phone?.trim()) {
       await sendTransactionalSms({ to: person.phone.trim(), body: sms }).catch((e) =>
         console.error("[non-default reminder sms]", e)
       );
+      contacted = true;
     }
 
     newRows.push({ key, sentAt: stamp });
     sent.add(key);
     log.push(`${person.name}: ${s.label} on ${s.date}`);
+    appendActivity(data, {
+      category: "reminder",
+      summary: `Non-default shift reminder: ${person.name} — ${s.label} on ${s.date}`,
+      detail: contacted
+        ? "Email and/or SMS attempted"
+        : "No email or phone on file — reminder recorded only",
+      at: stamp,
+    });
   }
 
   if (newRows.length) {
     data = {
       ...data,
       nonDefaultShiftReminders: [...(data.nonDefaultShiftReminders ?? []), ...newRows],
+      activityLog: data.activityLog,
     } as AppData;
     await writeDb(data);
   }

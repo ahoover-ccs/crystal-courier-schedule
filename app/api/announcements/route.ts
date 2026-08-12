@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { appendActivity } from "@/lib/activity-log";
 import { ensureDb, writeDb } from "@/lib/db";
 import { sendTransactionalEmail } from "@/lib/email-sender";
 import { driverPortalUrl } from "@/lib/public-urls";
@@ -33,6 +34,11 @@ export async function POST(req: NextRequest) {
     createdByName: createdByName?.trim(),
   };
   data.announcements = [...(data.announcements ?? []), row];
+  appendActivity(data, {
+    category: "announcement",
+    summary: `Announcement posted: ${row.subject}`,
+    detail: row.createdByName ? `By ${row.createdByName}` : undefined,
+  });
   await writeDb(data);
 
   const portalUrl = driverPortalUrl(new URL(req.url).origin);

@@ -11,6 +11,7 @@ export default function ApprovalsPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [showRecentApproved, setShowRecentApproved] = useState(false);
 
   const load = useCallback(async () => {
     const r = await fetch("/api/data");
@@ -34,7 +35,11 @@ export default function ApprovalsPage() {
     () =>
       (data?.timeOffRequests ?? [])
         .filter((r) => r.status === "pending")
-        .sort((a, b) => (a.date === b.date ? a.driverName.localeCompare(b.driverName) : a.date.localeCompare(b.date))),
+        .sort((a, b) =>
+          a.date === b.date
+            ? a.driverName.localeCompare(b.driverName)
+            : a.date.localeCompare(b.date)
+        ),
     [data]
   );
 
@@ -42,7 +47,23 @@ export default function ApprovalsPage() {
     if (!data) return [];
     return data.openShifts
       .filter((o) => o.status === "open" && o.pendingClaimDriverId)
-      .sort((a, b) => (a.date === b.date ? a.label.localeCompare(b.label) : a.date.localeCompare(b.date)));
+      .sort((a, b) =>
+        a.date === b.date ? a.label.localeCompare(b.label) : a.date.localeCompare(b.date)
+      );
+  }, [data]);
+
+  const recentApprovedTimeOff: TimeOffRequest[] = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 90);
+    const cutoffISO = cutoff.toISOString();
+    return (data?.timeOffRequests ?? [])
+      .filter((r) => r.status === "approved" && r.createdAt >= cutoffISO)
+      .sort((a, b) => {
+        const byCreated = b.createdAt.localeCompare(a.createdAt);
+        if (byCreated !== 0) return byCreated;
+        return b.date.localeCompare(a.date);
+      })
+      .slice(0, 75);
   }, [data]);
 
   const act = async (
@@ -68,7 +89,11 @@ export default function ApprovalsPage() {
         setErr(json.error ?? "Request failed");
         return;
       }
-      setMsg(action === "approve" ? "Approved. The team member was notified by email and text if we have their contact info." : "Rejected.");
+      setMsg(
+        action === "approve"
+          ? "Approved. The team member was notified by email and text if we have their contact info."
+          : "Rejected."
+      );
       setData(json.data as AppData);
     } catch {
       setErr("Network error");
@@ -88,7 +113,9 @@ export default function ApprovalsPage() {
       </p>
 
       <div className="mt-6 rounded border border-cc-line bg-cc-paper p-4 shadow-sm">
-        <label className="block text-sm font-medium text-cc-ink">Acting as (owner, ops, or dispatch)</label>
+        <label className="block text-sm font-medium text-cc-ink">
+          Acting as (owner, ops, or dispatch)
+        </label>
         <select
           value={approverId}
           onChange={(e) => setApproverId(e.target.value)}
@@ -118,10 +145,7 @@ export default function ApprovalsPage() {
             </li>
           )}
           {pendingTimeOff.map((r) => (
-            <li
-              key={r.id}
-              className="rounded border border-cc-line bg-white p-4 shadow-sm"
-            >
+            <li key={r.id} className="rounded border border-cc-line bg-white p-4 shadow-sm">
               <p className="font-medium text-cc-ink">{r.driverName}</p>
               <p className="text-sm text-cc-muted">
                 {format(parseISO(r.date), "EEEE, MMM d, yyyy")} · {r.routeTypes.join(", ")}
@@ -189,6 +213,43 @@ export default function ApprovalsPage() {
           ))}
         </ul>
       </section>
+
+      <div className="mt-12 border-t border-cc-line pt-6">
+        <button
+          type="button"
+          onClick={() => setShowRecentApproved((v) => !v)}
+          className="text-sm font-medium text-cc-navy underline decoration-cc-gold/50 hover:decoration-cc-gold"
+        >
+          {showRecentApproved ? "Hide recent approved time off" : "Show recent approved time off"}
+        </button>
+        {showRecentApproved && (
+          <section className="mt-4">
+            <h2 className="font-serif text-lg text-cc-navy">Recently approved time off</h2>
+            <p className="mt-1 text-xs text-cc-muted">
+              Approved requests from the last 90 days (by when they were submitted).
+            </p>
+            <ul className="mt-3 max-h-80 space-y-2 overflow-y-auto">
+              {recentApprovedTimeOff.length === 0 && (
+                <li className="rounded border border-cc-line bg-white px-4 py-3 text-sm text-cc-muted">
+                  No approved time off in the last 90 days.
+                </li>
+              )}
+              {recentApprovedTimeOff.map((r) => (
+                <li
+                  key={r.id}
+                  className="rounded border border-cc-line bg-white px-3 py-2 text-sm"
+                >
+                  <span className="font-medium text-cc-ink">{r.driverName}</span>
+                  <span className="text-cc-muted">
+                    {" "}
+                    · {format(parseISO(r.date), "EEE, MMM d, yyyy")} · {r.routeTypes.join(", ")}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

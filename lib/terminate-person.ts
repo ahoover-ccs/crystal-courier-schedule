@@ -1,5 +1,6 @@
 import type { AppData, WeekdayKey } from "./types";
 import { WEEKDAY_KEYS } from "./types";
+import { appendActivity } from "./activity-log";
 
 function slotDateFromId(slotId: string): string {
   const i = slotId.indexOf("__");
@@ -88,6 +89,11 @@ export function terminatePersonInData(
       data.nonDefaultShiftReminders = undefined;
     }
   }
+
+  appendActivity(data, {
+    category: "roster",
+    summary: `${person.name} terminated effective ${effectiveDate}`,
+  });
 }
 
 /** Clear template default references to unknown or terminated people (settings save safety). */

@@ -64,6 +64,20 @@ Notifications fall back to console logs if these are unset:
 - `APP_PUBLIC_URL` — public URL of this app on Render (for availability token links).
 - `DRIVER_PORTAL_URL` — link in driver emails/SMS (announcements, open shifts, approvals). Set to your employee schedule page, e.g. `https://sites.google.com/crystalcourier.com/employees/schedule?authuser=0`. When unset, emails use `{APP_PUBLIC_URL}/schedule`.
 
+### Non-default shift reminders (~24 hours ahead)
+
+When someone is assigned to a route that is **not** their usual default for that day, the app emails and texts them about a day before the shift starts. [`render.yaml`](render.yaml) defines an hourly **Cron Job** (`crystal-courier-shift-reminders`) that GETs `/api/cron/reminders` on the live web service.
+
+**One-time setup** (after this file is on `main`):
+
+1. In the [Render Dashboard](https://dashboard.render.com), click **New** → **Blueprint**, select this repo, and apply it. That creates the cron job only (the existing Web Service stays as-is).
+2. On the new cron job, set:
+   - `APP_PUBLIC_URL` — the public URL of the Web Service (e.g. `https://crystal-courier-schedule.onrender.com`)
+   - `CRON_SECRET` — same value as on the Web Service, if you set one there
+3. Optionally set `CRON_SECRET` on the **Web Service** too, so only the cron (and anyone with the secret) can hit the endpoint.
+
+If you deploy on Vercel instead, [`vercel.json`](vercel.json) already schedules that path hourly.
+
 ## Project layout
 
 - `app/` — Next.js App Router routes. Management UI at the root, driver portal under `/driver`, JSON APIs under `/api`.

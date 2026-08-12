@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  clearOverridesMatchingOldDefaultsOnOrAfter,
+  preserveScheduleBeforeEffectiveDate,
+} from "@/lib/apply-slot-templates-effective";
 import { applyDefaultDriversToEmptySlots } from "@/lib/apply-defaults";
 import { ensureDb, rebuildSlotsForWeek, writeDb } from "@/lib/db";
 import { syncSlotTemplatesWithCatalog } from "@/lib/sync-catalog-templates";
@@ -64,9 +68,11 @@ function preserveTemplatesForRetiredRoutes(
 
 export async function PATCH(req: NextRequest) {
   const body = await req.json();
-  const { fillPriorityIds, slotTemplates, defaultWeekStart, routeDefinitions } = body as Partial<
-    AppSettings & { routeDefinitions?: RouteDefinition[] }
-  >;
+  const { fillPriorityIds, slotTemplates, defaultWeekStart, routeDefinitions, slotTemplatesEffectiveDate } =
+    body as Partial<AppSettings & {
+      routeDefinitions?: RouteDefinition[];
+      slotTemplatesEffectiveDate?: string;
+    }>;
   let data = await ensureDb();
   if (fillPriorityIds) {
     data.settings.fillPriorityIds = fillPriorityIds;
@@ -82,11 +88,28 @@ export async function PATCH(req: NextRequest) {
     );
   }
   if (slotTemplates !== undefined) {
+    const previousTemplates = data.settings.slotTemplates;
+    if (
+      slotTemplatesEffectiveDate &&
+      /^\d{4}-\d{2}-\d{2}$/.test(slotTemplatesEffectiveDate)
+    ) {
+      preserveScheduleBeforeEffectiveDate(data, slotTemplatesEffectiveDate, previousTemplates);
+    }
     data.settings.slotTemplates = preserveTemplatesForRetiredRoutes(
       data.settings.slotTemplates,
       slotTemplates,
       data.settings.routeDefinitions
     );
+    if (
+      slotTemplatesEffectiveDate &&
+      /^\d{4}-\d{2}-\d{2}$/.test(slotTemplatesEffectiveDate)
+    ) {
+      clearOverridesMatchingOldDefaultsOnOrAfter(
+        data,
+        slotTemplatesEffectiveDate,
+        previousTemplates
+      );
+    }
   }
   if (catalogChanged || rowsChanged) {
     data.settings.slotTemplates = syncSlotTemplatesWithCatalog(

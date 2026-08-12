@@ -5,8 +5,6 @@ import { usePathname } from "next/navigation";
 import { BrandLogo } from "./BrandLogo";
 
 const managementLinks = [
-  { href: "/", label: "Home" },
-  { href: "/management", label: "Management portal" },
   { href: "/schedule?week=current", label: "Schedule" },
   { href: "/approvals", label: "Approvals needed" },
   { href: "/time-off", label: "Request time off" },
