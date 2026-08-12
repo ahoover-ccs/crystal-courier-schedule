@@ -14,7 +14,6 @@ const managementLinks = [
 ];
 
 const driverLinks = [
-  { href: "/driver", label: "Driver portal" },
   { href: "/driver/schedule", label: "Schedule (view only)" },
   { href: "/driver/time-off", label: "Request time off" },
   { href: "/driver/open-shifts", label: "Open shifts" },

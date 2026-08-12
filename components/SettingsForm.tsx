@@ -99,6 +99,12 @@ export function SettingsForm() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    if (!saved || err) return;
+    const t = setTimeout(() => setSaved(null), 5000);
+    return () => clearTimeout(t);
+  }, [saved, err]);
+
   const move = (id: string, dir: -1 | 1) => {
     if (!data) return;
     const ids = [...data.settings.fillPriorityIds];
@@ -536,11 +542,48 @@ export function SettingsForm() {
           </div>
         </div>
       )}
-      {err && (
-        <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{err}</p>
-      )}
-      {saved && (
-        <p className="rounded border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-900">{saved}</p>
+      {(saved || err) && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-cc-navy/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="settings-feedback-title"
+          onClick={() => {
+            setSaved(null);
+            setErr(null);
+          }}
+        >
+          <div
+            className={`w-full max-w-md rounded border p-6 shadow-xl ${
+              err ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2
+              id="settings-feedback-title"
+              className={`font-serif text-xl ${err ? "text-red-900" : "text-green-900"}`}
+            >
+              {err ? "Could not save" : "Saved"}
+            </h2>
+            <p className={`mt-2 text-sm ${err ? "text-red-800" : "text-green-900"}`}>
+              {err ?? saved}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSaved(null);
+                setErr(null);
+              }}
+              className={`mt-5 rounded px-4 py-2 text-sm ${
+                err
+                  ? "bg-red-800 text-white hover:bg-red-900"
+                  : "bg-cc-navy text-cc-paper hover:bg-cc-navy-deep"
+              }`}
+            >
+              OK
+            </button>
+          </div>
+        </div>
       )}
 
       <section>
