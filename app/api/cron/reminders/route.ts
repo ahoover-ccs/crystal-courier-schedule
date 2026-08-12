@@ -9,6 +9,7 @@ import { driverPortalUrl } from "@/lib/public-urls";
 import { sendTransactionalSms } from "@/lib/sms-sender";
 import type { AppData, NonDefaultShiftReminder, ScheduleSlot } from "@/lib/types";
 import { routeWindow } from "@/lib/route-windows";
+import { isSpecialRouteSlotId } from "@/lib/special-routes";
 
 function reminderKey(slot: ScheduleSlot, driverId: string): string {
   return `nd-${slot.id}-${driverId}`;
@@ -41,9 +42,12 @@ export async function GET(req: Request) {
   for (const s of data.slots) {
     if (!s.driverId) continue;
     const template = slotTemplateForSlot(data, s);
-    if (!template) continue;
-    const def = effectiveDefaultDriverForDate(data, s.date, template);
-    if (def == null || def === s.driverId) continue;
+    const isSpecial = isSpecialRouteSlotId(s.id);
+    if (!template && !isSpecial) continue;
+    if (template) {
+      const def = effectiveDefaultDriverForDate(data, s.date, template);
+      if (def == null || def === s.driverId) continue;
+    }
 
     const key = reminderKey(s, s.driverId);
     if (sent.has(key) || newRows.some((r) => r.key === key)) continue;

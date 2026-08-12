@@ -5,6 +5,7 @@ import { slotTemplateForSlot } from "@/lib/availability-helpers";
 import { effectiveDefaultDriverForDate } from "@/lib/person-roster-dates";
 import { ensureDb, writeDb } from "@/lib/db";
 import { refreshSlotOverrideFromSlot } from "@/lib/slot-overrides";
+import { isSpecialRouteSlotId } from "@/lib/special-routes";
 import { canAssignDriver, hasApprovedTimeOffForSlot } from "@/lib/suggestions";
 
 export async function POST(req: NextRequest) {
@@ -31,6 +32,16 @@ export async function POST(req: NextRequest) {
 
   if (driverId === null) {
     const removedId = prev.driverId;
+    if (isSpecialRouteSlotId(slotId)) {
+      data.slots[idx] = {
+        ...prev,
+        driverId: null,
+        isGap: false,
+        gapReason: undefined,
+        absenceType: undefined,
+        gapForDriverId: null,
+      };
+    } else {
     const template = slotTemplateForSlot(data, prev);
     const def = template ? effectiveDefaultDriverForDate(data, prev.date, template) : null;
     const hadApprovedTimeOff =
@@ -59,6 +70,7 @@ export async function POST(req: NextRequest) {
         absenceType: keepTimeOffMeta ? "planned" : undefined,
         gapForDriverId: keepTimeOffMeta ? prev.gapForDriverId : null,
       };
+    }
     }
   } else {
     data.slots[idx] = {

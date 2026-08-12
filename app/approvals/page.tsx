@@ -92,7 +92,7 @@ export default function ApprovalsPage() {
       setMsg(
         action === "approve"
           ? "Approved. The team member was notified by email and text if we have their contact info."
-          : "Rejected."
+          : "Rejected. The team member was emailed if we have their address on file."
       );
       setData(json.data as AppData);
     } catch {

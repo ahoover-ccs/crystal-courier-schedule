@@ -23,6 +23,7 @@ import { applyRosterDateRulesToSlots } from "./person-roster-dates";
 import { mergeSlotOverridesIntoSlots } from "./slot-overrides";
 import { createDefaultWeeklyShiftAvailability } from "./availability-helpers";
 import { newProfileToken } from "./profile-token";
+import { slotFromSpecialRoute } from "./special-routes";
 import { roleNeedsProfileToken } from "./roles";
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -437,6 +438,11 @@ export function rebuildSlotsForWeek(data: AppData, weekStart: string): AppData {
     data.settings.routeDefinitions,
     data.people
   );
+  const days = new Set(weekWorkdaysFromWeekStart(weekStart));
+  for (const sr of data.specialRoutes ?? []) {
+    if (!days.has(sr.date)) continue;
+    fresh.push(slotFromSpecialRoute(sr));
+  }
   const merged = mergeSlotOverridesIntoSlots(fresh, data.slotOverrides);
   const slots = applyRosterDateRulesToSlots(merged, data.people);
   return normalizeAppData({

@@ -4,6 +4,7 @@ import { migratePersonRole } from "./roles";
 import { newProfileToken } from "./profile-token";
 import { migrateRouteType } from "./route-types";
 import { normalizeStoredWeekStart } from "./week-utils";
+import { normalizeSpecialRoutes } from "./special-routes";
 import type {
   AppData,
   Person,
@@ -280,6 +281,7 @@ export function normalizeAppData(raw: AppData): AppData {
       );
       return notes.length ? notes : undefined;
     })(),
+    specialRoutes: normalizeSpecialRoutes(data.specialRoutes),
     settings: {
       routeDefinitions,
       slotTemplates,

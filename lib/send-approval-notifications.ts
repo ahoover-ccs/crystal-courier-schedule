@@ -47,6 +47,36 @@ Your matching assignments have been cleared on the schedule. View the schedule: 
   }
 }
 
+/** Email to the driver after time off is rejected. */
+export async function notifyTimeOffRejectedToDriver(params: {
+  person: Person;
+  dates: string[];
+  routeTypes: RouteType[];
+}): Promise<void> {
+  const dateLine =
+    params.dates.length === 1
+      ? params.dates[0]
+      : `${params.dates[0]} through ${params.dates[params.dates.length - 1]} (${params.dates.length} days)`;
+  const subject = `[Crystal Courier] Time off not approved — ${params.person.name}`;
+  const text = `Hi ${params.person.name},
+
+Unfortunately, we were not able to approve your time off request. Please chat with a member of management to see if anything can be done.
+
+Dates: ${dateLine}
+Route types: ${routeTypeLine(params.routeTypes)}
+
+— Crystal Courier`;
+
+  const email = params.person.email?.trim();
+  if (email) {
+    await sendTransactionalEmail({ to: email, subject, text }).catch((e) =>
+      console.error("[rejection email time-off]", e)
+    );
+  } else {
+    console.warn("[rejection notify time-off] no email for", params.person.name);
+  }
+}
+
 /** Email + SMS after an open-shift sign-up is approved. */
 export async function notifyShiftSignUpApprovedToDriver(params: {
   person: Person;

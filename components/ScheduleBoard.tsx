@@ -27,9 +27,10 @@ import { suggestFillIns } from "@/lib/suggestions";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
 import { compareSlotTemplatesByDisplayOrder } from "@/lib/route-display-order";
-import { formatISODate, weekStartContaining, weekWorkdaysFromWeekStart } from "@/lib/week-utils";
+import { formatISODate, isWeekdayISO, weekStartContaining, weekWorkdaysFromWeekStart } from "@/lib/week-utils";
 import { isTemplateActiveInWeek } from "@/lib/route-catalog";
 import { ROUTE_TYPE_SHORT_LABELS } from "@/lib/route-types";
+import { SPECIAL_ROUTE_TYPES, specialRouteSlotId, specialRoutesInWeek } from "@/lib/special-routes";
 
 const SYNC_DEFAULTS_NOTICE =
   "Refreshed from disk: time-off gaps re-applied, then empty cells filled from Settings defaults.";
@@ -188,6 +189,10 @@ export function ScheduleBoard() {
   const [activeDrag, setActiveDrag] = useState<{ label: string } | null>(null);
   const [weekInput, setWeekInput] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
+  const [showSpecialForm, setShowSpecialForm] = useState(false);
+  const [specialDate, setSpecialDate] = useState("");
+  const [specialType, setSpecialType] = useState<RouteType>("morning");
+  const [specialName, setSpecialName] = useState("");
   const weekSwitchSeq = useRef(0);
   const jumpedToCurrentWeek = useRef(false);
 
@@ -339,6 +344,19 @@ export function ScheduleBoard() {
     return rows.map(({ template, rowSlots }) => ({ template, rowSlots }));
   }, [data]);
 
+  const specialRows = useMemo(() => {
+    if (!data) return [];
+    const days = weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
+    return specialRoutesInWeek(data, data.settings.defaultWeekStart).map((route) => ({
+      route,
+      rowSlots: days.map((d) => {
+        if (d !== route.date) return null;
+        const id = specialRouteSlotId(route);
+        return data.slots.find((s) => s.id === id) ?? null;
+      }),
+    }));
+  }, [data]);
+
   const nameById = useMemo(() => {
     const m = new Map<string, string>();
     data?.people.forEach((p) => m.set(p.id, p.name));
@@ -411,6 +429,65 @@ export function ScheduleBoard() {
       setData(json as AppData);
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Could not save note");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openSpecialForm = () => {
+    const today = formatISODate(new Date());
+    const fallback = weekDays.find((d) => isWeekdayISO(d)) ?? today;
+    setSpecialDate(weekDays.includes(today) ? today : fallback);
+    setSpecialType("morning");
+    setSpecialName("");
+    setShowSpecialForm(true);
+  };
+
+  const addSpecialRoute = async () => {
+    if (!specialDate || !specialName.trim()) {
+      setLoadError("Enter a date and a route name.");
+      return;
+    }
+    setBusy(true);
+    setLoadError(null);
+    setNotice(null);
+    try {
+      const res = await fetch("/api/special-routes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: specialDate,
+          routeType: specialType,
+          name: specialName.trim(),
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not add special route");
+      const next = json.data as AppData;
+      setData(next);
+      setWeekInput(next.settings.defaultWeekStart);
+      setShowSpecialForm(false);
+      setSpecialName("");
+      setNotice(`Special route “${specialName.trim()}” added. Drop a driver on ${specialDate}.`);
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Could not add special route");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const removeSpecialRoute = async (id: string) => {
+    setBusy(true);
+    setLoadError(null);
+    try {
+      const res = await fetch(`/api/special-routes/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not remove special route");
+      setData(json.data as AppData);
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Could not remove special route");
     } finally {
       setBusy(false);
     }
@@ -645,7 +722,118 @@ export function ScheduleBoard() {
                 </Fragment>
               );
               })}
+              {specialRows.map(({ route, rowSlots }) => (
+                <Fragment key={route.id}>
+                  <div
+                    className={`flex flex-col justify-center bg-white px-1.5 py-1.5 text-sm ${routeStyle(route.routeType)}`}
+                  >
+                    <span className="text-[10px] font-semibold text-cc-muted">
+                      {routeLabel(route.routeType)} · Special
+                    </span>
+                    <span className="text-xs leading-tight text-cc-ink">{route.name}</span>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void removeSpecialRoute(route.id)}
+                      className="mt-1 text-left text-[10px] text-red-700 underline disabled:opacity-50"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  {rowSlots.map((slot, i) =>
+                    slot ? (
+                      <div key={slot.id} className="bg-cc-cream/40 p-0.5">
+                        <SlotCell
+                          slot={slot}
+                          occupantName={slot.driverId ? nameById.get(slot.driverId) ?? "?" : null}
+                          isNonDefaultAssignment={false}
+                          isPendingTimeOff={
+                            slot.driverId
+                              ? hasPendingTimeOffForSlot(data, slot.driverId, slot.date, slot.routeType)
+                              : false
+                          }
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        key={`special-empty-${route.id}-${i}`}
+                        className="bg-zinc-100/80 p-2 text-xs text-cc-muted"
+                      />
+                    )
+                  )}
+                </Fragment>
+              ))}
             </div>
+          </div>
+          <div className="mt-3">
+            {!showSpecialForm ? (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={openSpecialForm}
+                className="rounded border border-cc-navy px-3 py-2 text-sm text-cc-navy hover:bg-cc-navy/5 disabled:opacity-50"
+              >
+                Add Special Route
+              </button>
+            ) : (
+              <div className="rounded border border-cc-line bg-cc-paper p-4 shadow-sm">
+                <p className="text-sm font-medium text-cc-navy">Add Special Route</p>
+                <p className="mt-1 text-xs text-cc-muted">
+                  One-day customer work. The row appears on the left; only that date is open for a
+                  driver.
+                </p>
+                <div className="mt-3 flex flex-wrap items-end gap-3">
+                  <label className="flex flex-col gap-1 text-sm text-cc-ink">
+                    Date
+                    <input
+                      type="date"
+                      value={specialDate}
+                      onChange={(e) => setSpecialDate(e.target.value)}
+                      className="rounded border border-cc-line px-2 py-1.5 font-serif"
+                    />
+                  </label>
+                  <label className="flex flex-col gap-1 text-sm text-cc-ink">
+                    Time
+                    <select
+                      value={specialType}
+                      onChange={(e) => setSpecialType(e.target.value as RouteType)}
+                      className="rounded border border-cc-line px-2 py-1.5"
+                    >
+                      {SPECIAL_ROUTE_TYPES.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-sm text-cc-ink">
+                    Name of Route
+                    <input
+                      value={specialName}
+                      onChange={(e) => setSpecialName(e.target.value)}
+                      placeholder="e.g. Acme extra pickup"
+                      className="rounded border border-cc-line px-2 py-1.5"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void addSpecialRoute()}
+                    className="rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep disabled:opacity-50"
+                  >
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => setShowSpecialForm(false)}
+                    className="text-sm text-cc-muted underline"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

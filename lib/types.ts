@@ -149,6 +149,15 @@ export type AppSettings = {
   defaultWeekStart: string;
 };
 
+/** One-off customer route for a single calendar day (not in the weekly catalog). */
+export type SpecialRoute = {
+  id: string;
+  date: string;
+  routeType: RouteType;
+  name: string;
+  createdAt: string;
+};
+
 /** Saved per `ScheduleSlot.id` (date__templateId) so changing weeks does not rebuild away manager edits */
 export type SlotOverrideState = {
   driverId: string | null;
@@ -171,5 +180,7 @@ export type AppData = {
   activityLog?: ActivityLogEntry[];
   slotOverrides?: Record<string, SlotOverrideState>;
   scheduleDayNotes?: ScheduleDayNote[];
+  /** One-day special routes shown on the weekly grid for that date only. */
+  specialRoutes?: SpecialRoute[];
   settings: AppSettings;
 };

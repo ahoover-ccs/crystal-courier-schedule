@@ -9,6 +9,7 @@ import { isDispatcherLike } from "@/lib/roles";
 import {
   notifyShiftSignUpApprovedToDriver,
   notifyTimeOffApprovedToDriver,
+  notifyTimeOffRejectedToDriver,
 } from "@/lib/send-approval-notifications";
 import { canAssignDriver } from "@/lib/suggestions";
 
@@ -56,6 +57,16 @@ export async function POST(req: NextRequest) {
         detail: row.routeTypes.join(", "),
       });
       await writeDb(data);
+
+      const person = data.people.find((p) => p.id === row.driverId);
+      if (person) {
+        await notifyTimeOffRejectedToDriver({
+          person,
+          dates: [row.date],
+          routeTypes: row.routeTypes,
+        });
+      }
+
       return NextResponse.json({ data: await ensureDb() });
     }
 
