@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { activePeople } from "@/lib/active-people";
 import { routeTypesAvailableForPerson } from "@/lib/availability-helpers";
-import { inclusiveDateRangeISO } from "@/lib/date-range";
+import { timeOffRequestDates } from "@/lib/date-range";
 import { ROUTE_TYPE_TIME_OFF_LABELS } from "@/lib/route-types";
 import { maxTimeOffRequestDateISO } from "@/lib/time-off-dates";
 import type { AppData, Person, RouteType } from "@/lib/types";
@@ -51,8 +51,8 @@ export default function TimeOffPage() {
 
   const requestDates = useMemo(() => {
     if (!startDate) return undefined;
-    if (effectiveEnd) return inclusiveDateRangeISO(startDate, effectiveEnd);
-    return [startDate];
+    const dates = timeOffRequestDates(startDate, effectiveEnd);
+    return dates.length ? dates : undefined;
   }, [startDate, effectiveEnd]);
 
   const routeOptions = useMemo(() => {
@@ -158,7 +158,7 @@ export default function TimeOffPage() {
     <div className="mx-auto max-w-lg">
       <h1 className="font-serif text-3xl text-cc-navy">Request time off</h1>
       <p className="mt-2 text-sm text-cc-muted">
-        Choose a single day or a date range (inclusive). Requests go to{" "}
+        Choose a single day or a date range. Weekends are skipped. Requests go to{" "}
         {isDriverPortal ? (
           <span className="font-medium text-cc-ink">management for approval</span>
         ) : (
@@ -166,8 +166,9 @@ export default function TimeOffPage() {
             Approvals needed
           </Link>
         )}{" "}
-        first. Once approved,
-        only slots where you are assigned for the selected route types are cleared.
+        first. Once approved, only routes where that person is assigned or is the Settings default
+        for that weekday are opened. Days they do not normally work still keep them out of fill-in
+        suggestions.
       </p>
 
       <form onSubmit={submit} className="mt-8 space-y-4 rounded border border-cc-line bg-cc-paper p-6 shadow-sm">

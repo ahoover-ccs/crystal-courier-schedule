@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { inclusiveDateRangeISO } from "@/lib/date-range";
+import { timeOffRequestDates } from "@/lib/date-range";
 import { ensureDb } from "@/lib/db";
 import {
   maxOthersOutInRange,
@@ -22,12 +22,12 @@ export async function POST(req: NextRequest) {
   if (!driverId || !date || !routeTypes?.length) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
-  const dates =
-    endDate && endDate.trim() && endDate >= date
-      ? inclusiveDateRangeISO(date, endDate)
-      : [date];
+  const dates = timeOffRequestDates(date, endDate);
   if (dates.length === 0) {
-    return NextResponse.json({ error: "Invalid date range" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Choose a range that includes at least one weekday (Monday–Friday)" },
+      { status: 400 }
+    );
   }
   const maxDate = maxTimeOffRequestDateISO();
   const outOfWindow = dates.find((d) => !isDateWithinTimeOffWindow(d));

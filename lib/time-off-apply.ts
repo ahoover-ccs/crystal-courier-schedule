@@ -1,5 +1,5 @@
 import { plannedTimeOffGapReason } from "./absence-labels";
-import { resolveTemplateLabel } from "./availability-helpers";
+import { dateToWeekdayKey, resolveTemplateLabel } from "./availability-helpers";
 import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import { isRouteActiveOnDate } from "./route-catalog";
 import {
@@ -7,8 +7,7 @@ import {
   refreshSlotOverrideFromSlot,
 } from "./slot-overrides";
 import { specialRouteSlotId } from "./special-routes";
-import type { AppData, ScheduleSlot, SlotTemplate, TimeOffRequest } from "./types";
-import { WEEKDAY_KEYS } from "./types";
+import type { AppData, ScheduleSlot, SlotOverrideState, SlotTemplate, TimeOffRequest } from "./types";
 
 function toTimeOffGap(slot: ScheduleSlot, req: TimeOffRequest): ScheduleSlot {
   return {
@@ -25,12 +24,48 @@ function coveredBySomeoneElse(driverId: string | null | undefined, req: TimeOffR
   return Boolean(driverId && driverId !== req.driverId);
 }
 
-function personIsUsualDefault(template: SlotTemplate, personId: string): boolean {
-  return WEEKDAY_KEYS.some((d) => template.defaultDriversByDay[d] === personId);
-}
-
 function writeGapOverride(data: AppData, slot: ScheduleSlot): void {
   refreshSlotOverrideFromSlot(data, slot);
+}
+
+function deleteOverride(data: AppData, slotId: string): void {
+  if (!data.slotOverrides || !(slotId in data.slotOverrides)) return;
+  const next = { ...data.slotOverrides };
+  delete next[slotId];
+  data.slotOverrides = Object.keys(next).length ? next : undefined;
+}
+
+function restoreWeekdayDefault(
+  data: AppData,
+  slotId: string,
+  date: string,
+  template: SlotTemplate
+): void {
+  const def = effectiveDefaultDriverForDate(data, date, template);
+  const i = data.slots.findIndex((s) => s.id === slotId);
+  if (i >= 0) {
+    data.slots[i] = {
+      ...data.slots[i],
+      driverId: def,
+      isGap: false,
+      gapReason: undefined,
+      absenceType: undefined,
+      gapForDriverId: null,
+    };
+    refreshSlotOverrideFromSlot(data, data.slots[i]);
+    return;
+  }
+  deleteOverride(data, slotId);
+}
+
+function isTimeOffGapForPerson(
+  slot: ScheduleSlot | undefined,
+  override: SlotOverrideState | undefined,
+  req: TimeOffRequest
+): boolean {
+  if (slot?.isGap && slot.gapForDriverId === req.driverId) return true;
+  if (override?.isGap && override.gapForDriverId === req.driverId && !slot?.driverId) return true;
+  return false;
 }
 
 function gapLoadedSlot(data: AppData, slotId: string, req: TimeOffRequest): boolean {
@@ -48,9 +83,8 @@ function gapUnloadedTemplate(
   routeType: ScheduleSlot["routeType"],
   label: string
 ): void {
-  const slotId = `${req.date}__${template.id}`;
   const slot: ScheduleSlot = {
-    id: slotId,
+    id: `${req.date}__${template.id}`,
     date: req.date,
     routeType,
     label,
@@ -64,11 +98,43 @@ function gapUnloadedTemplate(
   writeGapOverride(data, slot);
 }
 
+function clearTimeOffGapsForRequestDate(data: AppData, req: TimeOffRequest): void {
+  if (data.slotOverrides) {
+    const next = { ...data.slotOverrides };
+    for (const id of Object.keys(next)) {
+      if (!id.startsWith(`${req.date}__`)) continue;
+      const o = next[id];
+      if (o.isGap && o.gapForDriverId === req.driverId && !o.driverId) delete next[id];
+    }
+    data.slotOverrides = Object.keys(next).length ? next : undefined;
+  }
+  for (let i = 0; i < data.slots.length; i++) {
+    const s = data.slots[i];
+    if (s.date !== req.date) continue;
+    if (s.gapForDriverId !== req.driverId) continue;
+    if (s.driverId && s.driverId !== req.driverId) continue;
+    data.slots[i] = {
+      ...s,
+      driverId: null,
+      isGap: false,
+      gapReason: undefined,
+      absenceType: undefined,
+      gapForDriverId: null,
+    };
+    refreshSlotOverrideFromSlot(data, data.slots[i]);
+  }
+}
+
 /**
- * Open this person's usual/assigned cells for an approved time-off row.
- * Coverage by someone else is left in place. Mutates `data`.
+ * Open this person's assigned or weekday-default cells for an approved time-off row.
+ * Someone else's default or coverage is left in place. Mutates `data`.
  */
 export function applyTimeOffRequestToBoard(data: AppData, req: TimeOffRequest): number {
+  if (!dateToWeekdayKey(req.date)) {
+    clearTimeOffGapsForRequestDate(data, req);
+    return 0;
+  }
+
   let opened = 0;
 
   for (const t of data.settings.slotTemplates) {
@@ -81,21 +147,19 @@ export function applyTimeOffRequestToBoard(data: AppData, req: TimeOffRequest): 
     const slot = data.slots.find((s) => s.id === slotId);
     const override = data.slotOverrides?.[slotId];
     const assigned = slot?.driverId ?? override?.driverId ?? null;
+    const defaultId = effectiveDefaultDriverForDate(data, req.date, t);
+    const belongsToPerson = assigned === req.driverId || defaultId === req.driverId;
+
+    if (isTimeOffGapForPerson(slot, override, req) && !belongsToPerson) {
+      restoreWeekdayDefault(data, slotId, req.date, t);
+      continue;
+    }
     if (coveredBySomeoneElse(assigned, req)) continue;
-    if (
-      (slot?.isGap && slot.gapForDriverId === req.driverId) ||
-      (override?.isGap && override.gapForDriverId === req.driverId && !assigned)
-    ) {
+    if (isTimeOffGapForPerson(slot, override, req) && belongsToPerson) {
       if (slot) writeGapOverride(data, toTimeOffGap(slot, req));
       continue;
     }
-
-    const defaultId = effectiveDefaultDriverForDate(data, req.date, t);
-    const belongs =
-      assigned === req.driverId ||
-      defaultId === req.driverId ||
-      (!assigned && personIsUsualDefault(t, req.driverId));
-    if (!belongs) continue;
+    if (!belongsToPerson) continue;
 
     if (gapLoadedSlot(data, slotId, req)) {
       opened += 1;
@@ -113,12 +177,8 @@ export function applyTimeOffRequestToBoard(data: AppData, req: TimeOffRequest): 
     const override = data.slotOverrides?.[slotId];
     const assigned = slot?.driverId ?? override?.driverId ?? null;
     if (coveredBySomeoneElse(assigned, req)) continue;
-    const belongs = assigned === req.driverId || (!assigned && slot);
-    if (!belongs && assigned) continue;
-    if (!slot && !assigned) continue;
-    if (assigned === req.driverId || (slot && !assigned)) {
-      if (gapLoadedSlot(data, slotId, req)) opened += 1;
-    }
+    if (assigned !== req.driverId) continue;
+    if (gapLoadedSlot(data, slotId, req)) opened += 1;
   }
 
   return opened;
