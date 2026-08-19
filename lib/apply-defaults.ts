@@ -2,6 +2,7 @@ import { isActivePerson } from "./active-people";
 import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import { refreshSlotOverrideFromSlot, templateIdFromSlotId } from "./slot-overrides";
 import { canAssignDriver } from "./suggestions";
+import { reapplyApprovedTimeOffToSlots } from "./time-off-apply";
 import type { AppData } from "./types";
 import { weekWorkdaysFromWeekStart } from "./week-utils";
 
@@ -10,11 +11,12 @@ export function applyDefaultDriversToEmptySlots(data: AppData): {
   data: AppData;
   errors: string[];
 } {
-  const weekDays = weekWorkdaysFromWeekStart(data.settings.defaultWeekStart);
+  const withTimeOff = reapplyApprovedTimeOffToSlots(data);
+  const weekDays = weekWorkdaysFromWeekStart(withTimeOff.settings.defaultWeekStart);
   const errors: string[] = [];
-  const slots = data.slots.map((s) => ({ ...s }));
+  const slots = withTimeOff.slots.map((s) => ({ ...s }));
   /** Single mutable copy so `refreshSlotOverrideFromSlot` updates `slotOverrides` on the returned object. */
-  const next: AppData = { ...data, slots };
+  const next: AppData = { ...withTimeOff, slots };
 
   for (let i = 0; i < slots.length; i++) {
     const slot = slots[i];
@@ -24,10 +26,10 @@ export function applyDefaultDriversToEmptySlots(data: AppData): {
     if (slot.driverId !== null) continue;
 
     const tid = templateIdFromSlotId(slot.id);
-    const t = data.settings.slotTemplates.find((x) => x.id === tid);
-    const def = t ? effectiveDefaultDriverForDate(data, slot.date, t) : null;
+    const t = withTimeOff.settings.slotTemplates.find((x) => x.id === tid);
+    const def = t ? effectiveDefaultDriverForDate(withTimeOff, slot.date, t) : null;
     if (!def) continue;
-    const defPerson = data.people.find((p) => p.id === def);
+    const defPerson = withTimeOff.people.find((p) => p.id === def);
     if (!defPerson || !isActivePerson(defPerson)) continue;
 
     const check = canAssignDriver(next, slot.id, def);

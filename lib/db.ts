@@ -21,6 +21,7 @@ import { isPersonEffectiveOnDate } from "./active-people";
 import { normalizeAppData } from "./normalize";
 import { applyRosterDateRulesToSlots } from "./person-roster-dates";
 import { mergeSlotOverridesIntoSlots } from "./slot-overrides";
+import { reapplyApprovedTimeOffToSlots } from "./time-off-apply";
 import { createDefaultWeeklyShiftAvailability } from "./availability-helpers";
 import { newProfileToken } from "./profile-token";
 import { slotFromSpecialRoute } from "./special-routes";
@@ -445,9 +446,10 @@ export function rebuildSlotsForWeek(data: AppData, weekStart: string): AppData {
   }
   const merged = mergeSlotOverridesIntoSlots(fresh, data.slotOverrides);
   const slots = applyRosterDateRulesToSlots(merged, data.people);
-  return normalizeAppData({
+  const rebuilt = normalizeAppData({
     ...data,
     slots,
     settings: { ...data.settings, defaultWeekStart: weekStart },
   });
+  return reapplyApprovedTimeOffToSlots(rebuilt);
 }

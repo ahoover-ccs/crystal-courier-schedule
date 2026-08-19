@@ -112,6 +112,9 @@ export function canAssignDriver(
   if (!isPersonEffectiveOnDate(person, slot.date)) {
     return { ok: false, reason: "That person is not on the roster for this date." };
   }
+  if (hasApprovedTimeOffForSlot(data, driverId, slot.date, slot.routeType)) {
+    return { ok: false, reason: "That person has approved time off for this shift." };
+  }
   const busyTypes = assignmentsForDriverOnDate(data.slots, slot.date, driverId, slotId);
   if (conflictsWithDayAssignments(slot.routeType, busyTypes)) {
     return {

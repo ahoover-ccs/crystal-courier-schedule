@@ -1,5 +1,6 @@
 import { plannedTimeOffGapReason } from "./absence-labels";
 import { refreshSlotOverridesForSlots } from "./slot-overrides";
+import { persistApprovedTimeOffOverridesForRequest } from "./time-off-apply";
 import type { AppData, TimeOffRequest } from "./types";
 
 /** Apply one approved time-off row to slots (mutates `data`). Returns count of assignments cleared. */
@@ -25,5 +26,7 @@ export function applyApprovedTimeOffRequestToData(
     cleared += 1;
   }
   refreshSlotOverridesForSlots(data, data.slots.filter((s) => s.date === d));
+  // Future weeks are not in `data.slots`; persist gaps so they appear when that week is opened.
+  persistApprovedTimeOffOverridesForRequest(data, req);
   return cleared;
 }
