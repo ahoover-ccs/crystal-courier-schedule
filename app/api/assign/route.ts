@@ -7,6 +7,7 @@ import { ensureDb, writeDb } from "@/lib/db";
 import { refreshSlotOverrideFromSlot } from "@/lib/slot-overrides";
 import { isSpecialRouteSlotId } from "@/lib/special-routes";
 import { canAssignDriver, hasApprovedTimeOffForSlot } from "@/lib/suggestions";
+import { withdrawApprovedTimeOffForPersonOnDate } from "@/lib/withdraw-time-off";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -26,7 +27,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: check.reason }, { status: 409 });
   }
 
-  if (driverId && !prev.driverId && prev.gapForDriverId) {
+  if (driverId) {
+    withdrawApprovedTimeOffForPersonOnDate(data, driverId, prev.date);
+  }
+
+  if (driverId && !prev.driverId && prev.gapForDriverId && prev.gapForDriverId !== driverId) {
     incrementCoveredAbsence(data, prev.gapForDriverId, prev.date);
   }
 

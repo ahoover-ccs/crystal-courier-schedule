@@ -1,7 +1,7 @@
 import { isActivePerson } from "./active-people";
 import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import { refreshSlotOverrideFromSlot, templateIdFromSlotId } from "./slot-overrides";
-import { canAssignDriver } from "./suggestions";
+import { canAssignDriver, hasApprovedTimeOffForSlot } from "./suggestions";
 import { reapplyApprovedTimeOffToSlots } from "./time-off-apply";
 import type { AppData } from "./types";
 import { weekWorkdaysFromWeekStart } from "./week-utils";
@@ -31,6 +31,7 @@ export function applyDefaultDriversToEmptySlots(data: AppData): {
     if (!def) continue;
     const defPerson = withTimeOff.people.find((p) => p.id === def);
     if (!defPerson || !isActivePerson(defPerson)) continue;
+    if (hasApprovedTimeOffForSlot(withTimeOff, def, slot.date, slot.routeType)) continue;
 
     const check = canAssignDriver(next, slot.id, def);
     if (!check.ok) {

@@ -7,15 +7,17 @@ import { assignOpenShiftToDriver } from "@/lib/open-shift-assign";
 import { refreshSlotOverrideFromSlot } from "@/lib/slot-overrides";
 import { canAssignDriver } from "@/lib/suggestions";
 import type { AppData, OpenShift } from "@/lib/types";
+import { withdrawApprovedTimeOffForPersonOnDate } from "@/lib/withdraw-time-off";
 
 function assignPersonToSlotDirect(
   data: AppData,
   slotIdx: number,
   driverId: string,
-  personName: string
+  _personName: string
 ) {
   const prevSlot = data.slots[slotIdx];
-  if (prevSlot.gapForDriverId) {
+  withdrawApprovedTimeOffForPersonOnDate(data, driverId, prevSlot.date);
+  if (prevSlot.gapForDriverId && prevSlot.gapForDriverId !== driverId) {
     incrementCoveredAbsence(data, prevSlot.gapForDriverId, prevSlot.date);
   }
   data.slots[slotIdx] = {

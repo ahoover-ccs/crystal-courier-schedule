@@ -69,7 +69,7 @@ export default function ApprovalsPage() {
   const act = async (
     type: "time-off" | "shift",
     id: string,
-    action: "approve" | "reject"
+    action: "approve" | "reject" | "cancel"
   ) => {
     if (!approverId) {
       setErr("Select who is approving.");
@@ -92,7 +92,9 @@ export default function ApprovalsPage() {
       setMsg(
         action === "approve"
           ? "Approved. The team member was notified by email and text if we have their contact info."
-          : "Rejected. The team member was emailed if we have their address on file."
+          : action === "cancel"
+            ? "Time off cancelled. Their usual routes for that day are back on the board (coverage already assigned stays)."
+            : "Rejected. The team member was emailed if we have their address on file."
       );
       setData(json.data as AppData);
     } catch {
@@ -109,7 +111,9 @@ export default function ApprovalsPage() {
       <h1 className="font-serif text-3xl text-cc-navy">Approvals needed</h1>
       <p className="mt-2 text-sm text-cc-muted">
         Time off requests and open-shift sign-ups appear here. Approving applies the change on the
-        schedule and emails/texts the driver when contact info is on file.
+        schedule and emails/texts the driver when contact info is on file. If someone can work after
+        all, cancel the approved request under Recently approved time off, or drag them back onto
+        the board.
       </p>
 
       <div className="mt-6 rounded border border-cc-line bg-cc-paper p-4 shadow-sm">
@@ -226,7 +230,8 @@ export default function ApprovalsPage() {
           <section className="mt-4">
             <h2 className="font-serif text-lg text-cc-navy">Recently approved time off</h2>
             <p className="mt-1 text-xs text-cc-muted">
-              Approved requests from the last 90 days (by when they were submitted).
+              Approved requests from the last 90 days (by when they were submitted). Cancel puts
+              them back on their usual routes for that day.
             </p>
             <ul className="mt-3 max-h-80 space-y-2 overflow-y-auto">
               {recentApprovedTimeOff.length === 0 && (
@@ -237,13 +242,23 @@ export default function ApprovalsPage() {
               {recentApprovedTimeOff.map((r) => (
                 <li
                   key={r.id}
-                  className="rounded border border-cc-line bg-white px-3 py-2 text-sm"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded border border-cc-line bg-white px-3 py-2 text-sm"
                 >
-                  <span className="font-medium text-cc-ink">{r.driverName}</span>
-                  <span className="text-cc-muted">
-                    {" "}
-                    · {format(parseISO(r.date), "EEE, MMM d, yyyy")} · {r.routeTypes.join(", ")}
-                  </span>
+                  <div>
+                    <span className="font-medium text-cc-ink">{r.driverName}</span>
+                    <span className="text-cc-muted">
+                      {" "}
+                      · {format(parseISO(r.date), "EEE, MMM d, yyyy")} · {r.routeTypes.join(", ")}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={Boolean(busyId) || !approverId}
+                    onClick={() => act("time-off", r.id, "cancel")}
+                    className="rounded border border-cc-line px-2 py-1 text-xs text-cc-ink hover:bg-cc-cream/50 disabled:opacity-50"
+                  >
+                    {busyId === `time-off-${r.id}-cancel` ? "…" : "Cancel / restore"}
+                  </button>
                 </li>
               ))}
             </ul>

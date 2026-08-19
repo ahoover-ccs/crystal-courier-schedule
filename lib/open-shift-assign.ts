@@ -1,5 +1,6 @@
 import { incrementCoveredAbsence } from "./absence-stats";
 import type { AppData, OpenShift } from "./types";
+import { withdrawApprovedTimeOffForPersonOnDate } from "./withdraw-time-off";
 
 /** Assign driver to slot and mark the posted open shift filled (mutates `data`). */
 export function assignOpenShiftToDriver(
@@ -10,7 +11,8 @@ export function assignOpenShiftToDriver(
   openShift: OpenShift
 ): void {
   const prevSlot = data.slots[slotIdx];
-  if (prevSlot.gapForDriverId) {
+  withdrawApprovedTimeOffForPersonOnDate(data, driverId, prevSlot.date);
+  if (prevSlot.gapForDriverId && prevSlot.gapForDriverId !== driverId) {
     incrementCoveredAbsence(data, prevSlot.gapForDriverId, prevSlot.date);
   }
   data.slots[slotIdx] = {

@@ -155,7 +155,12 @@ function SlotCell({
           isPendingTimeOff={isPendingTimeOff}
         />
       ) : (
-        <p className="mt-2 text-center text-xs text-cc-muted">Drop here</p>
+        <div className="px-0.5 py-1">
+          <p className="text-center text-xs text-cc-muted">Drop here</p>
+          {slot.gapReason && (
+            <p className="mt-1 text-center text-[10px] leading-snug text-amber-900">{slot.gapReason}</p>
+          )}
+        </div>
       )}
     </div>
   );

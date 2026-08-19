@@ -399,12 +399,20 @@ async function fileWrite(data: AppData): Promise<void> {
   await fs.writeFile(DB_PATH, JSON.stringify(normalized, null, 2), "utf-8");
 }
 
+function withMergedSlotOverrides(data: AppData): AppData {
+  return {
+    ...data,
+    slots: mergeSlotOverridesIntoSlots(data.slots, data.slotOverrides),
+  };
+}
+
 export async function readDb(): Promise<AppData> {
   if (USE_POSTGRES) {
     const existing = await pgRead();
-    return existing ?? createSeedData();
+    if (!existing) return createSeedData();
+    return withMergedSlotOverrides(existing);
   }
-  return fileRead();
+  return withMergedSlotOverrides(await fileRead());
 }
 
 export async function writeDb(data: AppData): Promise<void> {
@@ -417,14 +425,14 @@ export async function writeDb(data: AppData): Promise<void> {
 export async function ensureDb(): Promise<AppData> {
   if (USE_POSTGRES) {
     const existing = await pgRead();
-    if (existing) return existing;
+    if (existing) return withMergedSlotOverrides(existing);
     const seed = createSeedData();
     await pgWrite(seed);
     return seed;
   }
   try {
     await fs.access(DB_PATH);
-    return fileRead();
+    return withMergedSlotOverrides(await fileRead());
   } catch {
     const seed = createSeedData();
     await fileWrite(seed);

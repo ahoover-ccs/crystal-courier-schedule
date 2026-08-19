@@ -79,7 +79,7 @@ export type TimeOffRequest = {
   date: string;
   routeTypes: RouteType[];
   note?: string;
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "approved" | "rejected" | "cancelled";
   createdAt: string;
 };
 

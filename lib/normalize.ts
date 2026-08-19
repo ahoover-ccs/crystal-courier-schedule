@@ -258,7 +258,10 @@ export function normalizeAppData(raw: AppData): AppData {
     ...r,
     routeTypes: r.routeTypes.map((rt) => migrateRouteType(rt as string)),
     status:
-      r.status === "pending" || r.status === "approved" || r.status === "rejected"
+      r.status === "pending" ||
+      r.status === "approved" ||
+      r.status === "rejected" ||
+      r.status === "cancelled"
         ? r.status
         : "approved",
   }));

@@ -12,6 +12,7 @@ import {
   notifyTimeOffRejectedToDriver,
 } from "@/lib/send-approval-notifications";
 import { canAssignDriver } from "@/lib/suggestions";
+import { withdrawApprovedTimeOffRequest } from "@/lib/withdraw-time-off";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -19,12 +20,17 @@ export async function POST(req: NextRequest) {
     type: "time-off" | "shift";
     id: string;
     approverId: string;
-    action: "approve" | "reject";
+    action: "approve" | "reject" | "cancel";
   };
 
-  if (!type || !id || !approverId || (action !== "approve" && action !== "reject")) {
+  if (
+    !type ||
+    !id ||
+    !approverId ||
+    (action !== "approve" && action !== "reject" && action !== "cancel")
+  ) {
     return NextResponse.json(
-      { error: "type, id, approverId, and action (approve | reject) required" },
+      { error: "type, id, approverId, and action (approve | reject | cancel) required" },
       { status: 400 }
     );
   }
@@ -45,6 +51,16 @@ export async function POST(req: NextRequest) {
     if (!row) {
       return NextResponse.json({ error: "Request not found" }, { status: 404 });
     }
+
+    if (action === "cancel") {
+      if (row.status !== "approved") {
+        return NextResponse.json({ error: "Only approved time off can be cancelled" }, { status: 409 });
+      }
+      withdrawApprovedTimeOffRequest(data, row, approver.name);
+      await writeDb(data);
+      return NextResponse.json({ data: await ensureDb() });
+    }
+
     if (row.status !== "pending") {
       return NextResponse.json({ error: "This request is not pending" }, { status: 409 });
     }
@@ -99,6 +115,9 @@ export async function POST(req: NextRequest) {
     }
     if (os.status !== "open" || !os.pendingClaimDriverId) {
       return NextResponse.json({ error: "No pending sign-up for this posting" }, { status: 409 });
+    }
+    if (action === "cancel") {
+      return NextResponse.json({ error: "Cancel only applies to approved time off" }, { status: 400 });
     }
 
     if (action === "reject") {
