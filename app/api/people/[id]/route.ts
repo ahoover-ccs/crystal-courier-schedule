@@ -11,14 +11,16 @@ type Ctx = { params: Promise<{ id: string }> };
 export async function PATCH(req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params;
   const body = await req.json();
-  const { name, role, email, phone, weeklyShiftAvailability, regenerateProfileToken } = body as {
-    name?: string;
-    role?: PersonRole;
-    email?: string;
-    phone?: string;
-    weeklyShiftAvailability?: WeeklyShiftAvailability;
-    regenerateProfileToken?: boolean;
-  };
+  const { name, role, email, phone, hiredAt, weeklyShiftAvailability, regenerateProfileToken } =
+    body as {
+      name?: string;
+      role?: PersonRole;
+      email?: string;
+      phone?: string;
+      hiredAt?: string | null;
+      weeklyShiftAvailability?: WeeklyShiftAvailability;
+      regenerateProfileToken?: boolean;
+    };
   const data = await ensureDb();
   const idx = data.people.findIndex((p) => p.id === id);
   if (idx === -1) {
@@ -37,15 +39,31 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     ? normalizeWeeklyAvailability(weeklyShiftAvailability)
     : normalizeWeeklyAvailability(cur.weeklyShiftAvailability);
 
+  let nextHiredAt = cur.hiredAt;
+  if (hiredAt !== undefined) {
+    const trimmed = typeof hiredAt === "string" ? hiredAt.trim() : "";
+    if (!trimmed) {
+      nextHiredAt = undefined;
+    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      return NextResponse.json({ error: "hiredAt must be YYYY-MM-DD" }, { status: 400 });
+    } else {
+      nextHiredAt = trimmed;
+    }
+  }
+
   data.people[idx] = {
     ...cur,
     name: name?.trim() ?? cur.name,
     role: nextRole,
     email: email !== undefined ? email.trim() || undefined : cur.email,
     phone: phone !== undefined ? phone.trim() || undefined : cur.phone,
+    hiredAt: nextHiredAt,
     weeklyShiftAvailability: mergedWeekly,
     profileToken: roleNeedsProfileToken(nextRole) ? profileToken : undefined,
   };
+  if (!nextHiredAt) {
+    delete data.people[idx].hiredAt;
+  }
   await writeDb(data);
   return NextResponse.json(data);
 }

@@ -5,14 +5,72 @@ import { activePeople } from "@/lib/active-people";
 import { routeTypesAvailableForPerson } from "@/lib/availability-helpers";
 import { timeOffRequestDates } from "@/lib/date-range";
 import { ROUTE_TYPE_TIME_OFF_LABELS } from "@/lib/route-types";
+import {
+  TIME_OFF_HANDBOOK_URL,
+  attendancePreviewCopy,
+  formatAbsenceDays,
+  othersOutPreviewCopy,
+} from "@/lib/time-off-preview-copy";
 import { maxTimeOffRequestDateISO } from "@/lib/time-off-dates";
 import type { AppData, Person, RouteType } from "@/lib/types";
 
 type Preview = {
   othersAlreadyOut: number;
   trailing12MonthsDaysOff: number;
+  employedLessThanOneYear?: boolean;
   daysInRange?: number;
 };
+
+const TONE_CLASS: Record<string, string> = {
+  ok: "text-cc-ink",
+  caution: "text-cc-ink",
+  warning: "text-amber-900",
+  danger: "text-red-800",
+};
+
+function PreviewWarnings({ preview }: { preview: Preview }) {
+  const others = othersOutPreviewCopy(preview.othersAlreadyOut);
+  const attendance = attendancePreviewCopy(
+    preview.trailing12MonthsDaysOff,
+    preview.employedLessThanOneYear ?? false
+  );
+  const daysLabel = formatAbsenceDays(preview.trailing12MonthsDaysOff);
+
+  return (
+    <div className="rounded border border-cc-line bg-white px-3 py-3 text-sm text-cc-ink">
+      {preview.daysInRange != null && preview.daysInRange > 1 && (
+        <p className="mb-2 text-xs text-cc-muted">
+          Range: {preview.daysInRange} calendar day{preview.daysInRange === 1 ? "" : "s"} (counts
+          use the busiest requested shift on the busiest day in the range).
+        </p>
+      )}
+      <p className={TONE_CLASS[others.tone]}>{others.text}</p>
+      <p className="mt-2">
+        <span className="font-medium text-cc-navy">Your days off (trailing 12 months): </span>
+        {daysLabel} {daysLabel === "1" ? "day" : "days"} (AM = ½ day, PM = ½ day, all-day = 1 day; lab,
+        opener, and closer are not counted).
+      </p>
+      {attendance && (
+        <p className={`mt-2 ${TONE_CLASS[attendance.tone]}`}>
+          {attendance.text}
+          {attendance.includeHandbookLink && (
+            <>
+              {" "}
+              <a
+                href={TIME_OFF_HANDBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="break-all text-cc-navy underline"
+              >
+                {TIME_OFF_HANDBOOK_URL}
+              </a>
+            </>
+          )}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default function TimeOffPage() {
   const [data, setData] = useState<AppData | null>(null);
@@ -226,27 +284,7 @@ export default function TimeOffPage() {
           )}
         </fieldset>
 
-        {preview && (
-          <div className="rounded border border-cc-line bg-white px-3 py-3 text-sm text-cc-ink">
-            {preview.daysInRange != null && preview.daysInRange > 1 && (
-              <p className="mb-2 text-xs text-cc-muted">
-                Range: {preview.daysInRange} calendar day{preview.daysInRange === 1 ? "" : "s"} (counts
-                use the busiest day in the range for coverage).
-              </p>
-            )}
-            <p>
-              <span className="font-medium text-cc-navy">Others already out: </span>
-              {preview.othersAlreadyOut} — drivers off their default route or open shifts not yet
-              filled on the hardest day in this range.
-            </p>
-            <p className="mt-2">
-              <span className="font-medium text-cc-navy">Your days off (trailing 12 months): </span>
-              {preview.trailing12MonthsDaysOff} calendar day
-              {preview.trailing12MonthsDaysOff === 1 ? "" : "s"} with approved time off or recorded
-              absences.
-            </p>
-          </div>
-        )}
+        {preview && <PreviewWarnings preview={preview} />}
 
         <div>
           <label className="block text-sm font-medium text-cc-ink">Note (optional)</label>

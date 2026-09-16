@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { timeOffRequestDates } from "@/lib/date-range";
 import { ensureDb } from "@/lib/db";
 import {
+  isEmployedLessThanOneYear,
   maxOthersOutInRange,
   trailingMonthsAbsenceDayCount,
 } from "@/lib/time-off-preview-stats";
@@ -44,12 +45,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unknown person" }, { status: 400 });
   }
 
-  const othersAlreadyOut = maxOthersOutInRange(data, dates, driverId);
+  const othersAlreadyOut = maxOthersOutInRange(data, dates, driverId, routeTypes);
   const trailing12MonthsDaysOff = trailingMonthsAbsenceDayCount(data, driverId, 12, date);
 
   return NextResponse.json({
     othersAlreadyOut,
     trailing12MonthsDaysOff,
+    employedLessThanOneYear: isEmployedLessThanOneYear(person.hiredAt, date),
     daysInRange: dates.length,
   });
 }

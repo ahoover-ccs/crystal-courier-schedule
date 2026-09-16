@@ -54,6 +54,7 @@ export function SettingsForm() {
     role: PersonRole;
     email: string;
     phone: string;
+    hiredAt: string;
   } | null>(null);
 
   const [newPerson, setNewPerson] = useState({
@@ -242,6 +243,7 @@ export function SettingsForm() {
       role: p.role,
       email: p.email ?? "",
       phone: p.phone ?? "",
+      hiredAt: p.hiredAt ?? "",
     });
   };
 
@@ -728,6 +730,15 @@ export function SettingsForm() {
                     onChange={(e) => setEditDraft({ ...editDraft, phone: e.target.value })}
                     className="rounded border border-cc-line px-2 py-1 text-sm"
                   />
+                  <label className="flex items-center gap-2 text-sm text-cc-ink">
+                    Hire date
+                    <input
+                      type="date"
+                      value={editDraft.hiredAt}
+                      onChange={(e) => setEditDraft({ ...editDraft, hiredAt: e.target.value })}
+                      className="rounded border border-cc-line px-2 py-1 font-serif"
+                    />
+                  </label>
                   <button
                     type="button"
                     onClick={saveEdit}
@@ -760,6 +771,14 @@ export function SettingsForm() {
                     ) : (
                       <p className="text-xs text-amber-800">
                         No email or phone — open-shift and announcement notifications skip this person.
+                      </p>
+                    )}
+                    {p.hiredAt ? (
+                      <p className="text-xs text-cc-muted">Hire date: {p.hiredAt}</p>
+                    ) : (
+                      <p className="text-xs text-amber-800">
+                        No hire date — set one so time-off attendance warnings use the correct
+                        tenure.
                       </p>
                     )}
                   </div>
