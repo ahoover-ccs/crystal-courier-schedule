@@ -47,8 +47,7 @@ function PreviewWarnings({ preview }: { preview: Preview }) {
       <p className={TONE_CLASS[others.tone]}>{others.text}</p>
       <p className="mt-2">
         <span className="font-medium text-cc-navy">Your days off (trailing 12 months): </span>
-        {daysLabel} {daysLabel === "1" ? "day" : "days"} (AM = ½ day, PM = ½ day, all-day = 1 day; lab,
-        opener, and closer are not counted).
+        {daysLabel} {daysLabel === "1" ? "day" : "days"}.
       </p>
       {attendance && (
         <p className={`mt-2 ${TONE_CLASS[attendance.tone]}`}>
