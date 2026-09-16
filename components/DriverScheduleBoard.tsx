@@ -13,6 +13,7 @@ import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
 import { formatISODate, weekStartContaining, weekWorkdaysFromWeekStart } from "@/lib/week-utils";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 import { buildScheduleGridRows } from "@/lib/schedule-grid-rows";
+import { isNonDefaultVehicleForSlot, vehicleById, vehicleDisplayName } from "@/lib/vehicles";
 
 function routeStyle(rt: RouteType): string {
   switch (rt) {
@@ -142,8 +143,7 @@ export function DriverScheduleBoard() {
         {busy && <span className="text-sm text-cc-muted">Loading week...</span>}
       </div>
       <p className="mb-4 text-sm text-cc-muted">
-        Week of {format(parseISO(data.settings.defaultWeekStart), "MMMM d, yyyy")}. This view is
-        read-only for drivers.
+        Week of {format(parseISO(data.settings.defaultWeekStart), "MMMM d, yyyy")}.
       </p>
 
       <div className="w-full min-w-0 rounded border border-cc-line bg-cc-paper shadow-sm">
@@ -189,11 +189,16 @@ export function DriverScheduleBoard() {
                     : isNonDefault
                       ? "bg-cc-gold"
                       : "bg-cc-navy";
+                  const vehicle = slot?.vehicleId ? vehicleById(data, slot.vehicleId) : undefined;
+                  const vehicleNonDefault = slot
+                    ? isNonDefaultVehicleForSlot(data, slot, row.template)
+                    : false;
+                  const vehicleColor = vehicleNonDefault ? "bg-cc-gold" : "bg-cc-navy";
                   return (
                     <div key={slot?.id ?? `empty-${row.key}-${i}`} className="bg-cc-cream/40 p-0.5">
                       {slot ? (
                         <div
-                          className={`min-h-[4rem] rounded border border-dashed border-cc-line p-1.5 ${
+                          className={`min-h-[5rem] rounded border border-dashed border-cc-line p-1.5 ${
                             slot.isGap && !slot.driverId ? "ring-1 ring-amber-500/50" : ""
                           }`}
                         >
@@ -205,14 +210,21 @@ export function DriverScheduleBoard() {
                               {nameById.get(slot.driverId) ?? "Assigned"}
                             </p>
                           ) : (
-                            <p className="mt-2 text-center text-xs text-cc-muted">Open</p>
+                            <p className="mt-1 text-center text-xs text-cc-muted">Open</p>
+                          )}
+                          {vehicle ? (
+                            <p className={`mt-1 rounded px-2 py-0.5 text-[11px] leading-tight text-cc-paper ${vehicleColor}`}>
+                              {vehicleDisplayName(vehicle)}
+                            </p>
+                          ) : (
+                            <p className="mt-1 text-center text-[10px] text-cc-muted">No car</p>
                           )}
                           {slot.gapReason && (
                             <p className="mt-2 text-xs text-amber-900">{slot.gapReason}</p>
                           )}
                         </div>
                       ) : (
-                        <div className="min-h-[4rem] rounded bg-zinc-100/80" />
+                        <div className="min-h-[5rem] rounded bg-zinc-100/80" />
                       )}
                     </div>
                   );

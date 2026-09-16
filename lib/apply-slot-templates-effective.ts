@@ -1,6 +1,7 @@
 import { addDays, parseISO } from "date-fns";
 import { resolveTemplateLabel } from "./availability-helpers";
 import { isRouteActiveOnDate } from "./route-catalog";
+import { defaultVehicleIdForTemplate } from "./vehicles";
 import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import type { AppData, ScheduleSlot, SlotOverrideState, SlotTemplate } from "./types";
 import { formatISODate, isWeekdayISO } from "./week-utils";
@@ -24,6 +25,7 @@ function snapshotSlot(slot: ScheduleSlot, overrides: Record<string, SlotOverride
     gapReason: slot.gapReason,
     absenceType: slot.absenceType,
     gapForDriverId: slot.gapForDriverId ?? null,
+    vehicleId: slot.vehicleId ?? null,
   };
 }
 
@@ -46,6 +48,7 @@ function buildSlotFromTemplate(
     routeType,
     label,
     driverId,
+    vehicleId: defaultVehicleIdForTemplate(template, date),
     isGap: false,
     isOfficeSlot: false,
     gapForDriverId: null,
@@ -108,9 +111,11 @@ export function clearOverridesMatchingOldDefaultsOnOrAfter(
     const t = previousTemplates.find((x) => x.id === tid);
     if (!t) continue;
     const oldDef = effectiveDefaultDriverForDate(prevData, date, t);
+    const oldVehicle = defaultVehicleIdForTemplate(t, date);
     const matchesOld =
       !o.isGap &&
       o.driverId === oldDef &&
+      (o.vehicleId === undefined || o.vehicleId === oldVehicle) &&
       (o.gapForDriverId == null || o.gapForDriverId === undefined) &&
       !o.gapReason;
     if (matchesOld) delete overrides[slotId];

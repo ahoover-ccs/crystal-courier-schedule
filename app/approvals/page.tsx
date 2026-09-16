@@ -111,14 +111,14 @@ export default function ApprovalsPage() {
       <h1 className="font-serif text-3xl text-cc-navy">Approvals needed</h1>
       <p className="mt-2 text-sm text-cc-muted">
         Time off requests and open-shift sign-ups appear here. Approving applies the change on the
-        schedule and emails/texts the driver when contact info is on file. If someone can work after
+        schedule and notifies the driver when contact info is on file. If someone can work after
         all, cancel the approved request under Recently approved time off, or drag them back onto
         the board.
       </p>
 
       <div className="mt-6 rounded border border-cc-line bg-cc-paper p-4 shadow-sm">
         <label className="block text-sm font-medium text-cc-ink">
-          Acting as (owner, ops, or dispatch)
+          Who&apos;s approving?
         </label>
         <select
           value={approverId}

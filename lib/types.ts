@@ -56,6 +56,15 @@ export type SlotTemplate = {
   routeDefinitionId: string;
   /** Default assignee per weekday (same route, different drivers on different days). */
   defaultDriversByDay: Record<WeekdayKey, string | null>;
+  /** Default company car per weekday (same route, different cars on different days). */
+  defaultVehiclesByDay?: Record<WeekdayKey, string | null>;
+};
+
+/** Company car / van in the fleet. */
+export type Vehicle = {
+  id: string;
+  name: string;
+  plate?: string;
 };
 
 export type ScheduleSlot = {
@@ -64,6 +73,8 @@ export type ScheduleSlot = {
   routeType: RouteType;
   label: string;
   driverId: string | null;
+  /** Company car assigned to this shift (independent of the driver). */
+  vehicleId?: string | null;
   isGap: boolean;
   gapReason?: string;
   absenceType?: AbsenceType;
@@ -147,6 +158,8 @@ export type AppSettings = {
   slotTemplates: SlotTemplate[];
   fillPriorityIds: string[];
   defaultWeekStart: string;
+  /** Company cars that can be assigned to shifts. */
+  vehicles?: Vehicle[];
 };
 
 /** One-off customer route for a single calendar day (not in the weekly catalog). */
@@ -165,6 +178,8 @@ export type SlotOverrideState = {
   gapReason?: string;
   absenceType?: AbsenceType;
   gapForDriverId?: string | null;
+  /** Present when a car was set or cleared on this cell. */
+  vehicleId?: string | null;
 };
 
 export type AppData = {

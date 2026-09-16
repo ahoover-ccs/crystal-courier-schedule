@@ -5,6 +5,7 @@ import { newProfileToken } from "./profile-token";
 import { migrateRouteType } from "./route-types";
 import { normalizeStoredWeekStart } from "./week-utils";
 import { normalizeSpecialRoutes } from "./special-routes";
+import { normalizeDefaultVehiclesByDay, normalizeVehicles } from "./vehicles";
 import type {
   AppData,
   Person,
@@ -13,6 +14,7 @@ import type {
   SlotOverrideState,
   WeekdayKey,
   WeeklyShiftAvailability,
+  Vehicle,
 } from "./types";
 import { WEEKDAY_KEYS } from "./types";
 
@@ -25,6 +27,8 @@ type LegacySlotTemplate = {
   defaultDays?: Partial<Record<WeekdayKey, boolean>>;
   routeDefinitionId?: string;
   defaultDriversByDay?: Partial<Record<WeekdayKey, string | null>>;
+  defaultVehicleId?: string | null;
+  defaultVehiclesByDay?: Partial<Record<WeekdayKey, string | null>>;
 };
 
 function migratePerson(p: Person & { shiftAvailability?: LegacyShiftAvailability }): Person {
@@ -129,6 +133,7 @@ function migrateSlotTemplates(
         id: t.id,
         routeDefinitionId: t.routeDefinitionId,
         defaultDriversByDay: dayMap,
+        defaultVehiclesByDay: normalizeDefaultVehiclesByDay(t),
       };
     }
 
@@ -164,6 +169,7 @@ function migrateSlotTemplates(
       id: t.id,
       routeDefinitionId: def?.id ?? rdId,
       defaultDriversByDay,
+      defaultVehiclesByDay: normalizeDefaultVehiclesByDay(t),
     };
   });
 }
@@ -174,6 +180,7 @@ function migrateSlots(slots: AppData["slots"]): AppData["slots"] {
     routeType: migrateRouteType(s.routeType as string),
     isOfficeSlot: false,
     gapForDriverId: s.gapForDriverId ?? null,
+    vehicleId: s.vehicleId ?? null,
   }));
 }
 
@@ -290,6 +297,7 @@ export function normalizeAppData(raw: AppData): AppData {
       slotTemplates,
       fillPriorityIds: data.settings.fillPriorityIds ?? [],
       defaultWeekStart: normalizeStoredWeekStart(data.settings.defaultWeekStart ?? ""),
+      vehicles: normalizeVehicles((data.settings as { vehicles?: Vehicle[] }).vehicles),
     },
   };
   syncAbsenceStatsRequested(out);

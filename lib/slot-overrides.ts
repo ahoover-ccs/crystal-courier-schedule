@@ -1,4 +1,5 @@
 import { effectiveDefaultDriverForDate } from "./person-roster-dates";
+import { defaultVehicleIdForTemplate } from "./vehicles";
 import type { AppData, ScheduleSlot, SlotOverrideState } from "./types";
 
 export function templateIdFromSlotId(slotId: string): string {
@@ -21,6 +22,7 @@ export function mergeSlotOverridesIntoSlots(
       gapReason: o.gapReason,
       absenceType: o.absenceType,
       gapForDriverId: o.gapForDriverId ?? null,
+      vehicleId: o.vehicleId !== undefined ? o.vehicleId : s.vehicleId,
     };
   });
 }
@@ -33,6 +35,8 @@ export function mergeSlotOverridesIntoSlots(
 export function refreshSlotOverrideFromSlot(data: AppData, slot: ScheduleSlot): void {
   const t = data.settings.slotTemplates.find((x) => x.id === templateIdFromSlotId(slot.id));
   const def = t ? effectiveDefaultDriverForDate(data, slot.date, t) : null;
+  const defVehicle = defaultVehicleIdForTemplate(t, slot.date);
+  const vehicleId = slot.vehicleId ?? null;
 
   const isTimeOffGap =
     slot.isGap &&
@@ -44,6 +48,7 @@ export function refreshSlotOverrideFromSlot(data: AppData, slot: ScheduleSlot): 
     !isTimeOffGap &&
     !slot.isGap &&
     slot.driverId === def &&
+    vehicleId === defVehicle &&
     (slot.gapForDriverId == null || slot.gapForDriverId === undefined) &&
     !slot.gapReason;
 
@@ -61,6 +66,7 @@ export function refreshSlotOverrideFromSlot(data: AppData, slot: ScheduleSlot): 
     gapReason: slot.gapReason,
     absenceType: slot.absenceType,
     gapForDriverId: slot.gapForDriverId ?? null,
+    vehicleId,
   };
   data.slotOverrides = { ...(data.slotOverrides ?? {}), [slot.id]: row };
 }

@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { activePeople } from "@/lib/active-people";
 import { routeTypesAvailableForPerson } from "@/lib/availability-helpers";
@@ -17,8 +15,6 @@ type Preview = {
 };
 
 export default function TimeOffPage() {
-  const pathname = usePathname();
-  const isDriverPortal = pathname.startsWith("/driver");
   const [data, setData] = useState<AppData | null>(null);
   const [driverId, setDriverId] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -139,8 +135,8 @@ export default function TimeOffPage() {
       const n = (json.datesRequested as string[] | undefined)?.length ?? 1;
       setMsg(
         n === 1
-          ? "Time off request submitted for approval. An owner, ops manager, or dispatcher must approve it on Approvals needed before your assignments are cleared. A notification was sent to the scheduling inbox."
-          : `${n} time off requests submitted for approval (one per day). Approve each on Approvals needed; until then the schedule is unchanged. A notification was sent to the scheduling inbox.`
+          ? "Time off request submitted. All requests must be approved by management before the schedule changes."
+          : `${n} time off requests submitted (one per day). All requests must be approved by management before the schedule changes.`
       );
       setTypes([]);
       setNote("");
@@ -158,17 +154,7 @@ export default function TimeOffPage() {
     <div className="mx-auto max-w-lg">
       <h1 className="font-serif text-3xl text-cc-navy">Request time off</h1>
       <p className="mt-2 text-sm text-cc-muted">
-        Choose a single day or a date range. Weekends are skipped. Requests go to{" "}
-        {isDriverPortal ? (
-          <span className="font-medium text-cc-ink">management for approval</span>
-        ) : (
-          <Link href="/approvals" className="font-medium text-cc-navy underline decoration-cc-gold/50 hover:decoration-cc-gold">
-            Approvals needed
-          </Link>
-        )}{" "}
-        first. Once approved, only routes where that person is assigned or is the Settings default
-        for that weekday are opened. Days they do not normally work still keep them out of fill-in
-        suggestions.
+        Choose a single day or a date range. All requests must be approved by management.
       </p>
 
       <form onSubmit={submit} className="mt-8 space-y-4 rounded border border-cc-line bg-cc-paper p-6 shadow-sm">

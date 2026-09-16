@@ -1,6 +1,7 @@
 import { resolveTemplateLabel } from "./availability-helpers";
 import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import { slotFromSpecialRoute } from "./special-routes";
+import { defaultVehicleIdForTemplate } from "./vehicles";
 import type { AppData, ScheduleSlot } from "./types";
 
 /** Reconstruct Mon–Fri slots for one calendar day from templates + specials + saved overrides. */
@@ -17,6 +18,7 @@ export function slotsForDate(data: AppData, date: string): ScheduleSlot[] {
       routeType,
       label,
       driverId: def,
+      vehicleId: defaultVehicleIdForTemplate(t, date),
       isGap: false,
       isOfficeSlot: false,
       gapForDriverId: null,
@@ -30,6 +32,7 @@ export function slotsForDate(data: AppData, date: string): ScheduleSlot[] {
       gapReason: o.gapReason,
       gapForDriverId: o.gapForDriverId ?? null,
       absenceType: o.absenceType,
+      vehicleId: o.vehicleId !== undefined ? o.vehicleId : base.vehicleId,
     };
   });
 
@@ -46,6 +49,7 @@ export function slotsForDate(data: AppData, date: string): ScheduleSlot[] {
         gapReason: o.gapReason,
         gapForDriverId: o.gapForDriverId ?? null,
         absenceType: o.absenceType,
+        vehicleId: o.vehicleId !== undefined ? o.vehicleId : base.vehicleId,
       };
     });
 

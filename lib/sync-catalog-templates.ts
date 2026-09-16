@@ -1,13 +1,6 @@
-import type { RouteDefinition, SlotTemplate, WeekdayKey } from "./types";
+import type { RouteDefinition, SlotTemplate } from "./types";
 import { activeRouteDefinitions } from "./route-catalog";
-
-const emptyDriversByDay = (): Record<WeekdayKey, string | null> => ({
-  mon: null,
-  tue: null,
-  wed: null,
-  thu: null,
-  fri: null,
-});
+import { emptyWeekdayIds } from "./vehicles";
 
 /** Ensure every active catalog route has at least one schedule row on the weekly grid. */
 export function syncSlotTemplatesWithCatalog(
@@ -22,13 +15,15 @@ export function syncSlotTemplatesWithCatalog(
   const next = activeTemplates.map((t) => ({
     ...t,
     defaultDriversByDay: { ...t.defaultDriversByDay },
+    defaultVehiclesByDay: { ...(t.defaultVehiclesByDay ?? emptyWeekdayIds()) },
   }));
   for (const rd of catalog) {
     if (used.has(rd.id)) continue;
     next.push({
       id: `t-${rd.id}-${Date.now()}`,
       routeDefinitionId: rd.id,
-      defaultDriversByDay: emptyDriversByDay(),
+      defaultDriversByDay: emptyWeekdayIds(),
+      defaultVehiclesByDay: emptyWeekdayIds(),
     });
   }
   return [...next, ...retiredTemplates];

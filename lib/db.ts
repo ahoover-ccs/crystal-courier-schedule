@@ -24,8 +24,9 @@ import { mergeSlotOverridesIntoSlots } from "./slot-overrides";
 import { reapplyApprovedTimeOffToSlots } from "./time-off-apply";
 import { createDefaultWeeklyShiftAvailability } from "./availability-helpers";
 import { newProfileToken } from "./profile-token";
-import { slotFromSpecialRoute } from "./special-routes";
+import { defaultVehicleIdForTemplate } from "./vehicles";
 import { roleNeedsProfileToken } from "./roles";
+import { slotFromSpecialRoute } from "./special-routes";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const DB_PATH = path.join(DATA_DIR, "schedule.json");
@@ -217,12 +218,14 @@ function buildSlotsForWeek(
       const person = raw ? people.find((p) => p.id === raw) : undefined;
       const driverId =
         raw && person && isPersonEffectiveOnDate(person, date) ? raw : null;
+      const vehicleId = defaultVehicleIdForTemplate(t, date);
       slots.push({
         id: `${date}__${t.id}`,
         date,
         routeType,
         label,
         driverId,
+        vehicleId,
         isGap: false,
         isOfficeSlot: false,
         gapForDriverId: null,
@@ -262,6 +265,7 @@ export function createSeedData(): AppData {
     slotTemplates,
     fillPriorityIds,
     defaultWeekStart: defaultWeek,
+    vehicles: [],
   };
   return normalizeAppData({
     people,

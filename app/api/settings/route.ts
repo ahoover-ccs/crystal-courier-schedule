@@ -9,8 +9,9 @@ import { syncSlotTemplatesWithCatalog } from "@/lib/sync-catalog-templates";
 import { sanitizeTemplateDefaults } from "@/lib/terminate-person";
 import { migrateRouteType } from "@/lib/route-types";
 import { formatISODate } from "@/lib/week-utils";
-import type { AppSettings, RouteDefinition, SlotTemplate, WeekdayKey } from "@/lib/types";
+import type { AppSettings, RouteDefinition, SlotTemplate, Vehicle, WeekdayKey } from "@/lib/types";
 import { WEEKDAY_KEYS } from "@/lib/types";
+import { normalizeDefaultVehiclesByDay, normalizeVehicles, retainKnownVehicleDayDefaults } from "@/lib/vehicles";
 
 function normalizeRouteDefinitions(defs: RouteDefinition[]): RouteDefinition[] {
   return defs.map((d) => ({
@@ -31,6 +32,7 @@ function normalizeSlotTemplates(templates: SlotTemplate[]): SlotTemplate[] {
       id: t.id,
       routeDefinitionId: t.routeDefinitionId,
       defaultDriversByDay,
+      defaultVehiclesByDay: normalizeDefaultVehiclesByDay(t),
     };
   });
 }
@@ -68,14 +70,39 @@ function preserveTemplatesForRetiredRoutes(
 
 export async function PATCH(req: NextRequest) {
   const body = await req.json();
-  const { fillPriorityIds, slotTemplates, defaultWeekStart, routeDefinitions, slotTemplatesEffectiveDate } =
+  const { fillPriorityIds, slotTemplates, defaultWeekStart, routeDefinitions, slotTemplatesEffectiveDate, vehicles } =
     body as Partial<AppSettings & {
       routeDefinitions?: RouteDefinition[];
       slotTemplatesEffectiveDate?: string;
+      vehicles?: Vehicle[];
     }>;
   let data = await ensureDb();
   if (fillPriorityIds) {
     data.settings.fillPriorityIds = fillPriorityIds;
+  }
+
+  if (vehicles !== undefined) {
+    const nextVehicles = normalizeVehicles(vehicles);
+    const ids = new Set(nextVehicles.map((v) => v.id));
+    data.settings.vehicles = nextVehicles;
+    data.settings.slotTemplates = data.settings.slotTemplates.map((t) => ({
+      ...t,
+      defaultVehiclesByDay: retainKnownVehicleDayDefaults(t.defaultVehiclesByDay, ids),
+    }));
+    data.slots = data.slots.map((s) =>
+      s.vehicleId && !ids.has(s.vehicleId) ? { ...s, vehicleId: null } : s
+    );
+    if (data.slotOverrides) {
+      const next = { ...data.slotOverrides };
+      for (const [id, o] of Object.entries(next)) {
+        if (o.vehicleId && !ids.has(o.vehicleId)) {
+          next[id] = { ...o, vehicleId: null };
+        }
+      }
+      data.slotOverrides = next;
+    }
+    const { data: filledVehicles } = applyDefaultDriversToEmptySlots(data);
+    data = filledVehicles;
   }
 
   const catalogChanged = routeDefinitions !== undefined;

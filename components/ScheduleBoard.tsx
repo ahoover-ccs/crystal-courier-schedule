@@ -1,20 +1,22 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  pointerWithin,
   useDraggable,
   useDroppable,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { format, parseISO, addDays } from "date-fns";
-import type { AppData, Person, RouteType, ScheduleSlot } from "@/lib/types";
+import type { AppData, Person, RouteType, ScheduleSlot, Vehicle } from "@/lib/types";
 import { isActivePerson } from "@/lib/active-people";
 import {
   hasPendingTimeOffForSlot,
@@ -29,9 +31,38 @@ import { formatISODate, isWeekdayISO, weekStartContaining, weekWorkdaysFromWeekS
 import { ROUTE_TYPE_SHORT_LABELS } from "@/lib/route-types";
 import { SPECIAL_ROUTE_TYPES } from "@/lib/special-routes";
 import { buildScheduleGridRows } from "@/lib/schedule-grid-rows";
+import {
+  activeVehicles,
+  isNonDefaultVehicleForSlot,
+  vehicleById,
+  vehicleDisplayName,
+} from "@/lib/vehicles";
 
 const SYNC_DEFAULTS_NOTICE =
   "Refreshed from disk: time-off gaps re-applied, then empty cells filled from Settings defaults.";
+
+const slotFirstCollision: CollisionDetection = (args) => {
+  const hits = pointerWithin(args);
+  const onSlot = hits.filter((h) => String(h.id).startsWith("slot-"));
+  return onSlot.length ? onSlot : hits;
+};
+
+function UnassignCanvas({ children }: { children: ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: "unassign-pool",
+    data: { kind: "pool" as const },
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`min-h-[70vh] rounded-lg p-1 transition-colors ${
+        isOver ? "bg-cc-gold/10 ring-2 ring-cc-gold/35" : ""
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
 
 function routeStyle(rt: RouteType): string {
   switch (rt) {
@@ -77,6 +108,68 @@ function DraggableRosterCard({ person }: { person: Person }) {
     >
       <span className="font-medium text-cc-ink">{person.name}</span>
       <span className="ml-2 text-xs text-cc-muted">({roleLabel(person.role)})</span>
+    </button>
+  );
+}
+
+function DraggableFleetCard({ vehicle }: { vehicle: Vehicle }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `fleet-${vehicle.id}`,
+    data: { kind: "fleet" as const, vehicleId: vehicle.id },
+  });
+  const style = transform
+    ? { transform: `translate3d(${transform.x}px,${transform.y}px,0)` }
+    : undefined;
+  return (
+    <button
+      type="button"
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      title={vehicle.plate?.trim() ? vehicle.plate : undefined}
+      className={`w-full cursor-grab rounded border border-cc-line bg-white px-2 py-1.5 text-left text-sm shadow-sm active:cursor-grabbing ${
+        isDragging ? "opacity-60" : ""
+      }`}
+    >
+      <span className="font-medium text-cc-ink">{vehicle.name}</span>
+      {vehicle.plate?.trim() ? (
+        <span className="ml-2 text-xs text-cc-muted">{vehicle.plate}</span>
+      ) : null}
+    </button>
+  );
+}
+
+function DraggableVehicleChip({
+  slotId,
+  vehicleId,
+  label,
+  isNonDefault,
+}: {
+  slotId: string;
+  vehicleId: string;
+  label: string;
+  isNonDefault: boolean;
+}) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `vehicle-${slotId}`,
+    data: { kind: "vehicle-assign" as const, slotId, vehicleId },
+  });
+  const style = transform
+    ? { transform: `translate3d(${transform.x}px,${transform.y}px,0)` }
+    : undefined;
+  return (
+    <button
+      type="button"
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className={`mt-1 w-full cursor-grab rounded px-2 py-0.5 text-left text-[11px] leading-tight text-cc-paper active:cursor-grabbing ${
+        isNonDefault ? "bg-cc-gold" : "bg-cc-navy"
+      } ${isDragging ? "opacity-50" : ""}`}
+    >
+      {label}
     </button>
   );
 }
@@ -129,11 +222,15 @@ function SlotCell({
   occupantName,
   isNonDefaultAssignment,
   isPendingTimeOff,
+  vehicleLabel,
+  isNonDefaultVehicle,
 }: {
   slot: ScheduleSlot;
   occupantName: string | null;
   isNonDefaultAssignment: boolean;
   isPendingTimeOff: boolean;
+  vehicleLabel: string | null;
+  isNonDefaultVehicle: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `slot-${slot.id}`,
@@ -142,7 +239,7 @@ function SlotCell({
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[4.5rem] rounded border border-dashed border-cc-line p-1 transition-colors ${
+      className={`min-h-[5.25rem] rounded border border-dashed border-cc-line p-1 transition-colors ${
         isOver ? "bg-cc-gold/15 ring-2 ring-cc-gold/40" : "bg-white/80"
       } ${slot.isGap && !slot.driverId ? "ring-1 ring-amber-500/50" : ""}`}
     >
@@ -156,29 +253,22 @@ function SlotCell({
         />
       ) : (
         <div className="px-0.5 py-1">
-          <p className="text-center text-xs text-cc-muted">Drop here</p>
+          <p className="text-center text-xs text-cc-muted">Drop driver</p>
           {slot.gapReason && (
             <p className="mt-1 text-center text-[10px] leading-snug text-amber-900">{slot.gapReason}</p>
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-function UnassignPool() {
-  const { setNodeRef, isOver } = useDroppable({
-    id: "unassign-pool",
-    data: { kind: "pool" as const },
-  });
-  return (
-    <div
-      ref={setNodeRef}
-      className={`rounded border border-dashed px-3 py-4 text-center text-sm ${
-        isOver ? "border-cc-gold bg-cc-gold/10 text-cc-ink" : "border-cc-muted/40 text-cc-muted"
-      }`}
-    >
-      Drag a name here to unassign
+      {slot.vehicleId && vehicleLabel ? (
+        <DraggableVehicleChip
+          slotId={slot.id}
+          vehicleId={slot.vehicleId}
+          label={vehicleLabel}
+          isNonDefault={isNonDefaultVehicle}
+        />
+      ) : (
+        <p className="mt-1 text-center text-[10px] text-cc-muted">Drop car</p>
+      )}
     </div>
   );
 }
@@ -328,6 +418,26 @@ export function ScheduleBoard() {
       setData(json as AppData);
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Assign failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const assignVehicle = async (slotId: string, vehicleId: string | null) => {
+    setBusy(true);
+    try {
+      const res = await fetch("/api/assign-vehicle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slotId, vehicleId }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error ?? "Car assign failed");
+      }
+      setData(json as AppData);
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Car assign failed");
     } finally {
       setBusy(false);
     }
@@ -486,26 +596,37 @@ export function ScheduleBoard() {
     } else if (d?.kind === "assign") {
       const p = data?.people.find((x) => x.id === d.driverId);
       setActiveDrag({ label: p?.name ?? "" });
+    } else if (d?.kind === "fleet") {
+      const v = data ? vehicleById(data, d.vehicleId) : undefined;
+      setActiveDrag({ label: v ? vehicleDisplayName(v) : "Car" });
+    } else if (d?.kind === "vehicle-assign") {
+      const v = data ? vehicleById(data, d.vehicleId) : undefined;
+      setActiveDrag({ label: v ? vehicleDisplayName(v) : "Car" });
     }
   };
 
   const onDragEnd = async (e: DragEndEvent) => {
     setActiveDrag(null);
     const { active, over } = e;
-    if (!over || !data) return;
-    const overId = String(over.id);
+    if (!data) return;
     const activeData = active.data.current as
       | { kind: "roster"; personId: string }
       | { kind: "assign"; slotId: string; driverId: string }
+      | { kind: "fleet"; vehicleId: string }
+      | { kind: "vehicle-assign"; slotId: string; vehicleId: string }
       | undefined;
-    const overData = over.data.current as
+    const overData = over?.data.current as
       | { kind: "slot"; slotId: string }
       | { kind: "pool" }
       | undefined;
     if (!activeData) return;
 
-    if (overData?.kind === "pool" && activeData.kind === "assign") {
+    if (activeData.kind === "assign" && overData?.kind !== "slot") {
       await assign(activeData.slotId, null);
+      return;
+    }
+    if (activeData.kind === "vehicle-assign" && overData?.kind !== "slot") {
+      await assignVehicle(activeData.slotId, null);
       return;
     }
 
@@ -517,10 +638,21 @@ export function ScheduleBoard() {
       return;
     }
 
+    if (activeData.kind === "fleet") {
+      await assignVehicle(targetSlotId, activeData.vehicleId);
+      return;
+    }
+
     if (activeData.kind === "assign") {
       if (activeData.slotId === targetSlotId) return;
       await assign(activeData.slotId, null);
       await assign(targetSlotId, activeData.driverId);
+    }
+
+    if (activeData.kind === "vehicle-assign") {
+      if (activeData.slotId === targetSlotId) return;
+      await assignVehicle(activeData.slotId, null);
+      await assignVehicle(targetSlotId, activeData.vehicleId);
     }
   };
 
@@ -536,16 +668,20 @@ export function ScheduleBoard() {
   }
 
   return (
-    <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
-      <div className="flex flex-col gap-6 lg:flex-row">
+    <DndContext
+      sensors={sensors}
+      collisionDetection={slotFirstCollision}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
+      <UnassignCanvas>
+        <div className="flex flex-col gap-6 lg:flex-row">
         <aside className="lg:w-52 lg:shrink-0">
           <h2 className="mb-1.5 font-serif text-base text-cc-navy">Team roster</h2>
           <p className="mb-2 text-[11px] leading-snug text-cc-muted">
-            Drag to adjust or cover gaps. One person can hold multiple non-overlapping routes per day.
-            Change the week with the date control or use Refresh—both reload from disk and fill only
-            empty, non–gap cells from Settings (saved assignments stay via overrides).
+            Drag to adjust or cover gaps.
           </p>
-          <div className="flex max-h-[50vh] flex-col gap-1 overflow-y-auto rounded border border-cc-line bg-cc-paper p-2 lg:max-h-[70vh]">
+          <div className="flex max-h-[36vh] flex-col gap-1 overflow-y-auto rounded border border-cc-line bg-cc-paper p-2 lg:max-h-[42vh]">
             {data.people
               .filter(isActivePerson)
               .slice()
@@ -554,8 +690,19 @@ export function ScheduleBoard() {
                 <DraggableRosterCard key={p.id} person={p} />
               ))}
           </div>
-          <div className="mt-4">
-            <UnassignPool />
+          <h2 className="mb-1.5 mt-4 font-serif text-base text-cc-navy">Fleet</h2>
+          <p className="mb-2 text-[11px] leading-snug text-cc-muted">
+            Drag a car onto a shift independently of the driver.
+          </p>
+          <div className="flex max-h-[28vh] flex-col gap-1 overflow-y-auto rounded border border-cc-line bg-cc-paper p-2">
+            {activeVehicles(data).length === 0 && (
+              <p className="px-1 py-2 text-xs text-cc-muted">
+                Add cars in Settings → Fleet.
+              </p>
+            )}
+            {activeVehicles(data).map((v) => (
+              <DraggableFleetCard key={v.id} vehicle={v} />
+            ))}
           </div>
         </aside>
 
@@ -598,12 +745,6 @@ export function ScheduleBoard() {
             </button>
             {busy && <span className="text-sm text-cc-muted">Saving…</span>}
           </div>
-          <p className="mt-2 max-w-xl text-xs text-cc-muted">
-            Changing the week runs the same logic as{" "}
-            <strong className="font-medium text-cc-ink">Refresh</strong>, plus rebuilding the Mon–Fri
-            grid for that week: read the schedule file, merge saved cell overrides, then fill only empty
-            non-gap cells from Settings.
-          </p>
           {notice && (
             <p className="mt-2 rounded border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-900">
               {notice}
@@ -675,6 +816,19 @@ export function ScheduleBoard() {
                               ? hasPendingTimeOffForSlot(data, slot.driverId, slot.date, slot.routeType)
                               : false
                           }
+                          vehicleLabel={
+                            slot.vehicleId
+                              ? (() => {
+                                  const v = vehicleById(data, slot.vehicleId);
+                                  return v ? vehicleDisplayName(v) : slot.vehicleId;
+                                })()
+                              : null
+                          }
+                          isNonDefaultVehicle={isNonDefaultVehicleForSlot(
+                            data,
+                            slot,
+                            row.template
+                          )}
                         />
                       </div>
                     ) : (
@@ -768,11 +922,7 @@ export function ScheduleBoard() {
         </div>
 
         <aside className="lg:w-60 lg:shrink-0">
-          <h2 className="mb-1.5 font-serif text-base text-cc-navy">Gaps &amp; fill-ins</h2>
-          <p className="mb-2 text-[11px] leading-snug text-cc-muted">
-            After time off or unassigning, suggested names follow your priority order in Settings. Use
-            notify to email/SMS active drivers who can cover the shift (see Resend &amp; Twilio env vars).
-          </p>
+          <h2 className="mb-1.5 font-serif text-base text-cc-navy">Fill-in Suggestions</h2>
           <ul className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto">
             {gaps.length === 0 && (
               <li className="rounded border border-cc-line bg-white px-2 py-1.5 text-xs text-cc-muted">
@@ -823,8 +973,8 @@ export function ScheduleBoard() {
             })}
           </ul>
         </aside>
-      </div>
-
+        </div>
+      </UnassignCanvas>
       <DragOverlay>
         {activeDrag ? (
           <div className="rounded border border-cc-gold bg-cc-paper px-3 py-2 shadow-lg">

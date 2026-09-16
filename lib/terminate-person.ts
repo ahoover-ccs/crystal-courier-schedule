@@ -1,5 +1,6 @@
 import type { AppData, WeekdayKey } from "./types";
 import { WEEKDAY_KEYS } from "./types";
+import { retainKnownVehicleDayDefaults } from "./vehicles";
 import { appendActivity } from "./activity-log";
 
 function slotDateFromId(slotId: string): string {
@@ -105,7 +106,12 @@ export function sanitizeTemplateDefaults(data: AppData): void {
       const id = days[d];
       if (id && !activeIds.has(id)) days[d] = null;
     }
-    return { ...t, defaultDriversByDay: days };
+    const vehicleIds = new Set((data.settings.vehicles ?? []).map((v) => v.id));
+    return {
+      ...t,
+      defaultDriversByDay: days,
+      defaultVehiclesByDay: retainKnownVehicleDayDefaults(t.defaultVehiclesByDay, vehicleIds),
+    };
   });
   data.settings.fillPriorityIds = data.settings.fillPriorityIds.filter((id) => activeIds.has(id));
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
   compareRouteDefinitionsByDisplayOrder,
   compareSlotTemplatesByDisplayOrder,
@@ -18,9 +18,11 @@ import type {
   RouteDefinition,
   RouteType,
   SlotTemplate,
+  Vehicle,
   WeekdayKey,
 } from "@/lib/types";
 import { WEEKDAY_KEYS } from "@/lib/types";
+import { emptyWeekdayIds, normalizeDefaultVehiclesByDay } from "@/lib/vehicles";
 
 import {
   ROUTE_TYPE_CATALOG_OPTIONS,
@@ -43,6 +45,7 @@ export function SettingsForm() {
   const [data, setData] = useState<AppData | null>(null);
   const [routeDefs, setRouteDefs] = useState<RouteDefinition[]>([]);
   const [templates, setTemplates] = useState<SlotTemplate[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -65,6 +68,7 @@ export function SettingsForm() {
     name: "",
     routeType: "morning" as RouteType,
   });
+  const [newVehicle, setNewVehicle] = useState({ name: "", plate: "" });
 
   const [terminateTarget, setTerminateTarget] = useState<{ id: string; name: string } | null>(
     null
@@ -85,8 +89,13 @@ export function SettingsForm() {
     setTemplates(
       d.settings.slotTemplates
         .filter((t) => activeIds.has(t.routeDefinitionId))
-        .map((t) => ({ ...t, defaultDriversByDay: { ...t.defaultDriversByDay } }))
+        .map((t) => ({
+          ...t,
+          defaultDriversByDay: { ...t.defaultDriversByDay },
+          defaultVehiclesByDay: normalizeDefaultVehiclesByDay(t),
+        }))
     );
+    setVehicles((d.settings.vehicles ?? []).map((v) => ({ ...v })));
   }, []);
 
   const load = useCallback(async () => {
@@ -402,6 +411,7 @@ export function SettingsForm() {
         id: `t-${Date.now()}`,
         routeDefinitionId: routeId,
         defaultDriversByDay: { ...empty },
+        defaultVehiclesByDay: { ...empty },
       },
     ]);
     setNewRoute({ name: "", routeType: "morning" });
@@ -451,7 +461,7 @@ export function SettingsForm() {
     };
     setTemplates((t) => [
       ...t,
-      { id: `t-${Date.now()}`, routeDefinitionId: first, defaultDriversByDay: { ...empty } },
+      { id: `t-${Date.now()}`, routeDefinitionId: first, defaultDriversByDay: { ...empty }, defaultVehiclesByDay: { ...empty } },
     ]);
   };
 
@@ -467,6 +477,95 @@ export function SettingsForm() {
           : x
       )
     );
+  };
+
+  const setTemplateDayVehicle = (rowId: string, day: WeekdayKey, vehicleId: string | null) => {
+    setTemplates((t) =>
+      t.map((x) =>
+        x.id === rowId
+          ? {
+              ...x,
+              defaultVehiclesByDay: {
+                ...(x.defaultVehiclesByDay ?? emptyWeekdayIds()),
+                [day]: vehicleId,
+              },
+            }
+          : x
+      )
+    );
+  };
+
+  const saveFleet = async (nextVehicles: Vehicle[]) => {
+    if (!data) return false;
+    setErr(null);
+    setCatalogBusy(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vehicles: nextVehicles }),
+      });
+      if (!res.ok) {
+        const j = await res.json();
+        setErr(j.error ?? "Save failed");
+        return false;
+      }
+      applyCatalogFromAppData((await res.json()) as AppData);
+      return true;
+    } catch {
+      setErr("Save failed");
+      return false;
+    } finally {
+      setCatalogBusy(false);
+    }
+  };
+
+  const addVehicle = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newVehicle.name.trim();
+    if (!name) return;
+    const plate = newVehicle.plate.trim();
+    const next: Vehicle[] = [
+      ...vehicles,
+      { id: `veh-${Date.now()}`, name, ...(plate ? { plate } : {}) },
+    ];
+    setSaved(null);
+    const ok = await saveFleet(next);
+    if (ok) {
+      setNewVehicle({ name: "", plate: "" });
+      setSaved("Fleet saved.");
+    }
+  };
+
+  const saveVehicleEdits = async () => {
+    setSaved(null);
+    const ok = await saveFleet(
+      vehicles
+        .map((v) => ({
+          ...v,
+          name: v.name.trim(),
+          plate: v.plate?.trim() || undefined,
+        }))
+        .filter((v) => v.name)
+    );
+    if (ok) setSaved("Fleet saved.");
+  };
+
+  const removeVehicle = async (id: string) => {
+    setSaved(null);
+    const ok = await saveFleet(vehicles.filter((v) => v.id !== id));
+    if (ok) {
+      setTemplates((t) =>
+        t.map((x) => {
+          const days = { ...(x.defaultVehiclesByDay ?? emptyWeekdayIds()) };
+          for (const d of WEEKDAY_KEYS) {
+            if (days[d] === id) days[d] = null;
+          }
+          return { ...x, defaultVehiclesByDay: days };
+        })
+      );
+      setSaved("Car removed from the fleet.");
+    }
   };
 
   const routeDefsSorted = useMemo(
@@ -588,12 +687,6 @@ export function SettingsForm() {
 
       <section>
         <h1 className="font-serif text-3xl text-cc-navy">Settings</h1>
-        <p className="mt-2 text-sm text-cc-muted">
-          Data file: <code className="rounded bg-cc-cream px-1">data/schedule.json</code>.
-          Configure the route catalog and schedule rows below. Changes here affect future weeks on
-          the schedule board—past dates stay as saved in per-cell overrides unless you edit them
-          manually on the board.
-        </p>
       </section>
 
       <CollapsibleSection title="Team roster" hint="Add, edit, and terminate team members.">
@@ -768,7 +861,7 @@ export function SettingsForm() {
         </form>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Shift availability (by day)" hint="Which route types each person can cover each weekday.">
+      <CollapsibleSection title="Shift availability" hint="Which route types each person can cover each weekday.">
         <p className="mt-2 text-sm text-cc-muted">
           For each weekday, check the shift types someone can cover for fill-in suggestions and time-off
           requests. Opener and Closer do not conflict with other routes on the same day. Drivers can
@@ -832,9 +925,9 @@ export function SettingsForm() {
         </button>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Route catalog" hint="Define customer/route names and shift types.">
+      <CollapsibleSection title="Route catalog" hint="Establish customer/route names and shift types.">
         <p className="mt-2 text-sm text-cc-muted">
-          Define each customer/route once. Adding a route also creates a matching row on the weekly
+          Establish an official route here. Adding a route also creates a matching row on the weekly
           grid below. Use <strong className="font-medium text-cc-ink">Remove</strong> to drop a route
           from the live catalog and schedule (past history is kept).
         </p>
@@ -930,17 +1023,120 @@ export function SettingsForm() {
         </form>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Schedule rows (weekly grid)" hint="Default drivers for each Mon–Fri schedule line.">
+      <CollapsibleSection title="Fleet" hint="Company cars assigned to routes on the schedule board.">
         <p className="mt-2 text-sm text-cc-muted">
-          Each row is one line on the Mon–Fri board. Pick the route, then choose the default driver per
-          weekday (leave blank for open that day). Set an effective date when saving so earlier
-          schedule dates keep their existing assignments.
+          Establish a vehicle here. Then pick the default vehicle below in the “Schedule rows
+          (weekly grid)” for each shift.
         </p>
         <div className="mt-4 overflow-x-auto rounded border border-cc-line bg-cc-paper">
-          <table className="w-full min-w-[900px] text-left text-sm">
+          <table className="w-full min-w-[28rem] text-left text-sm">
+            <thead>
+              <tr className="border-b border-cc-line bg-cc-cream/50 text-xs uppercase text-cc-muted">
+                <th className="px-3 py-2">Name</th>
+                <th className="px-3 py-2">Description</th>
+                <th className="w-16" />
+              </tr>
+            </thead>
+            <tbody>
+              {vehicles.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="px-3 py-4 text-cc-muted">
+                    No cars yet. Add one below.
+                  </td>
+                </tr>
+              )}
+              {vehicles.map((v) => (
+                <tr key={v.id} className="border-b border-cc-line/60">
+                  <td className="px-3 py-2">
+                    <input
+                      value={v.name}
+                      onChange={(e) =>
+                        setVehicles((list) =>
+                          list.map((x) => (x.id === v.id ? { ...x, name: e.target.value } : x))
+                        )
+                      }
+                      className="w-full min-w-[8rem] rounded border border-cc-line px-2 py-1"
+                    />
+                  </td>
+                  <td className="px-3 py-2">
+                    <input
+                      value={v.plate ?? ""}
+                      onChange={(e) =>
+                        setVehicles((list) =>
+                          list.map((x) => (x.id === v.id ? { ...x, plate: e.target.value } : x))
+                        )
+                      }
+                      placeholder="Optional notes"
+                      className="w-full min-w-[7rem] rounded border border-cc-line px-2 py-1"
+                    />
+                  </td>
+                  <td className="px-3 py-2">
+                    <button
+                      type="button"
+                      onClick={() => void removeVehicle(v.id)}
+                      disabled={catalogBusy}
+                      className="text-xs text-red-700 underline disabled:opacity-50"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <button
+          type="button"
+          onClick={() => void saveVehicleEdits()}
+          disabled={catalogBusy || vehicles.length === 0}
+          className="mt-3 rounded bg-cc-navy px-4 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep disabled:opacity-50"
+        >
+          {catalogBusy ? "Saving…" : "Save fleet"}
+        </button>
+        <form
+          onSubmit={(e) => void addVehicle(e)}
+          className="mt-4 space-y-3 rounded border border-cc-line bg-white p-4"
+        >
+          <p className="text-sm font-medium text-cc-ink">Add car</p>
+          <div className="flex flex-wrap items-end gap-2">
+            <label className="flex flex-col gap-1 text-sm text-cc-ink">
+              Name
+              <input
+                required
+                placeholder="e.g. Van 4"
+                value={newVehicle.name}
+                onChange={(e) => setNewVehicle({ ...newVehicle, name: e.target.value })}
+                className="min-w-[10rem] rounded border border-cc-line px-2 py-1"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-sm text-cc-ink">
+              Description
+              <input
+                placeholder="Optional notes"
+                value={newVehicle.plate}
+                onChange={(e) => setNewVehicle({ ...newVehicle, plate: e.target.value })}
+                className="min-w-[8rem] rounded border border-cc-line px-2 py-1"
+              />
+            </label>
+            <button type="submit" className="rounded bg-cc-gold px-3 py-1 text-sm text-white">
+              Add
+            </button>
+          </div>
+        </form>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Schedule rows (weekly grid)" hint="Default drivers and cars for each Mon–Fri schedule line.">
+        <p className="mt-2 text-sm text-cc-muted">
+          Each route has two lines: one for the default driver per weekday, and one for the default
+          car per weekday. Leave a box blank for open that day. Set an effective date when saving so
+          earlier schedule dates keep their existing assignments.
+        </p>
+        <div className="mt-4 overflow-x-auto rounded border border-cc-line bg-cc-paper">
+          <table className="w-full min-w-[960px] text-left text-sm">
             <thead>
               <tr className="border-b border-cc-line bg-cc-cream/50 text-xs uppercase text-cc-muted">
                 <th className="px-2 py-2">Route</th>
+                <th className="px-2 py-2">Line</th>
                 {WEEKDAY_KEYS.map((d) => (
                   <th key={d} className="px-1 py-2">
                     {WEEKDAY_LABELS[d]}
@@ -951,60 +1147,93 @@ export function SettingsForm() {
             </thead>
             <tbody>
               {templatesSorted.map((row) => (
-                <tr key={row.id} className="border-b border-cc-line/60">
-                  <td className="px-2 py-2">
-                    <select
-                      value={row.routeDefinitionId}
-                      onChange={(e) =>
-                        setTemplates((t) =>
-                          t.map((x) =>
-                            x.id === row.id
-                              ? { ...x, routeDefinitionId: e.target.value }
-                              : x
-                          )
-                        )
-                      }
-                      className="w-full max-w-[14rem] rounded border border-cc-line px-2 py-1"
-                    >
-                      {routeDefsSorted.map((rd) => (
-                        <option key={rd.id} value={rd.id}>
-                          {rd.name} ({rd.routeType})
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  {WEEKDAY_KEYS.map((d) => (
-                    <td key={d} className="px-1 py-2">
+                <Fragment key={row.id}>
+                  <tr className="border-b border-cc-line/30">
+                    <td className="px-2 py-2 align-top" rowSpan={2}>
                       <select
-                        value={row.defaultDriversByDay[d] ?? ""}
+                        value={row.routeDefinitionId}
                         onChange={(e) =>
-                          setTemplateDayDriver(
-                            row.id,
-                            d,
-                            e.target.value ? e.target.value : null
+                          setTemplates((t) =>
+                            t.map((x) =>
+                              x.id === row.id
+                                ? { ...x, routeDefinitionId: e.target.value }
+                                : x
+                            )
                           )
                         }
-                        className="w-full max-w-[9rem] rounded border border-cc-line px-1 py-1 text-xs"
+                        className="w-full max-w-[14rem] rounded border border-cc-line px-2 py-1"
                       >
-                        <option value="">—</option>
-                        {peopleAlpha.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
+                        {routeDefsSorted.map((rd) => (
+                          <option key={rd.id} value={rd.id}>
+                            {rd.name} ({rd.routeType})
                           </option>
                         ))}
                       </select>
                     </td>
-                  ))}
-                  <td className="px-2 py-2">
-                    <button
-                      type="button"
-                      onClick={() => removeTemplateRow(row.id)}
-                      className="text-xs text-red-700 underline"
-                    >
-                      Remove
-                    </button>
-                  </td>
-                </tr>
+                    <td className="px-2 py-2 text-xs font-medium uppercase tracking-wide text-cc-muted">
+                      Driver
+                    </td>
+                    {WEEKDAY_KEYS.map((d) => (
+                      <td key={d} className="px-1 py-2">
+                        <select
+                          value={row.defaultDriversByDay[d] ?? ""}
+                          onChange={(e) =>
+                            setTemplateDayDriver(
+                              row.id,
+                              d,
+                              e.target.value ? e.target.value : null
+                            )
+                          }
+                          className="w-full max-w-[9rem] rounded border border-cc-line px-1 py-1 text-xs"
+                        >
+                          <option value="">—</option>
+                          {peopleAlpha.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                    ))}
+                    <td className="px-2 py-2 align-top" rowSpan={2}>
+                      <button
+                        type="button"
+                        onClick={() => removeTemplateRow(row.id)}
+                        className="text-xs text-red-700 underline"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-cc-line/60 bg-cc-cream/25">
+                    <td className="px-2 py-2 text-xs font-medium uppercase tracking-wide text-cc-muted">
+                      Car
+                    </td>
+                    {WEEKDAY_KEYS.map((d) => (
+                      <td key={d} className="px-1 py-2">
+                        <select
+                          value={row.defaultVehiclesByDay?.[d] ?? ""}
+                          onChange={(e) =>
+                            setTemplateDayVehicle(
+                              row.id,
+                              d,
+                              e.target.value ? e.target.value : null
+                            )
+                          }
+                          className="w-full max-w-[9rem] rounded border border-cc-line px-1 py-1 text-xs"
+                        >
+                          <option value="">—</option>
+                          {vehicles.map((v) => (
+                            <option key={v.id} value={v.id}>
+                              {v.name}
+                              {v.plate ? ` (${v.plate})` : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                    ))}
+                  </tr>
+                </Fragment>
               ))}
             </tbody>
           </table>
@@ -1095,15 +1324,10 @@ export function SettingsForm() {
         </Link>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Email" hint="How transactional email and portal URLs are configured.">
+      <CollapsibleSection title="Email" hint="Who receives time-off notifications.">
         <p className="mt-2 text-sm text-cc-muted">
-          Time off notifies <strong>ahoover@crystalcourier.com</strong> by default. Set{" "}
-          <code className="rounded bg-cc-cream px-1">RESEND_API_KEY</code> and{" "}
-          <code className="rounded bg-cc-cream px-1">RESEND_FROM</code> for delivery. Driver emails
-          (announcements, open shifts, approvals) link to{" "}
-          <code className="rounded bg-cc-cream px-1">DRIVER_PORTAL_URL</code> (your Google Sites
-          schedule page). Availability token links use{" "}
-          <code className="rounded bg-cc-cream px-1">APP_PUBLIC_URL</code> (this app on Render).
+          Time off notifies <strong>ahoover@crystalcourier.com</strong> by default. Please notify
+          Aaron to change this.
         </p>
       </CollapsibleSection>
       <p className="mt-12 border-t border-cc-line pt-6 text-sm text-cc-muted">

@@ -75,7 +75,7 @@ export default function OpenShiftsPage() {
       return;
     }
     setMsg(
-      "Sign-up submitted. You’ll get email and text when a manager or dispatcher approves it."
+      "Sign-up submitted. You’ll be notified when management approves it."
     );
     setData(json as AppData);
   };
@@ -86,19 +86,22 @@ export default function OpenShiftsPage() {
     <div className="mx-auto max-w-2xl">
       <h1 className="font-serif text-3xl text-cc-navy">Open shifts</h1>
       <p className="mt-2 text-sm text-cc-muted">
-        Shifts appear here only after a manager uses <strong className="font-medium text-cc-ink">Notify team (email / SMS)</strong>{" "}
-        on the schedule. Signing up submits a request; an owner, ops manager, or dispatcher approves it{" "}
+        Shifts appear here only after a manager uses{" "}
+        <strong className="font-medium text-cc-ink">Notify team</strong> on the schedule. Signing up
+        submits a request; all requests must be approved by management
         {isDriverPortal ? (
-          <span className="font-medium text-cc-ink">in management</span>
+          "."
         ) : (
           <>
+            {" "}
             on{" "}
             <Link href="/approvals" className="font-medium text-cc-navy underline decoration-cc-gold/50 hover:decoration-cc-gold">
               Approvals needed
             </Link>
+            .
           </>
-        )}
-        . Only one pending sign-up per shift.
+        )}{" "}
+        Only one pending sign-up per shift.
       </p>
 
       <div className="mt-6 rounded border border-cc-line bg-cc-paper p-4 shadow-sm">

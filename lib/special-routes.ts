@@ -31,6 +31,7 @@ export function slotFromSpecialRoute(route: SpecialRoute): ScheduleSlot {
     routeType: route.routeType,
     label: route.name,
     driverId: null,
+    vehicleId: null,
     isGap: false,
     isOfficeSlot: false,
     gapForDriverId: null,

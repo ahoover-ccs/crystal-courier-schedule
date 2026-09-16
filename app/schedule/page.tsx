@@ -5,11 +5,11 @@ export default function SchedulePage() {
   return (
     <div>
       <h1 className="font-serif text-3xl text-cc-navy">Weekly route board</h1>
-      <p className="mt-2 max-w-3xl text-cc-muted">
-        Monday through Friday grid. Drag from the roster onto a cell to assign, drag a name between
-        cells to move, or drop on the unassign area to clear. Overlapping route types on the same day
-        are blocked (for example, all-day and morning cannot double-book). Opening Schedule from the
-        menu jumps to the current week; past weeks stay as saved when you browse back.
+      <p className="mt-2 w-full text-cc-muted">
+        Drag a name or car onto a cell to assign, drag a name between cells to move, or click a
+        suggested name from the “Fill-in Suggestions” to assign to a route. Drag a name off of the
+        grid to unassign a driver. Anything in navy blue is a default, anything in gold is a swap,
+        and anything in light blue is pending.
       </p>
       <div className="mt-8">
         <Suspense fallback={<p className="text-cc-muted">Loading schedule…</p>}>

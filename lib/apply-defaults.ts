@@ -2,6 +2,7 @@ import { isActivePerson } from "./active-people";
 import { effectiveDefaultDriverForDate } from "./person-roster-dates";
 import { refreshSlotOverrideFromSlot, templateIdFromSlotId } from "./slot-overrides";
 import { canAssignDriver, hasApprovedTimeOffForSlot } from "./suggestions";
+import { canAssignVehicle, defaultVehicleIdForTemplate, vehicleById } from "./vehicles";
 import { reapplyApprovedTimeOffToSlots } from "./time-off-apply";
 import type { AppData } from "./types";
 import { weekWorkdaysFromWeekStart } from "./week-utils";
@@ -39,6 +40,24 @@ export function applyDefaultDriversToEmptySlots(data: AppData): {
       continue;
     }
     slots[i] = { ...slot, driverId: def };
+    refreshSlotOverrideFromSlot(next, slots[i]);
+  }
+
+  for (let i = 0; i < slots.length; i++) {
+    const slot = slots[i];
+    if (!weekDays.includes(slot.date)) continue;
+    if (slot.vehicleId) continue;
+    const tid = templateIdFromSlotId(slot.id);
+    const t = withTimeOff.settings.slotTemplates.find((x) => x.id === tid);
+    const defVehicle = defaultVehicleIdForTemplate(t, slot.date);
+    if (!defVehicle) continue;
+    if (!vehicleById(next, defVehicle)) continue;
+    const check = canAssignVehicle(next, slot.id, defVehicle);
+    if (!check.ok) {
+      errors.push(`${slot.label} (${slot.date}): ${check.reason}`);
+      continue;
+    }
+    slots[i] = { ...slot, vehicleId: defVehicle };
     refreshSlotOverrideFromSlot(next, slots[i]);
   }
 
