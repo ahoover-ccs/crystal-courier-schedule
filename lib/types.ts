@@ -119,7 +119,7 @@ export type AbsenceYearStats = {
   coveredAbsenceDayCount: number;
 };
 
-/** Dedupe for 24h reminders when someone non-default is assigned to a slot */
+/** Dedupe for day-before reminders when someone non-default is assigned to a slot */
 export type NonDefaultShiftReminder = {
   key: string;
   sentAt: string;
@@ -174,7 +174,7 @@ export type AppData = {
   openShifts: OpenShift[];
   announcements: Announcement[];
   absenceStats: AbsenceYearStats[];
-  /** Keys like `nd-{slotId}-{driverId}` once a non-default 24h reminder was sent */
+  /** Keys like `nd-{slotId}-{driverId}` once a day-before non-default reminder was sent */
   nonDefaultShiftReminders?: NonDefaultShiftReminder[];
   /** Chronological site activity (newest first); pruned on write */
   activityLog?: ActivityLogEntry[];

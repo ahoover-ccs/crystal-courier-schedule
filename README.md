@@ -64,9 +64,9 @@ Notifications fall back to console logs if these are unset:
 - `APP_PUBLIC_URL` — public URL of this app on Render (for availability token links).
 - `DRIVER_PORTAL_URL` — link in driver emails/SMS (announcements, open shifts, approvals). Set to your employee schedule page, e.g. `https://sites.google.com/crystalcourier.com/employees/schedule?authuser=0`. When unset, emails use `{APP_PUBLIC_URL}/schedule`.
 
-### Non-default shift reminders (~24 hours ahead)
+### Non-default shift reminders (the day before)
 
-When someone is assigned to a route that is **not** their usual default for that day, the app emails and texts them about a day before the shift starts. [`render.yaml`](render.yaml) defines an hourly **Cron Job** (`crystal-courier-shift-reminders`) that GETs `/api/cron/reminders` on the live web service.
+When someone is assigned to a route that is **not** their usual default for that day, the app emails and texts them the morning before (America/Denver, starting at 6am). If they have more than one non-default shift tomorrow, those are combined into a single email. [`render.yaml`](render.yaml) defines an hourly **Cron Job** (`crystal-courier-shift-reminders`) that GETs `/api/cron/reminders` on the live web service. Sent reminders also appear under **Settings → Activity log**.
 
 **One-time setup** (after this file is on `main`):
 
