@@ -165,8 +165,8 @@ function DraggableVehicleChip({
       style={style}
       {...listeners}
       {...attributes}
-      className={`mt-1 w-full cursor-grab rounded px-2 py-0.5 text-left text-[11px] leading-tight text-cc-paper active:cursor-grabbing ${
-        isNonDefault ? "bg-cc-gold" : "bg-cc-navy"
+      className={`mt-1 w-full cursor-grab bg-transparent px-2 py-0.5 text-left text-[11px] leading-tight active:cursor-grabbing ${
+        isNonDefault ? "font-bold text-cc-gold" : "text-cc-navy"
       } ${isDragging ? "opacity-50" : ""}`}
     >
       {label}
@@ -251,14 +251,9 @@ function SlotCell({
           isNonDefault={isNonDefaultAssignment}
           isPendingTimeOff={isPendingTimeOff}
         />
-      ) : (
-        <div className="px-0.5 py-1">
-          <p className="text-center text-xs text-cc-muted">Drop driver</p>
-          {slot.gapReason && (
-            <p className="mt-1 text-center text-[10px] leading-snug text-amber-900">{slot.gapReason}</p>
-          )}
-        </div>
-      )}
+      ) : slot.gapReason ? (
+        <p className="px-0.5 py-1 text-center text-[10px] leading-snug text-amber-900">{slot.gapReason}</p>
+      ) : null}
       {slot.vehicleId && vehicleLabel ? (
         <DraggableVehicleChip
           slotId={slot.id}
@@ -266,9 +261,7 @@ function SlotCell({
           label={vehicleLabel}
           isNonDefault={isNonDefaultVehicle}
         />
-      ) : (
-        <p className="mt-1 text-center text-[10px] text-cc-muted">Drop car</p>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -473,6 +466,13 @@ export function ScheduleBoard() {
     const base = parseISO(data.settings.defaultWeekStart);
     const targetWeekStart = formatISODate(weekStartContaining(addDays(base, days)));
     setWeekInput(targetWeekStart);
+  };
+
+  const currentWeekStart = formatISODate(weekStartContaining(new Date()));
+  const isViewingCurrentWeek = data?.settings.defaultWeekStart === currentWeekStart;
+
+  const goToCurrentWeek = () => {
+    setWeekInput(currentWeekStart);
   };
 
   const saveDayNote = async (date: string, text: string) => {
@@ -726,6 +726,14 @@ export function ScheduleBoard() {
               className="rounded border border-cc-line bg-white px-3 py-2 text-sm text-cc-ink hover:bg-cc-cream/60 disabled:opacity-50"
             >
               Previous week
+            </button>
+            <button
+              type="button"
+              onClick={goToCurrentWeek}
+              disabled={busy || !data || isViewingCurrentWeek}
+              className="rounded border border-cc-line bg-white px-3 py-2 text-sm text-cc-ink hover:bg-cc-cream/60 disabled:opacity-50"
+            >
+              Today
             </button>
             <button
               type="button"

@@ -102,6 +102,13 @@ export function DriverScheduleBoard() {
     void loadWeek(targetWeekStart);
   };
 
+  const currentWeekStart = formatISODate(weekStartContaining(new Date()));
+  const isViewingCurrentWeek = data?.settings.defaultWeekStart === currentWeekStart;
+
+  const goToCurrentWeek = () => {
+    void loadWeek(currentWeekStart);
+  };
+
   if (!data) {
     return <p className="text-cc-muted">{loadError ?? "Loading schedule..."}</p>;
   }
@@ -131,6 +138,14 @@ export function DriverScheduleBoard() {
           className="rounded border border-cc-line bg-white px-3 py-2 text-sm text-cc-ink hover:bg-cc-cream/60 disabled:opacity-50"
         >
           Previous week
+        </button>
+        <button
+          type="button"
+          onClick={goToCurrentWeek}
+          disabled={busy || !data || isViewingCurrentWeek}
+          className="rounded border border-cc-line bg-white px-3 py-2 text-sm text-cc-ink hover:bg-cc-cream/60 disabled:opacity-50"
+        >
+          Today
         </button>
         <button
           type="button"
@@ -193,7 +208,7 @@ export function DriverScheduleBoard() {
                   const vehicleNonDefault = slot
                     ? isNonDefaultVehicleForSlot(data, slot, row.template)
                     : false;
-                  const vehicleColor = vehicleNonDefault ? "bg-cc-gold" : "bg-cc-navy";
+                  const vehicleColor = vehicleNonDefault ? "font-bold text-cc-gold" : "text-cc-navy";
                   return (
                     <div key={slot?.id ?? `empty-${row.key}-${i}`} className="bg-cc-cream/40 p-0.5">
                       {slot ? (
@@ -213,7 +228,7 @@ export function DriverScheduleBoard() {
                             <p className="mt-1 text-center text-xs text-cc-muted">Open</p>
                           )}
                           {vehicle ? (
-                            <p className={`mt-1 rounded px-2 py-0.5 text-[11px] leading-tight text-cc-paper ${vehicleColor}`}>
+                            <p className={`mt-1 bg-transparent px-2 py-0.5 text-[11px] leading-tight ${vehicleColor}`}>
                               {vehicleDisplayName(vehicle)}
                             </p>
                           ) : (
