@@ -1,0 +1,42 @@
+# GitHub's scheduler can skip or delay an hourly run. The app treats that as a
+# miss: it starts at 8:00 America/Denver the day before the shift and does not
+# record the reminder until the email is actually accepted, so a later run
+# sends the same one email (all of that driver's non-default routes).
+name: Shift reminders
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send day-before shift reminders
+        env:
+          APP_PUBLIC_URL: ${{ secrets.APP_PUBLIC_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          base="${APP_PUBLIC_URL:-https://crystal-courier-schedule.onrender.com}"
+          base="${base%/}"
+          url="$base/api/cron/reminders"
+          ok=0
+          for attempt in 1 2 3 4; do
+            args=(-sS -L -o /tmp/reminders-body.txt -w "%{http_code}" --max-time 120)
+            if [ -n "$CRON_SECRET" ]; then
+              args+=(-H "Authorization: Bearer $CRON_SECRET")
+            fi
+            code=$(curl "${args[@]}" "$url" || echo "000")
+            echo "attempt $attempt HTTP $code"
+            cat /tmp/reminders-body.txt 2>/dev/null || true
+            echo
+            if [ "$code" -ge 200 ] && [ "$code" -lt 300 ]; then
+              ok=1
+              break
+            fi
+            sleep 25
+          done
+          if [ "$ok" -ne 1 ]; then
+            exit 1
+          fi

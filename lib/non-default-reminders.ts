@@ -15,7 +15,7 @@ import { formatISODate, weekStartContaining } from "@/lib/week-utils";
 export const BUSINESS_TIMEZONE = "America/Denver";
 
 /** First hour (0–23) in Denver when the day-before reminder may send. */
-export const REMINDER_SEND_AFTER_HOUR = 6;
+export const REMINDER_SEND_AFTER_HOUR = 8;
 
 export function reminderKey(slot: ScheduleSlot, driverId: string): string {
   return `nd-${slot.id}-${driverId}`;
@@ -163,6 +163,8 @@ export type ReminderRunResult = {
   localHour: number;
   sendWindowOpen: boolean;
   sent: number;
+  /** Drivers who still need a real email (or SMS, if they have no email) after this run. */
+  failed: number;
   details: string[];
   pending: string[];
   newRows: NonDefaultShiftReminder[];
@@ -193,6 +195,7 @@ export async function sendNonDefaultShiftReminders(params: {
     localHour,
     sendWindowOpen,
     sent: 0,
+    failed: 0,
     details: [],
     pending,
     newRows: [],
@@ -207,9 +210,12 @@ export async function sendNonDefaultShiftReminders(params: {
     const email = group.person.email?.trim();
     const phone = group.person.phone?.trim();
     const stamp = new Date().toISOString();
+    const labels = group.slots.map((s) => s.label).join(", ");
 
-    let emailOk = false;
-    let smsAttempted = false;
+    // One message lists every non-default route for this driver tomorrow.
+    // A console-only "send" does not count; the next scheduled run tries again.
+    let emailDelivered = false;
+    let smsDelivered = false;
     if (email) {
       const sendResult = await sendTransactionalEmail({
         to: email,
@@ -219,23 +225,45 @@ export async function sendNonDefaultShiftReminders(params: {
         console.error("[non-default reminder email]", e);
         return { ok: false as const, channel: "resend" as const, error: String(e) };
       });
-      emailOk = sendResult.ok;
-      if (!sendResult.ok) {
-        console.error("[non-default reminder email]", sendResult.error);
+      emailDelivered = sendResult.ok && sendResult.channel === "resend";
+      if (!emailDelivered) {
+        console.error(
+          "[non-default reminder email]",
+          sendResult.ok ? "not delivered (email provider not configured)" : sendResult.error
+        );
       }
     }
-    if (phone) {
-      smsAttempted = true;
-      await sendTransactionalSms({ to: phone, body: sms }).catch((e) =>
-        console.error("[non-default reminder sms]", e)
-      );
+
+    if (email && !emailDelivered) {
+      result.failed += 1;
+      result.details.push(`retry ${group.person.name}: email not delivered`);
+      continue;
     }
 
-    const contacted = emailOk || smsAttempted;
-    const shouldRetry = Boolean(email) && !emailOk && !smsAttempted;
-    if (shouldRetry) {
-      result.details.push(`retry ${group.person.name}: email failed`);
+    if (!email && phone) {
+      const smsResult = await sendTransactionalSms({ to: phone, body: sms }).catch((e) => {
+        console.error("[non-default reminder sms]", e);
+        return { ok: false as const, channel: "twilio" as const };
+      });
+      smsDelivered = smsResult.ok && smsResult.channel === "twilio";
+      if (!smsDelivered) {
+        result.failed += 1;
+        result.details.push(`retry ${group.person.name}: text not delivered`);
+        continue;
+      }
+    }
+
+    if (!email && !phone) {
+      result.details.push(`waiting ${group.person.name}: no email or phone on file`);
       continue;
+    }
+
+    if (email && phone) {
+      const smsResult = await sendTransactionalSms({ to: phone, body: sms }).catch((e) => {
+        console.error("[non-default reminder sms]", e);
+        return { ok: false as const, channel: "twilio" as const };
+      });
+      smsDelivered = smsResult.ok && smsResult.channel === "twilio";
     }
 
     for (const slot of group.slots) {
@@ -244,25 +272,22 @@ export async function sendNonDefaultShiftReminders(params: {
       sentKeys.add(key);
     }
 
-    const labels = group.slots.map((s) => s.label).join(", ");
     result.details.push(`${group.person.name}: ${labels} on ${group.date}`);
     appendActivity(params.data, {
       category: "reminder",
       summary: `Non-default shift reminder: ${group.person.name} — ${labels} on ${group.date}`,
-      detail: contacted
-        ? emailOk && smsAttempted
-          ? "Email and SMS attempted"
-          : emailOk
-            ? "Email sent"
-            : smsAttempted
-              ? "SMS attempted (no email on file or email failed)"
-              : "Email and/or SMS attempted"
-        : "No email or phone on file — reminder recorded only",
+      detail: emailDelivered && smsDelivered
+        ? "Email and SMS sent"
+        : emailDelivered
+          ? "Email sent"
+          : "SMS sent (no email on file)",
       at: stamp,
     });
   }
 
-  result.sent = result.details.filter((d) => !d.startsWith("retry ")).length;
+  result.sent = result.details.filter(
+    (d) => !d.startsWith("retry ") && !d.startsWith("waiting ")
+  ).length;
   result.pending = collectReminderGroups(weekData, tomorrow, sentKeys).map(
     (g) => `${g.person.name}: ${g.slots.map((s) => s.label).join(", ")} on ${g.date}`
   );

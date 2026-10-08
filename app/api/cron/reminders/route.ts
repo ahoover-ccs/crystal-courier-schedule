@@ -11,8 +11,10 @@ function publicBaseUrl(req: Request): string {
 }
 
 /**
- * Call on a schedule (e.g. hourly) with optional `Authorization: Bearer CRON_SECRET`.
- * Sends one email + SMS per driver the Denver morning before their non-default shift(s).
+ * Call on a schedule (hourly is enough) with optional `Authorization: Bearer CRON_SECRET`.
+ * From 8:00 America/Denver the day before, sends one email per driver listing every
+ * non-default route for the next day. A run that does not actually deliver is not
+ * recorded, so the next run tries again.
  */
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
@@ -38,15 +40,20 @@ export async function GET(req: Request) {
     await writeDb(next);
   }
 
-  return NextResponse.json({
-    ok: true,
-    timezone: BUSINESS_TIMEZONE,
-    today: run.today,
-    tomorrow: run.tomorrow,
-    localHour: run.localHour,
-    sendWindowOpen: run.sendWindowOpen,
-    sent: run.sent,
-    details: run.details,
-    pending: run.pending,
-  });
+  const delivered = run.failed === 0;
+  return NextResponse.json(
+    {
+      ok: delivered,
+      timezone: BUSINESS_TIMEZONE,
+      today: run.today,
+      tomorrow: run.tomorrow,
+      localHour: run.localHour,
+      sendWindowOpen: run.sendWindowOpen,
+      sent: run.sent,
+      failed: run.failed,
+      details: run.details,
+      pending: run.pending,
+    },
+    { status: delivered ? 200 : 500 }
+  );
 }

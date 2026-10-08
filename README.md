@@ -66,17 +66,11 @@ Notifications fall back to console logs if these are unset:
 
 ### Non-default shift reminders (the day before)
 
-When someone is assigned to a route that is **not** their usual default for that day, the app emails and texts them the morning before (America/Denver, starting at 6am). If they have more than one non-default shift tomorrow, those are combined into a single email. [`render.yaml`](render.yaml) defines an hourly **Cron Job** (`crystal-courier-shift-reminders`) that GETs `/api/cron/reminders` on the live web service. Sent reminders also appear under **Settings → Activity log**.
+When someone is assigned to a route that is **not** their usual default for that day, the app emails them the morning before (America/Denver, starting at 8:00am). If they have more than one non-default shift tomorrow, those are combined into a single email. A reminder is recorded only after Resend actually accepts the email, so a missed or failed run tries again on the next check. [`.github/workflows/shift-reminders.yml`](.github/workflows/shift-reminders.yml) calls `/api/cron/reminders` every hour. [`render.yaml`](render.yaml) can do the same from a Render Cron Job. Sent reminders also appear under **Settings → Activity log**.
 
-**One-time setup** (after this file is on `main`):
+The GitHub Action runs only after this workflow is on `main`. If the web service uses `CRON_SECRET`, add that same value as an Actions secret named `CRON_SECRET`. Add `APP_PUBLIC_URL` only if the site is not `https://crystal-courier-schedule.onrender.com`.
 
-1. In the [Render Dashboard](https://dashboard.render.com), click **New** → **Blueprint**, select this repo, and apply it. That creates the cron job only (the existing Web Service stays as-is).
-2. On the new cron job, set:
-   - `APP_PUBLIC_URL` — the public URL of the Web Service (e.g. `https://crystal-courier-schedule.onrender.com`)
-   - `CRON_SECRET` — same value as on the Web Service, if you set one there
-3. Optionally set `CRON_SECRET` on the **Web Service** too, so only the cron (and anyone with the secret) can hit the endpoint.
-
-If you deploy on Vercel instead, [`vercel.json`](vercel.json) already schedules that path hourly.
+The Render cron in [`render.yaml`](render.yaml) calls the same endpoint. It is optional; the live site had not been recording scheduled sends from it.
 
 ## Project layout
 
