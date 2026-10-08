@@ -1,8 +1,5 @@
 import { format, parseISO, subMonths, subYears } from "date-fns";
-import { resolveTemplateLabel } from "./availability-helpers";
 import { slotsForDate } from "./schedule-for-date";
-import { isSpecialRouteSlotId } from "./special-routes";
-import { templateIdFromSlotId } from "./slot-overrides";
 import type { AppData, RouteType, TimeOffRequest } from "./types";
 
 const ACTIVE_TIME_OFF: ReadonlySet<TimeOffRequest["status"]> = new Set([
@@ -53,21 +50,6 @@ export function isEmployedLessThanOneYear(
   return hiredAt > oneYearBefore;
 }
 
-function dateFromSlotId(slotId: string): string {
-  const sep = slotId.indexOf("__");
-  return sep === -1 ? slotId : slotId.slice(0, sep);
-}
-
-function routeTypeFromSlotId(data: AppData, slotId: string): RouteType | null {
-  if (isSpecialRouteSlotId(slotId)) {
-    const spec = (data.specialRoutes ?? []).find((r) => `${r.date}__${r.id}` === slotId);
-    return spec?.routeType ?? null;
-  }
-  const template = data.settings.slotTemplates.find((t) => t.id === templateIdFromSlotId(slotId));
-  if (!template) return null;
-  return resolveTemplateLabel(template, data.settings.routeDefinitions).routeType;
-}
-
 function addTypes(
   byDate: Map<string, Set<RouteType>>,
   date: string,
@@ -81,7 +63,11 @@ function addTypes(
   for (const t of types) set.add(t);
 }
 
-/** Distinct half/full days in the trailing N months the person was out. */
+/**
+ * Distinct half/full days of approved time off in the trailing N months.
+ * Pending, rejected, and cancelled requests do not count. Schedule gaps
+ * (including a default driver moved to another route) do not count.
+ */
 export function trailingMonthsAbsenceDayCount(
   data: AppData,
   personId: string,
@@ -97,22 +83,6 @@ export function trailingMonthsAbsenceDayCount(
     if (r.driverId !== personId || r.status !== "approved") continue;
     if (r.date < fromISO || r.date > throughDateISO) continue;
     addTypes(byDate, r.date, r.routeTypes);
-  }
-
-  if (data.slotOverrides) {
-    for (const [slotId, o] of Object.entries(data.slotOverrides)) {
-      if (o.gapForDriverId !== personId) continue;
-      const date = dateFromSlotId(slotId);
-      if (date < fromISO || date > throughDateISO) continue;
-      const rt = routeTypeFromSlotId(data, slotId);
-      if (rt) addTypes(byDate, date, [rt]);
-    }
-  }
-
-  for (const s of data.slots) {
-    if (s.gapForDriverId !== personId) continue;
-    if (s.date < fromISO || s.date > throughDateISO) continue;
-    addTypes(byDate, s.date, [s.routeType]);
   }
 
   let total = 0;
