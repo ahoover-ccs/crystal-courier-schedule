@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     if (email) {
       const text = `Hi ${name},
 
-There’s an open route on the schedule you may be able to cover:
+There’s an open route on Crystal Courier’s schedule that we need help covering. Would you please consider grabbing this open shift?
 
 • ${slot.label}
 • ${slot.date}
