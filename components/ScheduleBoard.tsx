@@ -239,7 +239,7 @@ function SlotCell({
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[5.25rem] rounded border border-dashed border-cc-line p-1 transition-colors ${
+      className={`min-h-[3.75rem] rounded border border-dashed border-cc-line p-1 transition-colors ${
         isOver ? "bg-cc-gold/15 ring-2 ring-cc-gold/40" : "bg-white/80"
       } ${slot.isGap && !slot.driverId ? "ring-1 ring-amber-500/50" : ""}`}
     >
@@ -251,8 +251,6 @@ function SlotCell({
           isNonDefault={isNonDefaultAssignment}
           isPendingTimeOff={isPendingTimeOff}
         />
-      ) : slot.gapReason ? (
-        <p className="px-0.5 py-1 text-center text-[10px] leading-snug text-amber-900">{slot.gapReason}</p>
       ) : null}
       {slot.vehicleId && vehicleLabel ? (
         <DraggableVehicleChip

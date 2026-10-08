@@ -213,7 +213,7 @@ export function DriverScheduleBoard() {
                     <div key={slot?.id ?? `empty-${row.key}-${i}`} className="bg-cc-cream/40 p-0.5">
                       {slot ? (
                         <div
-                          className={`min-h-[5rem] rounded border border-dashed border-cc-line p-1.5 ${
+                          className={`min-h-[3.75rem] rounded border border-dashed border-cc-line p-1 ${
                             slot.isGap && !slot.driverId ? "ring-1 ring-amber-500/50" : ""
                           }`}
                         >
@@ -234,12 +234,9 @@ export function DriverScheduleBoard() {
                           ) : (
                             <p className="mt-1 text-center text-[10px] text-cc-muted">No car</p>
                           )}
-                          {slot.gapReason && (
-                            <p className="mt-2 text-xs text-amber-900">{slot.gapReason}</p>
-                          )}
                         </div>
                       ) : (
-                        <div className="min-h-[5rem] rounded bg-zinc-100/80" />
+                        <div className="min-h-[3.75rem] rounded bg-zinc-100/80" />
                       )}
                     </div>
                   );
