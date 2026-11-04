@@ -106,9 +106,6 @@ export function canAssignDriver(
   if (!slot) return { ok: false, reason: "Slot not found" };
   const person = data.people.find((p) => p.id === driverId);
   if (!person) return { ok: false, reason: "Person not found" };
-  if (!isActivePerson(person)) {
-    return { ok: false, reason: "That person is no longer on the active roster." };
-  }
   if (!isPersonEffectiveOnDate(person, slot.date)) {
     return { ok: false, reason: "That person is not on the roster for this date." };
   }

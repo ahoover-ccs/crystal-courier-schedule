@@ -1,4 +1,4 @@
-import type { AppData, WeekdayKey } from "./types";
+import type { AppData } from "./types";
 import { WEEKDAY_KEYS } from "./types";
 import { retainKnownVehicleDayDefaults } from "./vehicles";
 import { appendActivity } from "./activity-log";
@@ -8,7 +8,11 @@ function slotDateFromId(slotId: string): string {
   return i === -1 ? slotId : slotId.slice(0, i);
 }
 
-/** Terminate a person: settings apply immediately; schedule/overrides only on/after `effectiveDate`. */
+/**
+ * Terminate a person effective `effectiveDate` (that date and after).
+ * Weekday route defaults stay so weeks before that date still rebuild with this person.
+ * Fill-in priority and assignments on/after the date are cleared now.
+ */
 export function terminatePersonInData(
   data: AppData,
   personId: string,
@@ -20,13 +24,6 @@ export function terminatePersonInData(
   person.terminatedAt = effectiveDate;
 
   data.settings.fillPriorityIds = data.settings.fillPriorityIds.filter((x) => x !== personId);
-  data.settings.slotTemplates = data.settings.slotTemplates.map((t) => {
-    const days = { ...t.defaultDriversByDay } as Record<WeekdayKey, string | null>;
-    for (const d of WEEKDAY_KEYS) {
-      if (days[d] === personId) days[d] = null;
-    }
-    return { ...t, defaultDriversByDay: days };
-  });
 
   if (data.slotOverrides) {
     const next = { ...data.slotOverrides };
@@ -97,14 +94,18 @@ export function terminatePersonInData(
   });
 }
 
-/** Clear template default references to unknown or terminated people (settings save safety). */
+/**
+ * Drop template defaults that point at deleted people.
+ * Terminated people stay on weekday defaults so dates before `terminatedAt` still rebuild.
+ */
 export function sanitizeTemplateDefaults(data: AppData): void {
+  const knownIds = new Set(data.people.map((p) => p.id));
   const activeIds = new Set(data.people.filter((p) => !p.terminatedAt).map((p) => p.id));
   data.settings.slotTemplates = data.settings.slotTemplates.map((t) => {
     const days = { ...t.defaultDriversByDay };
     for (const d of WEEKDAY_KEYS) {
       const id = days[d];
-      if (id && !activeIds.has(id)) days[d] = null;
+      if (id && !knownIds.has(id)) days[d] = null;
     }
     const vehicleIds = new Set((data.settings.vehicles ?? []).map((v) => v.id));
     return {

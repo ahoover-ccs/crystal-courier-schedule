@@ -301,7 +301,7 @@ export function SettingsForm() {
         }))
       );
       setSaved(
-        `${terminateTarget.name} terminated effective ${effectiveDate}. Past schedule before that date is unchanged.`
+        `${terminateTarget.name} terminated effective ${effectiveDate}. Shifts before that date stay as they were. On and after that date they are cleared.`
       );
       setTerminateTarget(null);
     } catch {
@@ -589,6 +589,10 @@ export function SettingsForm() {
     .filter(isActivePerson)
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name));
+  const terminatedPeople = data.people
+    .filter((p) => p.terminatedAt)
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="mx-auto max-w-6xl space-y-14">
@@ -608,9 +612,9 @@ export function SettingsForm() {
               Terminate {terminateTarget.name}
             </h2>
             <p className="mt-2 text-sm text-cc-muted">
-              Shift availability, schedule row defaults, and fill-in priority are removed
-              immediately. The schedule keeps this person&apos;s history before the effective date;
-              on and after that date they are cleared from assignments.
+              They are removed from fill-in priority now. Their usual route defaults stay, so
+              shifts before the effective date are unchanged when you change weeks. On and after
+              that date they are cleared from the schedule.
             </p>
             <label className="mt-4 block text-sm font-medium text-cc-ink">
               Effective date on schedule
@@ -1209,6 +1213,11 @@ export function SettingsForm() {
                           {peopleAlpha.map((p) => (
                             <option key={p.id} value={p.id}>
                               {p.name}
+                            </option>
+                          ))}
+                          {terminatedPeople.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name} (terminated)
                             </option>
                           ))}
                         </select>
