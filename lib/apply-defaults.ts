@@ -47,6 +47,9 @@ export function applyDefaultDriversToEmptySlots(data: AppData): {
     const slot = slots[i];
     if (!weekDays.includes(slot.date)) continue;
     if (slot.vehicleId) continue;
+    // A dragged-off car stays empty. Null alone is not enough: older overrides
+    // store vehicleId null for driver edits that never touched the car.
+    if (next.slotOverrides?.[slot.id]?.vehicleCleared) continue;
     const tid = templateIdFromSlotId(slot.id);
     const t = withTimeOff.settings.slotTemplates.find((x) => x.id === tid);
     const defVehicle = defaultVehicleIdForTemplate(t, slot.date);

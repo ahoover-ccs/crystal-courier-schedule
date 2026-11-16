@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   const prev = data.slots[idx];
   data.slots[idx] = { ...prev, vehicleId };
-  refreshSlotOverrideFromSlot(data, data.slots[idx]);
+  refreshSlotOverrideFromSlot(data, data.slots[idx], { vehicleAssignment: true });
   await writeDb(data);
   return NextResponse.json(data);
 }

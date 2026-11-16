@@ -20,14 +20,15 @@ export async function notifyTimeOffApprovedToDriver(params: {
   const subject = `[Crystal Courier] Time off approved — ${params.person.name}`;
   const text = `Hi ${params.person.name},
 
-Your time off request has been approved.
+Hooray! Your time off request has been approved. Enjoy your time off but, before you go, please remember to clean (at least) the interior of your car and fuel up. Whoever covers your shift will likely be in your vehicle so we ask that you show them respect and appreciation for covering your route(s).
 
+We will provide coverage for:
 Dates: ${dateLine}
 Route types: ${routeTypeLine(params.routeTypes)}
 
-Your matching assignments have been cleared on the schedule. View the schedule: ${params.scheduleUrl}
+You can confirm the schedule here: ${params.scheduleUrl}
 
-— Crystal Courier`;
+— Crystal Courier Management`;
 
   const email = params.person.email?.trim();
   if (email) {

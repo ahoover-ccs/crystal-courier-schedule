@@ -180,6 +180,11 @@ export type SlotOverrideState = {
   gapForDriverId?: string | null;
   /** Present when a car was set or cleared on this cell. */
   vehicleId?: string | null;
+  /**
+   * The car was dragged off this cell. Empty is not “use the route default” —
+   * week changes and Refresh must leave it unassigned.
+   */
+  vehicleCleared?: boolean;
 };
 
 export type AppData = {

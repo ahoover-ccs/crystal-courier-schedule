@@ -32,11 +32,22 @@ export function mergeSlotOverridesIntoSlots(
  * matches a fresh template default (no gap), so new weeks can follow Settings defaults until
  * someone changes the cell again.
  */
-export function refreshSlotOverrideFromSlot(data: AppData, slot: ScheduleSlot): void {
+export function refreshSlotOverrideFromSlot(
+  data: AppData,
+  slot: ScheduleSlot,
+  opts?: { vehicleAssignment?: boolean }
+): void {
   const t = data.settings.slotTemplates.find((x) => x.id === templateIdFromSlotId(slot.id));
   const def = t ? effectiveDefaultDriverForDate(data, slot.date, t) : null;
   const defVehicle = defaultVehicleIdForTemplate(t, slot.date);
   const vehicleId = slot.vehicleId ?? null;
+  const prev = data.slotOverrides?.[slot.id];
+  // Only a direct car edit (assign or drag-off) may set or lift a clear.
+  // Other saves keep a previous clear while the cell is still empty, so a
+  // driver change does not hand the route back to its default car.
+  const vehicleCleared = opts?.vehicleAssignment
+    ? vehicleId == null
+    : vehicleId == null && prev?.vehicleCleared === true;
 
   const isTimeOffGap =
     slot.isGap &&
@@ -68,6 +79,7 @@ export function refreshSlotOverrideFromSlot(data: AppData, slot: ScheduleSlot): 
     gapForDriverId: slot.gapForDriverId ?? null,
     vehicleId,
   };
+  if (vehicleCleared) row.vehicleCleared = true;
   data.slotOverrides = { ...(data.slotOverrides ?? {}), [slot.id]: row };
 }
 

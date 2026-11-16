@@ -142,10 +142,9 @@ export function reminderEmailCopy(group: ReminderGroup, portalUrl: string): {
 ${covering}
 
 ${bullets}
-
 Date: ${niceDate}
 
-Check out the schedule here: ${portalUrl}
+Please double check the board when you arrive to confirm your routes and car assignment as things can change. For updates, check out the schedule here: ${portalUrl}
 
 — Crystal Courier Dispatch Team
 
