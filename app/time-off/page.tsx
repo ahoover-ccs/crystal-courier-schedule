@@ -210,6 +210,32 @@ export default function TimeOffPage() {
 
   return (
     <div className="mx-auto max-w-lg">
+      {msg && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-cc-navy/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="time-off-submitted-title"
+          onClick={() => setMsg(null)}
+        >
+          <div
+            className="w-full max-w-md rounded border border-green-200 bg-green-50 p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="time-off-submitted-title" className="font-serif text-xl text-green-900">
+              Request submitted
+            </h2>
+            <p className="mt-2 text-sm text-green-900">{msg}</p>
+            <button
+              type="button"
+              onClick={() => setMsg(null)}
+              className="mt-5 rounded bg-cc-navy px-4 py-2 text-sm text-cc-paper hover:bg-cc-navy-deep"
+            >
+              Okay
+            </button>
+          </div>
+        </div>
+      )}
       <h1 className="font-serif text-3xl text-cc-navy">Request time off</h1>
       <p className="mt-2 text-sm text-cc-muted">
         Choose a single day or a date range. All requests must be approved by management.
@@ -296,7 +322,6 @@ export default function TimeOffPage() {
           />
         </div>
         {err && <p className="text-sm text-red-700">{err}</p>}
-        {msg && <p className="text-sm text-green-800">{msg}</p>}
         <button
           type="submit"
           disabled={loading}

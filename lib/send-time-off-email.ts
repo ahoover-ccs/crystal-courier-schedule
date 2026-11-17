@@ -1,7 +1,7 @@
 import { sendTransactionalEmail } from "./email-sender";
 import type { RouteType } from "./types";
 
-const DEFAULT_NOTIFY = "ahoover@crystalcourier.com";
+const DEFAULT_NOTIFY = "orders@crystalcourier.com";
 
 function routeLabels(types: RouteType[]): string {
   return types.join(", ");

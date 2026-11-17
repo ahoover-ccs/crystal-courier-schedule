@@ -1354,7 +1354,7 @@ export function SettingsForm() {
 
       <CollapsibleSection title="Email" hint="Who receives time-off notifications.">
         <p className="mt-2 text-sm text-cc-muted">
-          Time off notifies <strong>ahoover@crystalcourier.com</strong> by default. Please notify
+          Time off notifies <strong>orders@crystalcourier.com</strong> by default. Please notify
           Aaron to change this.
         </p>
       </CollapsibleSection>
