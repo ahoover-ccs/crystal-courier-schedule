@@ -12,6 +12,7 @@ import {
   notifyTimeOffRejectedToDriver,
 } from "@/lib/send-approval-notifications";
 import { canAssignDriver } from "@/lib/suggestions";
+import { pendingTimeOffBatch } from "@/lib/time-off-batch";
 import { withdrawApprovedTimeOffRequest } from "@/lib/withdraw-time-off";
 
 export async function POST(req: NextRequest) {
@@ -65,11 +66,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "This request is not pending" }, { status: 409 });
     }
 
+    const batch = pendingTimeOffBatch(data.timeOffRequests, row);
+    const dates = batch.map((item) => item.date);
+    const dateSummary =
+      dates.length === 1
+        ? dates[0]
+        : `${dates[0]} through ${dates[dates.length - 1]} (${dates.length} days)`;
+
     if (action === "reject") {
-      row.status = "rejected";
+      for (const item of batch) item.status = "rejected";
       appendActivity(data, {
         category: "time_off",
-        summary: `Time off rejected: ${row.driverName} on ${row.date} (by ${approver.name})`,
+        summary: `Time off rejected: ${row.driverName} on ${dateSummary} (by ${approver.name})`,
         detail: row.routeTypes.join(", "),
       });
       await writeDb(data);
@@ -78,7 +86,7 @@ export async function POST(req: NextRequest) {
       if (person) {
         await notifyTimeOffRejectedToDriver({
           person,
-          dates: [row.date],
+          dates,
           routeTypes: row.routeTypes,
         });
       }
@@ -86,11 +94,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ data: await ensureDb() });
     }
 
-    applyApprovedTimeOffRequestToData(data, row);
-    row.status = "approved";
+    for (const item of batch) {
+      applyApprovedTimeOffRequestToData(data, item);
+      item.status = "approved";
+    }
     appendActivity(data, {
       category: "time_off",
-      summary: `Time off approved: ${row.driverName} on ${row.date} (by ${approver.name})`,
+      summary: `Time off approved: ${row.driverName} on ${dateSummary} (by ${approver.name})`,
       detail: row.routeTypes.join(", "),
     });
     await writeDb(data);
@@ -99,7 +109,7 @@ export async function POST(req: NextRequest) {
     if (person) {
       await notifyTimeOffApprovedToDriver({
         person,
-        dates: [row.date],
+        dates,
         routeTypes: row.routeTypes,
         scheduleUrl,
       });

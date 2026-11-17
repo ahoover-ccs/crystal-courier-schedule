@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
+import { groupTimeOffByBatch } from "@/lib/time-off-batch";
 import type { AppData, OpenShift, Person, TimeOffRequest } from "@/lib/types";
 import { isDispatcherLike } from "@/lib/roles";
 
@@ -31,17 +32,14 @@ export default function ApprovalsPage() {
     [data]
   );
 
-  const pendingTimeOff: TimeOffRequest[] = useMemo(
-    () =>
-      (data?.timeOffRequests ?? [])
-        .filter((r) => r.status === "pending")
-        .sort((a, b) =>
-          a.date === b.date
-            ? a.driverName.localeCompare(b.driverName)
-            : a.date.localeCompare(b.date)
-        ),
-    [data]
-  );
+  const pendingTimeOff: TimeOffRequest[][] = useMemo(() => {
+    const pending = (data?.timeOffRequests ?? []).filter((r) => r.status === "pending");
+    return groupTimeOffByBatch(pending).sort((a, b) => {
+      const byDate = a[0].date.localeCompare(b[0].date);
+      if (byDate !== 0) return byDate;
+      return a[0].driverName.localeCompare(b[0].driverName);
+    });
+  }, [data]);
 
   const pendingShiftClaims: OpenShift[] = useMemo(() => {
     if (!data) return [];
@@ -148,33 +146,41 @@ export default function ApprovalsPage() {
               No pending time off requests.
             </li>
           )}
-          {pendingTimeOff.map((r) => (
-            <li key={r.id} className="rounded border border-cc-line bg-white p-4 shadow-sm">
-              <p className="font-medium text-cc-ink">{r.driverName}</p>
-              <p className="text-sm text-cc-muted">
-                {format(parseISO(r.date), "EEEE, MMM d, yyyy")} · {r.routeTypes.join(", ")}
-              </p>
-              {r.note && <p className="mt-1 text-xs text-cc-muted">Note: {r.note}</p>}
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  disabled={Boolean(busyId) || !approverId}
-                  onClick={() => act("time-off", r.id, "approve")}
-                  className="rounded bg-cc-navy px-3 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep disabled:opacity-50"
-                >
-                  {busyId === `time-off-${r.id}-approve` ? "…" : "Approve"}
-                </button>
-                <button
-                  type="button"
-                  disabled={Boolean(busyId) || !approverId}
-                  onClick={() => act("time-off", r.id, "reject")}
-                  className="rounded border border-cc-line px-3 py-1.5 text-sm text-cc-ink hover:bg-cc-cream/50 disabled:opacity-50"
-                >
-                  {busyId === `time-off-${r.id}-reject` ? "…" : "Reject"}
-                </button>
-              </div>
-            </li>
-          ))}
+          {pendingTimeOff.map((group) => {
+            const r = group[0];
+            const last = group[group.length - 1];
+            const when =
+              group.length === 1
+                ? format(parseISO(r.date), "EEEE, MMM d, yyyy")
+                : `${format(parseISO(r.date), "EEE, MMM d, yyyy")} – ${format(parseISO(last.date), "EEE, MMM d, yyyy")} (${group.length} days)`;
+            return (
+              <li key={r.id} className="rounded border border-cc-line bg-white p-4 shadow-sm">
+                <p className="font-medium text-cc-ink">{r.driverName}</p>
+                <p className="text-sm text-cc-muted">
+                  {when} · {r.routeTypes.join(", ")}
+                </p>
+                {r.note && <p className="mt-1 text-xs text-cc-muted">Note: {r.note}</p>}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={Boolean(busyId) || !approverId}
+                    onClick={() => act("time-off", r.id, "approve")}
+                    className="rounded bg-cc-navy px-3 py-1.5 text-sm text-cc-paper hover:bg-cc-navy-deep disabled:opacity-50"
+                  >
+                    {busyId === `time-off-${r.id}-approve` ? "…" : "Approve"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={Boolean(busyId) || !approverId}
+                    onClick={() => act("time-off", r.id, "reject")}
+                    className="rounded border border-cc-line px-3 py-1.5 text-sm text-cc-ink hover:bg-cc-cream/50 disabled:opacity-50"
+                  >
+                    {busyId === `time-off-${r.id}-reject` ? "…" : "Reject"}
+                  </button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </section>
 
