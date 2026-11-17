@@ -24,6 +24,7 @@ import {
 } from "@/lib/availability-helpers";
 import { roleLabel } from "@/lib/roles";
 import { dayNoteForDate } from "@/lib/schedule-day-notes";
+import { teamNotifiedNote } from "@/lib/open-shift-notified";
 import { suggestFillIns } from "@/lib/suggestions";
 import { ScheduleDayHeader } from "./ScheduleDayHeader";
 import { SCHEDULE_GRID_COLUMNS } from "@/lib/schedule-grid-layout";
@@ -562,8 +563,10 @@ export function ScheduleBoard() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Invite failed");
       setData(json.data as AppData);
-      const log = (json.openShift as { notificationLog?: { message: string }[] } | undefined)
-        ?.notificationLog;
+      const log =
+        (json.sendLog as { message: string }[] | undefined) ??
+        (json.openShift as { notificationLog?: { message: string }[] } | undefined)
+          ?.notificationLog;
       const skipped =
         log?.filter((n) => n.message.startsWith("Skipped ")).map((n) => n.message) ?? [];
       const failed =
@@ -937,6 +940,10 @@ export function ScheduleBoard() {
             )}
             {gaps.map((slot) => {
               const sug = suggestFillIns(data, slot);
+              const posted = data.openShifts.find(
+                (o) => o.slotId === slot.id && o.status === "open"
+              );
+              const notified = posted ? teamNotifiedNote(posted) : null;
               return (
                 <li
                   key={slot.id}
@@ -972,8 +979,11 @@ export function ScheduleBoard() {
                     onClick={() => notifyTeamForOpenSlot(slot.id)}
                     className="mt-2 w-full rounded border border-cc-navy px-2 py-1 text-[11px] font-medium text-cc-navy hover:bg-cc-navy hover:text-cc-paper"
                   >
-                    Notify team (email / SMS)
+                    {posted ? "Remind team (email / SMS)" : "Notify team (email / SMS)"}
                   </button>
+                  {notified && (
+                    <p className="mt-1 text-[10px] leading-snug text-cc-muted">{notified}</p>
+                  )}
                 </li>
               );
             })}

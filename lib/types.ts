@@ -110,6 +110,8 @@ export type OpenShift = {
   pendingClaimDriverName: string | null;
   pendingClaimAt: string | null;
   invitedAt: string | null;
+  /** Each time Notify team / a reminder was sent (ISO timestamps). */
+  teamNotifiedAt?: string[];
   notificationLog: { at: string; channel: string; message: string }[];
 };
 

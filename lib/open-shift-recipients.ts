@@ -6,7 +6,7 @@ import type { AppData, Person, ScheduleSlot } from "./types";
 /**
  * Active drivers who could take this open slot (including those already on
  * non-overlapping routes that day). Approval emails use the same roster record;
- * this list controls who gets the initial "open shift posted" blast.
+ * this list controls who gets the open-shift blast and later reminders.
  */
 export function peopleEligibleForOpenShiftNotify(
   data: AppData,
